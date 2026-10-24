@@ -352,13 +352,20 @@ describe("P-03 시술 상세 컴포넌트 (4절 P-03 이벤트)", () => {
     expect(links[0]!.getAttribute("href")).toBe("/clinics/새솔결의원/");
     click(links[0]!);
     expect(events()).toEqual([{ event: "select_clinic", clinic_id: "saesolgyeol", from: "procedure" }]);
-    expect($("[data-testid=procedure-prices-demo]")).not.toBeNull();
+    expect($("[data-testid=procedure-prices-demo]")?.textContent).toContain("병원명과 가격은");
+    // 예시(가상) 병원이면 "병원이 공개한 가격"이라고 쓰지 않는다(리뷰 T-103 r1 반려 3 — 근거 없는 출처 귀속 금지)
+    expect($("[data-testid=procedure-prices]")?.textContent).not.toContain("병원이 공개한");
     expect($("td")?.textContent).toContain("2026.10.05 기준");
 
     vi.stubEnv("RS_PREVIEW", ""); // 병원 상세(P-05)가 아직 없으면 링크 없이 이름만
     act(() => root.render(<ClinicPriceTable id="prices" title="가격" rows={clinicPriceRows(content.clinics, p.id)} />));
     expect($$("[data-testid=procedure-prices] a")).toHaveLength(0);
     expect($("tbody")?.textContent).toContain("새솔결의원");
+
+    const real = clinicPriceRows(content.clinics, p.id).map((r) => ({ ...r, clinic: { ...r.clinic, is_demo: false } }));
+    act(() => root.render(<ClinicPriceTable id="prices" title="가격" rows={real} />));
+    expect($("[data-testid=procedure-prices]")?.textContent).toContain("병원이 공개한 가격 기준");
+    expect($("[data-testid=procedure-prices-demo]")).toBeNull();
 
     act(() => root.render(<ClinicPriceTable id="prices" title="가격" rows={[]} />));
     expect($("[data-testid=procedure-prices-empty]")?.textContent).toContain("병원별 가격 정보가 없습니다");

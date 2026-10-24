@@ -92,6 +92,15 @@ export function parseProcedureMdx(source) {
   return { frontmatter, body: parts.body, sections, problems };
 }
 
+/** 기관 첫 화면(경로·쿼리 없음)은 각주 문장을 확인할 수 없는 출처다(리뷰 T-103 r1 반려 3) */
+const isSiteRoot = (url) => {
+  try {
+    const u = new URL(url);
+    return u.pathname.replace(/\/+$/, "") === "" && !u.search;
+  } catch {
+    return false;
+  }
+};
 const isInt = (v) => Number.isInteger(v) && v >= 0;
 const isIntOrNull = (v) => v === null || isInt(v);
 const nonEmpty = (v) => typeof v === "string" && v.trim().length > 0;
@@ -144,6 +153,7 @@ function lintFrontmatter(fm, bad) {
       if (!s || !nonEmpty(s.title)) bad(`sources[${i}].title 없음`);
       if (!s || typeof s.url !== "string" || !/^https:\/\/[^\s]+$/.test(s.url)) bad(`sources[${i}].url 은 https (${s?.url})`);
       else if (urls.has(s.url)) bad(`sources[${i}].url 중복`);
+      else if (isSiteRoot(s.url)) bad(`sources[${i}].url 이 사이트 첫 화면(${s.url}) — 각주 문장의 내용이 적힌 구체 페이지 URL 로`);
       else urls.add(s.url);
     });
   }

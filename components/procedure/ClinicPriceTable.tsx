@@ -24,7 +24,8 @@ export function ClinicPriceTable({
         {title}
       </h2>
       <p className="mt-2 max-w-text text-sm text-ink-muted">
-        병원이 공개한 가격 기준의 참고용 범위입니다. 실제 비용은 상담 후 시술 범위에 따라 달라질 수 있습니다.
+        {hasDemo ? "병원별 참고 가격 범위입니다." : "병원이 공개한 가격 기준의 참고용 범위입니다."} 실제 비용은 상담 후 시술 범위에 따라 달라질 수
+        있습니다.
       </p>
       {rows.length === 0 ? (
         <p data-testid="procedure-prices-empty" className="mt-5 rounded-sm border border-line bg-surface px-5 py-4 text-ink-muted">
@@ -77,7 +78,7 @@ export function ClinicPriceTable({
       )}
       {hasDemo && (
         <p data-testid="procedure-prices-demo" className="mt-3 text-sm text-ink-muted">
-          병원명은 제휴 병원 등록 전 화면 구성을 보여 주는 예시 데이터입니다.
+          병원명과 가격은 제휴 병원 등록 전 화면 구성을 보여 주는 예시 데이터입니다.
         </p>
       )}
     </section>

@@ -88,7 +88,7 @@ describe("lib/procedure", () => {
     const [page, faq] = ld["@graph"] as Record<string, unknown>[];
     const proc = page!.mainEntity as Record<string, unknown>;
     expect(ld["@graph"]).toHaveLength(2);
-    expect(page).toMatchObject({ "@type": "MedicalWebPage", url: procedureUrl("https://a.kr/realsurgery", eyelid.slug), dateModified: "2026-10-24" });
+    expect(page).toMatchObject({ "@type": "MedicalWebPage", url: procedureUrl("https://a.kr/realsurgery", eyelid.slug), dateModified: "2026-10-25" });
     expect(page!.url).toBe("https://a.kr/realsurgery/procedures/%EC%8C%8D%EA%BA%BC%ED%92%80-%EC%88%98%EC%88%A0/");
     expect(page).not.toHaveProperty("reviewedBy");
     expect(proc).toMatchObject({

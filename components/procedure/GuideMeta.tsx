@@ -31,7 +31,7 @@ export function GuideMeta({
         <div className="flex flex-col gap-1 sm:flex-row sm:gap-4">
           <dt className="shrink-0 font-semibold text-ink sm:w-24">의료 자문</dt>
           <dd data-testid="procedure-reviewer" className="text-ink-muted">
-            {reviewer ? `${reviewer.name}${reviewer.role ? ` (${reviewer.role})` : ""}` : "자문의 검토 전입니다. 공개 자료를 바탕으로 편집팀이 작성했습니다."}
+            {reviewer ? `${reviewer.name}${reviewer.role ? ` (${reviewer.role})` : ""}` : "자문의 검토 전입니다. 아래 출처의 의료기관·공공기관 자료를 바탕으로 편집팀이 작성했으며, 가격은 출처 검증 전 예시 데이터입니다."}
           </dd>
         </div>
         <div className="flex flex-col gap-1 sm:flex-row sm:gap-4">
