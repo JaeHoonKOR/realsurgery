@@ -11,7 +11,7 @@
  *    - override 값 = Pretendard 메트릭 / size-adjust.
  *    - 같은 패밀리에서 unicode-range 가 겹치면 뒤에 선언한 면이 우선 → 기본(한글) 면을 먼저, 세부 범위를 뒤에 둔다.
  *    - Apple SD Gothic Neo(iOS·macOS)는 측정 환경이 없어 보정하지 않고 그대로 쓴다.
- * 검증: tests/e2e/home.spec.ts "웹폰트 교체(swap) 전후 블록 위치가 같다" (폭 360~1280 스윕)
+ * 검증: tests/e2e/home.spec.ts "웹폰트 교체(swap)로 생기는 CLS 가 0.05 이하다 (폭 360~1280 스윕)"
  */
 
 @font-face {
