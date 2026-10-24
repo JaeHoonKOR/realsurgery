@@ -50,3 +50,16 @@
   --container-content: 1120px;
   --container-text: 640px;
 }
+
+/*
+ * 쌓임 순서(z-index) — 숫자를 컴포넌트에 직접 쓰지 않는다(check-tokens 인라인 style 규칙).
+ * 사용: className="z-(--z-header)" 또는 style={{ zIndex: "var(--z-header)" }}
+ * @theme 밖 :root 에 두어 사용 여부와 관계없이 항상 출력한다.
+ */
+:root {
+  --z-header: 30; /* 상단 고정 헤더 */
+  --z-popover: 35; /* 검색 자동완성 목록 */
+  --z-bottom-bar: 40; /* 모바일 하단 고정 바 */
+  --z-banner: 50; /* 쿠키·동의 배너 */
+  --z-skip-link: 60; /* 본문 바로가기 */
+}

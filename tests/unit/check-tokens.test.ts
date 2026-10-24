@@ -2,7 +2,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
-import { checkTokens, scanSource } from "../../scripts/check-tokens.mjs";
+import { DIRS, EXT, checkTokens, scanSource } from "../../scripts/check-tokens.mjs";
 
 const rules = (text: string, file = "app/page.tsx") => scanSource(text, file).map((v) => `${v.rule} ${v.value}`);
 
@@ -55,6 +55,103 @@ describe("check-tokens: hex 색상", () => {
   it("줄 번호를 정확히 보고한다", () => {
     expect(scanSource('a\nb\nconst c = "#fff";', "x.ts")).toEqual([{ line: 3, rule: "hex", value: "#fff" }]);
   });
+
+  // 2026-10-25 T-100 r2 리뷰 권고 1: \b(?:href|id|to) 가 하이픈 뒤에서도 성립해 data-id 를 앵커로 오인
+  it.each([
+    ['<div data-id="#fff" />', "#fff"],
+    ['<div aria-describedby-id="#abc" />', "#abc"],
+    ['<a data-href="#cafe" />', "#cafe"],
+    ['<g data-to="#bad" />', "#bad"],
+    ['const o = { "data-href": "#fed" };', "#fed"],
+    ['const o = { xhref: "#ace" };', "#ace"],
+    ['<div gridid="#beef" />', "#beef"],
+  ])("하이픈·글자 뒤 id/href/to 는 앵커가 아니다: %s", (src, hex) => {
+    expect(rules(src)).toContain(`hex ${hex}`);
+  });
+});
+
+describe("check-tokens: 색 함수·이름 색 (T-100 r2 리뷰 권고 2)", () => {
+  it.each([
+    ['style={{ background: "rgb(0 0 0)" }}', "color-fn rgb("],
+    ["const c = 'rgba(31, 42, 46, .5)';", "color-fn rgba("],
+    ['const c = "hsl(200 50% 40%)";', "color-fn hsl("],
+    ["const c = `HSLA(1,2%,3%,.4)`;", "color-fn HSLA("],
+    ['const c = "oklch(0.7 0.1 200)";', "color-fn oklch("],
+    ['const c = "lab(50% 20 30)";', "color-fn lab("],
+    ['const c = "hwb(12 10% 20%)";', "color-fn hwb("],
+    ['const c = "color(display-p3 1 0 0)";', "color-fn color(display-p3"],
+  ])("TS 문자열의 색 함수 검출: %s", (src, expected) => {
+    expect(rules(src)).toContain(expected);
+  });
+
+  it.each([
+    ["box-shadow: 0 1px 2px rgb(0 0 0 / 0.1);", "color-fn rgb("],
+    ["color: hsl(0 0% 100%);", "color-fn hsl("],
+    ["  --overlay: oklab(0.5 0 0);", "color-fn oklab("],
+  ])("CSS 의 색 함수 검출: %s", (src, expected) => {
+    expect(rules(src, "styles/x.css")).toContain(expected);
+  });
+
+  it("일반 함수 호출(color(x), toRgb(), rgbToHex())는 색 함수가 아니다", () => {
+    expect(rules("const a = color(theme); const b = toRgb(x); const c = rgbToHex(v); obj.rgb(1);")).toEqual([]);
+  });
+
+  it.each([
+    ['style={{ color: "white" }}', "named-color color: white"],
+    ['style={{ backgroundColor: "Black" }}', "named-color backgroundColor: black"],
+    ['style={{ border: "1px solid red" }}', "named-color border: red"],
+    ['<path fill="white" />', "named-color fill=white"],
+    ['<circle stroke={"tomato"} />', "named-color stroke=tomato"],
+    ['<stop stopColor="navy" />', "named-color stopColor=navy"],
+    ['const theme = { color: "rebeccapurple" };', "named-color color: rebeccapurple"],
+  ])("TS·TSX 이름 색 검출: %s", (src, expected) => {
+    expect(rules(src)).toContain(expected);
+  });
+
+  it.each([
+    ["color: white;", "named-color color: white"],
+    ["  background: #0000 linear-gradient(red, blue);", "named-color background: red"],
+    ["border-bottom-color: Gray;", "named-color border-bottom-color: gray"],
+    ["--ring: navy;", "named-color --ring: navy"],
+    ["a { outline: 2px solid black }", "named-color outline: black"],
+  ])("CSS 이름 색 검출: %s", (src, expected) => {
+    expect(rules(src, "styles/x.css")).toContain(expected);
+  });
+
+  it.each([
+    ['<svg fill="none" stroke="currentColor" />'],
+    ['style={{ color: "inherit", background: "transparent" }}'],
+    ['style={{ color: "var(--color-brand)" }}'],
+    ['<p className="text-ink">흰색(white) 글자는 쓰지 않는다</p>'],
+    ['const label = "white paper";'],
+  ])("키워드·var(--토큰)·일반 문장은 통과: %s", (src) => {
+    expect(rules(src)).toEqual([]);
+  });
+
+  it.each([
+    ["color: currentColor;"],
+    ["background-color: var(--color-canvas);"],
+    ["outline: 2px solid var(--color-brand);"],
+    ['font-family: "Pretendard Variable", system-ui;'],
+    ["--z-header: 30;"],
+  ])("CSS 키워드·var(--토큰)는 통과: %s", (src) => {
+    expect(rules(src, "styles/x.css")).toEqual([]);
+  });
+
+  it.each([
+    ['<p className="text-white" />', "named-color text-white"],
+    ['<div className="bg-blue-500 hover:bg-blue-600/80" />', "named-color bg-blue-500"],
+    ['<div className="md:border-t-gray-200" />', "named-color md:border-t-gray-200"],
+    ['<div className="from-black to-white" />', "named-color from-black"],
+  ])("토큰 밖 Tailwind 팔레트 색 클래스 검출: %s", (src, expected) => {
+    expect(rules(src)).toContain(expected);
+  });
+
+  it("토큰 색 클래스·같은 접두사의 다른 유틸리티는 통과한다", () => {
+    expect(
+      rules('<a className="text-surface bg-accent-strong border-line text-sm text-ink-muted shadow-sm ring-brand" />'),
+    ).toEqual([]);
+  });
 });
 
 describe("check-tokens: 임의 값 클래스", () => {
@@ -96,6 +193,17 @@ describe("check-tokens: 인라인 style 값", () => {
     expect(scanSource(src, "components/x.tsx")).toEqual([{ line: 4, rule: "inline-style", value: "padding: 13" }]);
   });
 
+  it.each([
+    ["<div style={{ zIndex: 10 }} />", "zIndex: 10"],
+    ["<div style={{ opacity: 0.5 }} />", "opacity: 0.5"],
+  ])("zIndex·opacity 숫자도 검출한다(토큰 var 로 써야 함): %s", (src, value) => {
+    expect(rules(src)).toEqual([`inline-style ${value}`]);
+  });
+
+  it("zIndex·opacity 를 토큰 var 로 쓰면 통과한다", () => {
+    expect(rules('<div style={{ zIndex: "var(--z-header)", opacity: "var(--opacity-muted)" }} />')).toEqual([]);
+  });
+
   it("0·CSS 변수·키워드 값은 통과한다", () => {
     expect(
       rules(
@@ -126,7 +234,28 @@ describe("check-tokens: 저장소 검사", () => {
     expect(checkTokens(root)).toEqual([`${path.join("app", "page.tsx")}:2 토큰 밖 색상 #fff`]);
   });
 
-  it("현재 저장소(app·components·styles)는 위반 0건이다", () => {
+  it("lib·content(MDX)·.js/.jsx 도 검사한다 (T-100 r2 리뷰 권고 3)", () => {
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), "check-tokens-"));
+    dirs.push(root);
+    for (const d of ["lib", path.join("content", "procedures"), "components"]) fs.mkdirSync(path.join(root, d), { recursive: true });
+    fs.writeFileSync(path.join(root, "lib", "theme.ts"), 'export const c = "rgb(0 0 0)";\n', "utf8");
+    fs.writeFileSync(path.join(root, "content", "procedures", "double-eyelid.mdx"), '<span style={{ color: "#fff" }} />\n', "utf8");
+    fs.writeFileSync(path.join(root, "components", "legacy.jsx"), '<p className="text-white" />\n', "utf8");
+    expect(checkTokens(root).sort()).toEqual(
+      [
+        `${path.join("components", "legacy.jsx")}:1 토큰 밖 이름 색 text-white`,
+        `${path.join("content", "procedures", "double-eyelid.mdx")}:1 토큰 밖 색상 #fff`,
+        `${path.join("lib", "theme.ts")}:1 토큰 밖 색 함수 rgb(`,
+      ].sort(),
+    );
+  });
+
+  it("검사 범위에 app·components·lib·styles·content 가 있다", () => {
+    expect(DIRS).toEqual(expect.arrayContaining(["app", "components", "lib", "styles", "content"]));
+    expect(EXT).toEqual(expect.arrayContaining([".ts", ".tsx", ".js", ".jsx", ".css", ".mdx"]));
+  });
+
+  it("현재 저장소(app·components·lib·styles·content)는 위반 0건이다", () => {
     expect(checkTokens()).toEqual([]);
   });
 });

@@ -1,4 +1,5 @@
 import { test, expect } from "../fixtures";
+import { tooSmall, visibleTargets } from "./touch-targets";
 
 test.describe("홈 (T-100 스캐폴드)", () => {
   test("basePath 하위에서 렌더링되고 필수 영역이 있다", async ({ page }) => {
@@ -122,6 +123,19 @@ test.describe("홈 (T-100 스캐폴드)", () => {
     console.log(`[font-swap] ${report.join(" | ")}`);
   });
 
+  test("모바일 터치 타겟 44px 이상 — 보이는 인터랙티브 요소 전부(첫 방문·동의 후)", async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name !== "mobile-375", "모바일 기준");
+    await page.goto("./");
+    const first = await visibleTargets(page);
+    for (const area of ["site-logo", "consent-banner"]) {
+      expect(first.some((t) => t.label.startsWith(`[${area}]`)), `${area} 의 요소를 찾지 못함`).toBe(true);
+    }
+    expect(tooSmall(first), "첫 방문 화면의 44px 미만 요소").toEqual([]);
+    await page.getByTestId("consent-save").click();
+    await expect(page.getByTestId("consent-banner")).toBeHidden();
+    expect(tooSmall(await visibleTargets(page)), "동의 후 화면의 44px 미만 요소").toEqual([]);
+  });
+
   test("canonical·description 메타가 있다", async ({ page }) => {
     await page.goto("./");
     const canonical = await page.locator('link[rel="canonical"]').getAttribute("href");
@@ -129,6 +143,35 @@ test.describe("홈 (T-100 스캐폴드)", () => {
     const description = await page.locator('meta[name="description"]').getAttribute("content");
     expect(description?.length ?? 0).toBeGreaterThanOrEqual(120);
     expect(description?.length ?? 0).toBeLessThanOrEqual(150);
+  });
+
+  test("공통 틀(T-100b): 헤더·푸터·동의 배너, Consent Mode 기본 denied", async ({ page }) => {
+    await page.goto("./");
+    await expect(page.getByTestId("site-logo")).toHaveText("리얼성형");
+    await expect(page.getByTestId("site-footer").getByTestId("footer-info")).toContainText("상담 연락 시간");
+    await expect(page.getByTestId("consent-banner")).toBeVisible();
+    const first = await page.evaluate(() => {
+      const e = window.dataLayer?.[0];
+      return e ? Array.from(e as ArrayLike<unknown>) : null;
+    });
+    expect(first?.slice(0, 2)).toEqual(["consent", "default"]);
+    expect(first?.[2]).toMatchObject({ analytics_storage: "denied", ad_storage: "denied" });
+    await page.getByTestId("consent-save").click();
+    await expect(page.getByTestId("consent-banner")).toBeHidden();
+    await page.reload();
+    await expect(page.getByTestId("consent-banner")).toBeHidden();
+  });
+
+  test("모든 내부 링크·CTA 가 실제 화면으로 이어진다(아직 없는 화면 링크 노출 금지)", async ({ page, request }) => {
+    await page.goto("./");
+    const hrefs = await page.$$eval("a[href]", (as) =>
+      as.map((a) => (a as HTMLAnchorElement).href).filter((h) => h.startsWith(location.origin)),
+    );
+    expect(hrefs.length).toBeGreaterThan(0);
+    for (const href of new Set(hrefs.map((h) => h.split("#")[0]!))) {
+      const res = await request.get(href);
+      expect(res.status(), href).toBe(200);
+    }
   });
 
   test("하드코딩된 GA·Pixel 태그가 없다", async ({ page }) => {

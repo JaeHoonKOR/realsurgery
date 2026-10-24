@@ -4,12 +4,18 @@
  * 이 파일과 앱 코드에서 GA4·Meta 전역 함수를 직접 부르거나 태그 스크립트를 하드코딩하지 않는다.
  */
 
+/**
+ * click_cta 의 location 값 (3절 "location 파라미터로 구분", 4절 P-01 hero·footer, P-03 mid)
+ * header = 헤더 CTA, bottom_bar = 모바일 하단 고정 바, mid·bottom = 콘텐츠 본문 중간·하단 CTA 블록
+ */
+export type CtaLocation = "header" | "hero" | "mid" | "bottom" | "footer" | "bottom_bar";
+
 /** screen-spec.md 5절 이벤트 21개 (전환 1 + 보조 3 + 행동 17) 와 파라미터 */
 export type TrackEvents = {
   view_procedure: { procedure_id: string; procedure_name: string; category: string };
   view_clinic: { clinic_id: string; clinic_name: string; is_premium: boolean };
   view_lp: { campaign: string; variant: string };
-  click_cta: { location: string; procedure_id?: string };
+  click_cta: { location: CtaLocation; procedure_id?: string };
   form_start: { procedure_id?: string; clinic_id?: string; source_page: string };
   form_step2: { procedure_id?: string; clinic_id?: string; source_page: string };
   generate_lead: {
