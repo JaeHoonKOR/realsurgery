@@ -1,4 +1,4 @@
-import type { Page } from "@playwright/test";
+import type { Browser, Page, Route } from "@playwright/test";
 import { loadContent } from "../../lib/content";
 import { test, expect } from "../fixtures";
 import { tooSmall, visibleTargets } from "./touch-targets";
@@ -70,7 +70,7 @@ test.describe("P-03 구성 요소 (4절 표 전 행)", () => {
     const meta = page.getByTestId("procedure-meta");
     await expect(meta).toContainText("리얼성형 편집팀");
     await expect(meta).toContainText("의료 자문");
-    await expect(meta.locator("time")).toHaveAttribute("datetime", "2026-10-24");
+    await expect(meta.locator("time")).toHaveAttribute("datetime", "2026-10-25");
     // 브레드크럼 홈 › 시술 가이드 › 눈 › 쌍꺼풀 수술
     await expect(page.getByTestId("breadcrumb").getByRole("listitem")).toHaveText(["홈", "시술 가이드", "눈", "쌍꺼풀 수술"]);
 
@@ -192,9 +192,98 @@ test.describe("P-03 SEO·AEO (6절)", () => {
     expect(src).toBeTruthy();
     const rsc = await request.get(new URL(src!, baseURL).href);
     expect(rsc.status()).toBe(200);
-    expect(await rsc.text()).toMatch(/^\(self\.__next_f=self\.__next_f\|\|\[\]\)\.push\(\[0\]\)/);
+    const js = await rsc.text();
+    expect(js).toMatch(/^\(self\.__next_f=self\.__next_f\|\|\[\]\)\.push\(\[0\]\)/);
+    expect(js.trimEnd()).toMatch(/self\.__rs_rsc_ok=1;$/); // 끝까지 실행됐다는 표시 → 그때만 하이드레이션
+    // 하이드레이션 보류 GATE 가 모든 스크립트보다 앞
+    expect(html.indexOf("<script")).toBe(html.indexOf("<script>(function(s){var d,p=new Promise"));
+    // 문서 크기: 시술 전체(docs/content/procedure-mdx.md)
     const { gzipSync } = await import("node:zlib");
-    expect(gzipSync(Buffer.from(html)).length).toBeLessThanOrEqual(14 * 1024);
+    for (const p of content.procedures) {
+      const doc = await (await request.get(`${baseURL}${PATH(encodeURIComponent(p.slug))}`)).text();
+      expect(gzipSync(Buffer.from(doc)).length, p.slug).toBeLessThanOrEqual(14 * 1024);
+    }
+  });
+});
+
+test.describe("RSC 페이로드(*.rsc.js) 실패 — 정적 HTML 유지 (리뷰 T-103 r1 반려 1, scripts/externalize-rsc.mjs)", () => {
+  // 실패를 일부러 만드는 검사라 공통 fixture(콘솔·4xx 0)를 쓰지 않고 직접 수집해, 예상한 페이로드 실패 외에는 0 인지 본다.
+  type Env = { browser: Browser; baseURL?: string; viewport: { width: number; height: number } | null; isMobile: boolean; hasTouch: boolean };
+  const open = async ({ browser, baseURL, viewport, isMobile: mobile, hasTouch }: Env, handle: (route: Route, nth: number) => Promise<void>) => {
+    const ctx = await browser.newContext({ viewport, isMobile: mobile, hasTouch, locale: "ko-KR" });
+    const page = await ctx.newPage();
+    const issues: string[] = [];
+    const rscUrls: string[] = [];
+    page.on("pageerror", (e) => issues.push(`pageerror: ${e.message}`));
+    page.on("console", (m) => {
+      if ((m.type() === "error" || m.type() === "warning") && !/Failed to load resource/.test(m.text())) issues.push(`console.${m.type()}: ${m.text()}`);
+    });
+    page.on("response", (r) => {
+      if (r.status() >= 400 && !/\.rsc\.js/.test(r.url())) issues.push(`HTTP ${r.status()}: ${r.url()}`);
+    });
+    await page.route("**/*.rsc.js*", (route) => {
+      rscUrls.push(route.request().url());
+      return handle(route, rscUrls.length);
+    });
+    await page.goto(`${baseURL}${PATH(encodeURIComponent(eyelid.slug))}`);
+    return { ctx, page, issues, rscUrls };
+  };
+
+  /** JS 청크는 다 실행됐고(window.next — app-bootstrap), 재요청까지 끝난 뒤에도 하이드레이션이 시작되지 않았는지(app-index 미실행). */
+  const settledWithoutHydration = async (page: Page, rscUrls: string[]) => {
+    await page.waitForLoadState("load");
+    await expect.poll(() => page.evaluate(() => (window as unknown as { next?: { appDir?: boolean } }).next?.appDir)).toBe(true);
+    await expect.poll(() => rscUrls.length).toBe(2);
+    expect(rscUrls[1]).toMatch(/[?&]retry=1$/);
+    await page.waitForTimeout(500);
+    // app-index 가 실행되면 self.__next_f 를 배열로 만든다 → undefined 면 하이드레이션 스트림이 열리지 않은 것
+    expect(await page.evaluate(() => (self as unknown as { __next_f?: unknown }).__next_f)).toBeUndefined();
+  };
+
+  const staticContentIntact = async (page: Page) => {
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText(eyelid.name);
+    await expect(page.getByTestId("procedure-answer")).toBeVisible();
+    await expect(page.getByTestId("procedure-body").locator("h2")).toHaveCount(5);
+    await expect(page.getByTestId("procedure-body")).toContainText("쌍꺼풀 수술은 누가 받나요?");
+    // FAQ 답변 텍스트가 DOM 에 있고, <details> 는 JS 없이도 열린다
+    await expect(page.getByTestId("procedure-faq").locator("details p").nth(4)).toHaveText(eyelid.faqs[4]!.answer);
+    await page.getByTestId("procedure-faq").locator("summary").first().scrollIntoViewIfNeeded();
+    await page.getByTestId("procedure-faq").locator("summary").first().click();
+    await expect(page.getByTestId("procedure-faq").locator("details p").first()).toBeVisible();
+    expect(await page.evaluate(() => document.body.innerText.length)).toBeGreaterThan(2000);
+  };
+
+  test("abort: 재요청까지 실패해도 H1·본문·FAQ 답변이 남고 화면이 비지 않는다", async ({ browser, baseURL, viewport, isMobile: mobile, hasTouch }) => {
+    const { ctx, page, issues, rscUrls } = await open({ browser, baseURL, viewport, isMobile: mobile, hasTouch }, (r) => r.abort());
+    await settledWithoutHydration(page, rscUrls);
+    await staticContentIntact(page);
+    expect(issues).toEqual([]);
+    await ctx.close();
+  });
+
+  test("404: 재요청까지 404 여도 H1·본문·FAQ 답변이 남고 화면이 비지 않는다", async ({ browser, baseURL, viewport, isMobile: mobile, hasTouch }) => {
+    const { ctx, page, issues, rscUrls } = await open({ browser, baseURL, viewport, isMobile: mobile, hasTouch }, (r) =>
+      r.fulfill({ status: 404, contentType: "text/html; charset=utf-8", body: "<!DOCTYPE html><title>404</title><h1>Not Found</h1>" }),
+    );
+    await settledWithoutHydration(page, rscUrls);
+    await staticContentIntact(page);
+    expect(issues).toEqual([]);
+    await ctx.close();
+  });
+
+  test("첫 요청만 실패(일시 장애): 1회 재요청으로 받아 정상 하이드레이션 — view_procedure·동의 저장 동작", async ({ browser, baseURL, viewport, isMobile: mobile, hasTouch }) => {
+    const { ctx, page, issues, rscUrls } = await open({ browser, baseURL, viewport, isMobile: mobile, hasTouch }, (r, nth) =>
+      nth === 1 ? r.abort() : r.continue(),
+    );
+    await expect.poll(() => ofType(page, "view_procedure")).toEqual([
+      { event: "view_procedure", procedure_id: "double-eyelid", procedure_name: "쌍꺼풀 수술", category: "eye" },
+    ]);
+    expect(rscUrls).toHaveLength(2);
+    await page.getByTestId("consent-save").click();
+    await expect(page.getByTestId("consent-banner")).toBeHidden();
+    await staticContentIntact(page);
+    expect(issues).toEqual([]);
+    await ctx.close();
   });
 });
 
