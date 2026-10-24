@@ -11,6 +11,21 @@ export type Weekday = "Mo" | "Tu" | "We" | "Th" | "Fr" | "Sa" | "Su";
 export type Category = { id: string; name: string; slug: string; order: number };
 export type Source = { title: string; url: string };
 export type ProcedureFaq = { id: string; question: string; answer: string; order: number };
+/** P-03 회복기 추천템(쿠팡파트너스 제휴 링크) */
+export type AffiliateItem = { id: string; name: string; url: string; image: string | null; order: number };
+/** content_mdx 프런트매터·본문에서 빌드 때 뽑은 화면용 필드(scripts/procedure-mdx.mjs guideOf) */
+export type Guide = {
+  description: string;
+  procedure_type: "surgical" | "noninvasive" | "percutaneous";
+  body_location: string;
+  preparation: string;
+  author_id: string | null;
+  medical_reviewer_id: string | null;
+  /** 프런트매터를 뺀 MDX 본문 */
+  body: string;
+  /** 본문 H2 5개 — id 는 앵커 (#guide-who …) */
+  sections: { id: string; title: string }[];
+};
 export type Procedure = {
   id: string;
   category_id: string;
@@ -29,6 +44,8 @@ export type Procedure = {
   updated_at: string;
   view_count: number;
   faqs: ProcedureFaq[];
+  affiliate_items: AffiliateItem[];
+  guide: Guide | null;
 };
 export type ClinicHours = { label: string; days: Weekday[]; open: string; close: string };
 export type ClinicProcedure = {

@@ -30,6 +30,12 @@ test("axe critical·serious 0건: 검색 자동완성 열림·결과 없음", as
   expect(await blocking(page)).toEqual([]);
 });
 
+test("axe critical·serious 0건: P-03 시술 상세(중간·하단 CTA·하단 바·병원 링크 포함)", async ({ page }) => {
+  await page.goto("../procedures/쌍꺼풀-수술/");
+  await expect(page.getByTestId("consult-cta-mid")).toBeVisible();
+  expect(await blocking(page)).toEqual([]);
+});
+
 test("axe critical·serious 0건: 동의 후(배너 숨김)", async ({ page }) => {
   await page.goto("./");
   await page.getByTestId("consent-accept-all").click();

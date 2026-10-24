@@ -10,6 +10,102 @@
   padding-bottom: calc(var(--spacing) * 4 + env(safe-area-inset-bottom, 0px));
 }
 
+/*
+ * P-03 시술 가이드 반복 요소 스타일 — 같은 유틸리티 묶음을 요소마다 class 로 반복하지 않고 부모 클래스 하나로 준다.
+ * 이유: 정적 HTML 과 RSC 페이로드에 class 문자열이 두 번씩 실려 문서가 커지면(gzip 14KB 초과) 모바일 LCP 가 한 왕복 늦어진다
+ * (로그 2026-10-25-builder-T-103 "LCP"). 값은 전부 토큰 유틸리티(@apply)라 디자인 토큰 규칙은 그대로다.
+ */
+@layer components {
+  /* MDX 본문(components/procedure/GuideBody) */
+  .guide-prose > h2 {
+    @apply mt-12 text-h2 font-bold text-ink first:mt-0;
+  }
+  .guide-prose > h3 {
+    @apply mt-8 text-h3 font-bold text-ink;
+  }
+  .guide-prose > p {
+    @apply mt-4 text-ink;
+  }
+  .guide-prose > ul {
+    @apply mt-4 list-disc space-y-2 pl-5 text-ink marker:text-accent;
+  }
+  .guide-prose > ol {
+    @apply mt-4 list-decimal space-y-2 pl-5 text-ink;
+  }
+  .guide-prose strong {
+    @apply font-semibold text-ink;
+  }
+  .guide-prose sup[data-cite] {
+    @apply font-semibold text-brand;
+  }
+  .guide-table {
+    @apply mt-5 overflow-x-auto rounded-sm border border-line bg-surface;
+  }
+  .guide-table > table {
+    @apply w-full border-collapse text-left text-sm;
+  }
+  .guide-table thead {
+    @apply bg-canvas;
+  }
+  .guide-table tr {
+    @apply border-b border-line last:border-b-0;
+  }
+  .guide-table th {
+    @apply border-b border-line px-3 py-3 font-semibold text-ink md:px-4;
+  }
+  .guide-table td {
+    @apply px-3 py-3 align-top text-ink md:px-4;
+  }
+
+  /* 관련 시술 카드(components/procedure/RelatedProcedures) */
+  .related-card {
+    @apply flex h-full flex-col rounded-lg border border-line bg-surface p-4 hover:border-brand hover:shadow-sm md:p-5;
+  }
+  .related-card > small {
+    @apply text-sm text-ink-muted;
+  }
+  .related-card > b {
+    @apply mt-1 flex items-start justify-between gap-2 font-bold text-ink md:text-h3;
+  }
+  .related-card i {
+    @apply not-italic text-brand transition-transform;
+  }
+  .related-card:hover i {
+    @apply translate-x-1;
+  }
+  .related-card > span {
+    @apply mt-auto grid gap-1 pt-4 text-sm;
+  }
+  .related-card strong {
+    @apply font-semibold text-ink;
+  }
+  .related-card span > small {
+    @apply text-sm text-ink-muted;
+  }
+
+  /* FAQ 아코디언(components/procedure/FaqAccordion) */
+  .faq-list {
+    @apply divide-y divide-line rounded-lg border border-line bg-surface;
+  }
+  .faq-list summary {
+    @apply flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 px-5 py-3 font-semibold text-ink;
+  }
+  .faq-list summary::-webkit-details-marker {
+    display: none;
+  }
+  .faq-list details > p {
+    @apply px-5 pb-5 text-ink-muted;
+  }
+  /* 꺾쇠: 테두리 2면을 45도 돌린 사각형(아래 방향), 열리면 위 방향 */
+  .faq-chevron {
+    @apply size-2 shrink-0 rotate-45 border-r-2 border-b-2 border-ink-muted transition-transform;
+    margin-right: calc(var(--spacing) * 1);
+  }
+  .faq-list details[open] .faq-chevron {
+    @apply -rotate-135;
+  }
+}
+
 @layer base {
   html {
     background-color: var(--color-canvas);
@@ -72,6 +168,51 @@
   body:has([data-bottom-bar]) [data-consent-banner] {
     bottom: calc(var(--spacing) * 18 + env(safe-area-inset-bottom, 0px));
     padding-bottom: calc(var(--spacing) * 4);
+  }
+}
+
+/* 동의 배너는 마지막 자식(끝 표시)까지 파싱된 뒤에만 그린다 — 화면 아래 고정 요소가 파싱 도중 커지면 CLS 로 잡힌다 */
+[data-consent-banner]:not(:has(> [data-consent-end])) {
+  display: none;
+}
+
+/* 쿠키·동의 배너 접기 (T-100b 리뷰 권고): 세로 720px 이하 화면(320×568 소형 휴대폰, 667×375 가로 모드 등)에서
+   첫 방문 배너가 하단 바와 함께 화면 대부분을 덮지 않도록 토글 2개를 접고 "항목 설정" 버튼으로 연다.
+   접힌 상태에서 토글이 모두 꺼져 있으면 저장 버튼 = 거부 → 이름을 "동의 안 함"으로 바꿔 보여 준다.
+   그보다 높은 화면은 지금처럼 토글을 펼쳐 둔다(버튼도 숨김). */
+.consent-disclosure,
+.consent-label-compact {
+  display: none;
+}
+@media (max-height: 720px) {
+  .consent-disclosure {
+    display: inline-flex;
+  }
+  [data-consent-banner]:not([data-expanded]) .consent-options {
+    display: none;
+  }
+  [data-consent-banner]:not([data-expanded]):not([data-any-on]) .consent-label-compact {
+    display: inline;
+  }
+  [data-consent-banner]:not([data-expanded]):not([data-any-on]) .consent-label-full {
+    display: none;
+  }
+}
+/* 가로 모드처럼 낮고 넓은 화면: 안내 문구와 버튼을 한 줄에 둬 높이를 더 줄인다(48rem 이상은 원래 한 줄) */
+@media (max-height: 720px) and (min-width: 40rem) and (width < 48rem) {
+  .consent-inner {
+    display: flex;
+    align-items: flex-end;
+    gap: calc(var(--spacing) * 6);
+  }
+  .consent-inner > :first-child {
+    flex: 1;
+  }
+  .consent-actions {
+    width: calc(var(--spacing) * 64);
+    flex-shrink: 0;
+    margin-top: 0;
+    margin-bottom: calc(var(--spacing) * 1);
   }
 }
 

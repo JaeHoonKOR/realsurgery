@@ -2,15 +2,30 @@
 // - Supabase 키(NEXT_PUBLIC_SUPABASE_URL·ANON_KEY)가 있으면 REST 로 콘텐츠 테이블을 읽는다.
 // - 없으면 mock 모드: data/seed/*.json (실서비스형 더미 데이터)을 그대로 쓴다. (CLAUDE.md "외부 서비스 mock 모드")
 // - 결과: data/generated/content.json (gitignore). lib/content.ts 가 빌드 중에 읽는다.
-// - 시드 SQL: `node scripts/build-data.mjs --sql` → supabase/seed.sql (같은 data/seed 에서 생성, 직접 수정 금지)
-//            `node scripts/build-data.mjs --check-sql` → seed.sql 이 data/seed 와 다르면 exit 1
+// - 시드 SQL: `node scripts/build-data.mjs --sql` → supabase/seed.sql (data/seed + content/procedures 에서 생성, 직접 수정 금지)
+//            `node scripts/build-data.mjs --check-sql` → seed.sql 이 원본과 다르면 exit 1 (pnpm lint)
+// - 시술 콘텐츠: content/procedures/<id>.mdx (프런트매터 + 본문)가 원본이다(docs/content/procedure-mdx.md).
+//   MDX → procedures·procedure_faqs 행(content_mdx = 파일 전체)으로 바꿔 덮어쓴다(mock·Supabase 두 모드 모두 저장소 파일이 우선).
+//   data/seed/procedures.json 은 콘텐츠가 아닌 값(id, view_count)만 둔다.
 // 회귀 테스트: tests/unit/build-data.test.ts
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import {
+  PROCEDURES_DIR,
+  compileError,
+  docToRows,
+  guideOf,
+  lintDocId,
+  lintProcedureMdx,
+  parseProcedureMdx,
+  readProcedureDocs,
+  rowMismatches,
+} from "./procedure-mdx.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 export const SEED_DIR = path.join(ROOT, "data", "seed");
+export { PROCEDURES_DIR };
 export const GENERATED_FILE = path.join(ROOT, "data", "generated", "content.json");
 export const SEED_SQL_FILE = path.join(ROOT, "supabase", "seed.sql");
 
@@ -73,8 +88,14 @@ export const COLUMNS = {
     published_at: "date",
     updated_at: "date",
   },
+  // P-03 회복기 추천템(쿠팡파트너스 제휴 링크). 파트너스 가입 전에는 비어 있고 화면은 영역을 숨긴다(needs-key).
+  affiliate_items: { id: "text", procedure_id: "text", name: "text", url: "text", image: "text", order: "int" },
 };
 export const TABLES = Object.keys(COLUMNS);
+/** P-03 회복기 추천템 최대 개수(4절 "제휴 상품 3개") */
+export const AFFILIATE_MAX = 3;
+/** data/seed/procedures.json 에 둘 수 있는 키 — 나머지는 MDX 프런트매터가 원본 */
+export const SEED_PROCEDURE_KEYS = ["id", "view_count"];
 const PRIMARY_KEY = { clinic_procedures: ["clinic_id", "procedure_id"] };
 const pkOf = (table) => PRIMARY_KEY[table] ?? ["id"];
 
@@ -92,15 +113,68 @@ function readJson(file) {
   return JSON.parse(fs.readFileSync(file, "utf8"));
 }
 
-/** data/seed/*.json 원본(시술에 FAQ, 병원에 시술 가격이 중첩된 작성용 구조) */
+/** data/seed/*.json 원본(병원에 시술 가격이 중첩된 작성용 구조). 시술 콘텐츠는 content/procedures/*.mdx */
 export function readSeed(dir = SEED_DIR) {
+  const optional = (name) => (fs.existsSync(path.join(dir, name)) ? readJson(path.join(dir, name)) : []);
   return {
     categories: readJson(path.join(dir, "categories.json")),
     authors: readJson(path.join(dir, "authors.json")),
     procedures: readJson(path.join(dir, "procedures.json")),
     clinics: readJson(path.join(dir, "clinics.json")),
     posts: readJson(path.join(dir, "posts.json")),
+    affiliate_items: optional("affiliate_items.json"),
   };
+}
+
+/**
+ * MDX 문서를 테이블에 덮어쓴다: 같은 id 의 procedures 행을 MDX 값으로 바꾸고(view_count 는 기존 행 값 유지),
+ * 그 시술의 procedure_faqs 를 MDX faqs 로 바꾼다. 새 id 면 행을 추가한다(view_count 0).
+ */
+export function applyProcedureDocs(tables, docs) {
+  const procedures = [...tables.procedures];
+  let faqs = [...tables.procedure_faqs];
+  for (const doc of docs) {
+    const i = procedures.findIndex((p) => p.id === doc.id);
+    const rows = docToRows(doc, i > -1 ? (procedures[i].view_count ?? 0) : 0);
+    if (!rows) continue; // 프런트매터 오류 — mdxProblems 가 보고한다
+    if (i > -1) procedures[i] = rows.procedure;
+    else procedures.push(rows.procedure);
+    faqs = faqs.filter((f) => f.procedure_id !== doc.id).concat(rows.faqs);
+  }
+  return { ...tables, procedures, procedure_faqs: faqs };
+}
+
+/**
+ * MDX 파일 단위 문제 중 행으로 바꾸기 전에 막아야 하는 것(파일 이름·프런트매터 형식) — "content/procedures/x.mdx: 문제".
+ * 프런트매터·본문 규칙(lintProcedureMdx)은 행으로 바꾼 뒤 validateTables 가 content_mdx 로 검사한다(Supabase 모드와 같은 경로).
+ */
+export function mdxProblems(docs) {
+  const out = [];
+  for (const doc of docs) {
+    const at = `content/procedures/${doc.id}.mdx`;
+    for (const p of [...lintDocId(doc.id), ...parseProcedureMdx(doc.source).problems]) out.push(`${at}: ${p}`);
+  }
+  return out;
+}
+
+/** mock 모드 시드 규칙: procedures.json 은 id·view_count 만, 모든 행에 MDX 가 있어야 한다 */
+export function seedProcedureProblems(seedProcedures, docs) {
+  const out = [];
+  const docIds = new Set(docs.map((d) => d.id));
+  for (const row of seedProcedures) {
+    const extra = Object.keys(row).filter((k) => !SEED_PROCEDURE_KEYS.includes(k));
+    if (extra.length) out.push(`data/seed/procedures.json ${row.id}: ${extra.join(", ")} — 시술 콘텐츠는 content/procedures/${row.id}.mdx 프런트매터에 둔다`);
+    if (!docIds.has(row.id)) out.push(`data/seed/procedures.json ${row.id}: content/procedures/${row.id}.mdx 없음`);
+  }
+  return out;
+}
+
+/** 시드 + MDX → 테이블 행(mock 모드·seed.sql 의 원본) */
+export function seedTablesWithContent(seedDir = SEED_DIR, proceduresDir = PROCEDURES_DIR) {
+  const seed = readSeed(seedDir);
+  const docs = readProcedureDocs(proceduresDir);
+  const problems = [...mdxProblems(docs), ...seedProcedureProblems(seed.procedures, docs)];
+  return { tables: applyProcedureDocs(flattenSeed(seed), docs), docs, problems };
 }
 
 /** 작성용 중첩 구조 → DB 테이블 행(8절 데이터 모델) */
@@ -125,6 +199,7 @@ export function flattenSeed(seed) {
     clinics,
     clinic_procedures,
     posts: seed.posts,
+    affiliate_items: seed.affiliate_items ?? [],
   };
 }
 
@@ -147,8 +222,20 @@ export function assemble(tables, meta) {
     if (!faqsBy.has(procedure_id)) faqsBy.set(procedure_id, []);
     faqsBy.get(procedure_id).push(rest);
   }
+  const affiliateBy = new Map();
+  for (const a of (tables.affiliate_items ?? []).map((r) => pick(r, "affiliate_items")).sort(byOrder)) {
+    const { procedure_id, ...rest } = a;
+    if (!affiliateBy.has(procedure_id)) affiliateBy.set(procedure_id, []);
+    if (affiliateBy.get(procedure_id).length < AFFILIATE_MAX) affiliateBy.get(procedure_id).push(rest);
+  }
   const procedures = tables.procedures
-    .map((r) => ({ ...pick(r, "procedures"), faqs: faqsBy.get(r.id) ?? [] }))
+    .map((r) => ({
+      ...pick(r, "procedures"),
+      faqs: faqsBy.get(r.id) ?? [],
+      affiliate_items: affiliateBy.get(r.id) ?? [],
+      // 화면용 가이드 필드(프런트매터의 description·procedure_type 등 + 본문 + H2 목록) — content_mdx 에서 파싱
+      guide: guideOf(r.content_mdx),
+    }))
     .sort((a, b) => (catOrder.get(a.category_id) ?? 0) - (catOrder.get(b.category_id) ?? 0) || ko(a.name, b.name));
   const procOrder = new Map(procedures.map((p, i) => [p.id, i]));
   const offeredBy = new Map();
@@ -248,7 +335,28 @@ export function validateTables(tables) {
         if (!s || typeof s.url !== "string" || !/^https:\/\/[^\s]+$/.test(s.url)) bad(`${at}: 출처 url 은 https (${s?.url})`);
       }
     }
+    // P-03 본문(MDX)은 필수 — 본문 없는 시술 페이지를 배포하지 않는다. 규칙·DB 행 일치 검사(Supabase 모드에서도).
+    if (typeof p.content_mdx !== "string" || !p.content_mdx.trim()) bad(`${at}: content_mdx(가이드 MDX) 없음 → content/procedures/${p.id}.mdx`);
+    else {
+      for (const m of lintProcedureMdx(p.content_mdx)) bad(`${at}: MDX(content/procedures/${p.id}.mdx) ${m}`);
+      for (const m of rowMismatches(p, tables.procedure_faqs.filter((f) => f.procedure_id === p.id))) bad(`${at}: ${m}`);
+      const fm = parseProcedureMdx(p.content_mdx).frontmatter;
+      if (fm?.author && !authorIds.has(fm.author)) bad(`${at}: MDX author ${fm.author} 없음(authors)`);
+      if (fm?.medical_reviewer && !authorIds.has(fm.medical_reviewer)) bad(`${at}: MDX medical_reviewer ${fm.medical_reviewer} 없음(authors)`);
+    }
   }
+
+  const affiliateCount = new Map();
+  for (const a of tables.affiliate_items) {
+    const at = `affiliate_items.${a.id}`;
+    if (!procedureIds.has(a.procedure_id)) bad(`${at}: procedure_id ${a.procedure_id} 없음`);
+    if (typeof a.name !== "string" || !a.name.trim()) bad(`${at}: name 없음`);
+    if (typeof a.url !== "string" || !/^https:\/\/[^\s]+$/.test(a.url)) bad(`${at}: url 은 https (${a.url})`);
+    if (a.image !== null && a.image !== undefined && !(typeof a.image === "string" && /^https:\/\/[^\s]+$/.test(a.image))) bad(`${at}: image 는 https 또는 null`);
+    if (!isInt(a.order)) bad(`${at}: order 는 0 이상 정수`);
+    affiliateCount.set(a.procedure_id, (affiliateCount.get(a.procedure_id) ?? 0) + 1);
+  }
+  for (const [pid, n] of affiliateCount) if (n > AFFILIATE_MAX) bad(`affiliate_items: ${pid} 의 상품 ${n}개 > ${AFFILIATE_MAX}개(4절 회복기 추천템 3개)`);
 
   for (const f of tables.procedure_faqs) {
     if (!procedureIds.has(f.procedure_id)) bad(`procedure_faqs.${f.id}: procedure_id ${f.procedure_id} 없음`);
@@ -392,6 +500,7 @@ export async function fetchSupabaseTables({ url, anonKey }, fetchImpl = fetch) {
 export async function buildData({
   env = process.env,
   seedDir = SEED_DIR,
+  proceduresDir = PROCEDURES_DIR,
   outFile = GENERATED_FILE,
   fetchImpl = fetch,
   now = () => new Date(),
@@ -399,9 +508,27 @@ export async function buildData({
 } = {}) {
   const cfg = supabaseConfig(env);
   const mode = cfg ? "supabase" : "mock";
-  const tables = cfg ? await fetchSupabaseTables(cfg, fetchImpl) : flattenSeed(readSeed(seedDir));
-  const problems = validateTables(tables);
-  if (problems.length) throw new Error(`콘텐츠 검증 실패 ${problems.length}건\n${problems.join("\n")}`);
+  let tables;
+  const problems = [];
+  if (cfg) {
+    // DB 행에 저장소의 MDX 를 덮어쓴다(원본은 저장소 파일). DB 에만 있는 시술은 DB 의 content_mdx 를 검사한다.
+    const docs = readProcedureDocs(proceduresDir);
+    problems.push(...mdxProblems(docs));
+    tables = applyProcedureDocs(await fetchSupabaseTables(cfg, fetchImpl), docs);
+  } else {
+    const seeded = seedTablesWithContent(seedDir, proceduresDir);
+    problems.push(...seeded.problems);
+    tables = seeded.tables;
+  }
+  problems.push(...validateTables(tables));
+  if (!problems.length) {
+    // MDX 문법(컴파일) 오류는 페이지 빌드 전에 파일 이름과 함께 알린다
+    for (const p of tables.procedures) {
+      const err = await compileError(parseProcedureMdx(p.content_mdx).body);
+      if (err) problems.push(`content/procedures/${p.id}.mdx: MDX 컴파일 오류 — ${err}`);
+    }
+  }
+  if (problems.length) throw new Error(`콘텐츠 검증 실패 ${problems.length}건\n${[...new Set(problems)].join("\n")}`);
   const content = assemble(tables, { mode, generated_at: now().toISOString() });
   fs.mkdirSync(path.dirname(outFile), { recursive: true });
   fs.writeFileSync(outFile, `${JSON.stringify(content, null, 2)}\n`, "utf8");
@@ -419,13 +546,14 @@ if (path.basename(process.argv[1] ?? "") === "build-data.mjs") {
   const args = process.argv.slice(2);
   try {
     if (args.includes("--sql") || args.includes("--check-sql")) {
-      const tables = flattenSeed(readSeed());
-      const problems = validateTables(tables);
+      const seeded = seedTablesWithContent();
+      const tables = seeded.tables;
+      const problems = [...seeded.problems, ...validateTables(tables)];
       if (problems.length) throw new Error(`시드 검증 실패 ${problems.length}건\n${problems.join("\n")}`);
       const sql = toSeedSql(tables);
       if (args.includes("--check-sql")) {
         const current = fs.existsSync(SEED_SQL_FILE) ? fs.readFileSync(SEED_SQL_FILE, "utf8") : "";
-        if (current !== sql) throw new Error("supabase/seed.sql 이 data/seed 와 다릅니다 → node scripts/build-data.mjs --sql");
+        if (current !== sql) throw new Error("supabase/seed.sql 이 data/seed·content/procedures 와 다릅니다 → pnpm data:sql");
         console.log("[build-data] supabase/seed.sql 최신");
       } else {
         fs.mkdirSync(path.dirname(SEED_SQL_FILE), { recursive: true });

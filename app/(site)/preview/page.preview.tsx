@@ -3,6 +3,8 @@ import { BottomBar } from "@/components/common/BottomBar";
 import { Breadcrumb } from "@/components/common/Breadcrumb";
 import { ConsultCta } from "@/components/common/ConsultCta";
 import { SkeletonList, SkeletonText } from "@/components/common/Skeleton";
+import { AffiliateItems } from "@/components/procedure/AffiliateItems";
+import { ClinicPriceTable } from "@/components/procedure/ClinicPriceTable";
 import { loadContent } from "@/lib/content";
 import { ROUTES } from "@/lib/routes";
 
@@ -16,6 +18,13 @@ export const metadata: Metadata = {
   title: "공통 컴포넌트 미리보기",
   robots: { index: false, follow: false },
 };
+
+// 미리보기 전용 제휴 상품(실제 시술 페이지에는 affiliate_items 데이터가 생긴 뒤에만 나온다)
+const PREVIEW_AFFILIATES = [
+  { id: "preview-cold-pack", name: "눈가용 냉찜질 팩", url: "https://www.coupang.com/", image: null, order: 1 },
+  { id: "preview-cleanser", name: "저자극 클렌징 폼", url: "https://www.coupang.com/", image: null, order: 2 },
+  { id: "preview-sunscreen", name: "무기자차 선크림", url: "https://www.coupang.com/", image: null, order: 3 },
+];
 
 function Block({ id, title, note, children }: { id: string; title: string; note: string; children: React.ReactNode }) {
   return (
@@ -71,6 +80,18 @@ export default function ComponentPreviewPage() {
 
       <Block id="cta-bottom" title="상담 예약 CTA 블록 · 본문 하단" note="location=bottom.">
         <ConsultCta location="bottom" procedureId={procedure.id} />
+      </Block>
+
+      <Block
+        id="affiliates"
+        title="P-03 회복기 추천템"
+        note="쿠팡 파트너스 가입 전이라 실제 시술 페이지에는 나오지 않습니다(needs-key). 아래 상품·링크는 미리보기 전용 예시입니다."
+      >
+        <AffiliateItems procedureId={procedure.id} items={PREVIEW_AFFILIATES} />
+      </Block>
+
+      <Block id="prices-empty" title="P-03 가격 비교 표 · 빈 상태" note="이 시술의 병원 가격 정보가 하나도 없을 때입니다.">
+        <ClinicPriceTable id="preview-prices-empty" title={`${procedure.name} 병원별 가격 비교`} rows={[]} />
       </Block>
 
       <Block

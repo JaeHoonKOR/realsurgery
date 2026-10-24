@@ -11,13 +11,18 @@ import {
   fetchSupabaseTables,
   flattenSeed,
   readSeed,
+  seedTablesWithContent,
+  seedProcedureProblems,
+  applyProcedureDocs,
+  mdxProblems,
+  AFFILIATE_MAX,
   supabaseConfig,
   toSeedSql,
   validateTables,
   type Tables,
 } from "../../scripts/build-data.mjs";
 
-const seedTables = () => flattenSeed(readSeed());
+const seedTables = () => seedTablesWithContent().tables;
 const clone = (t: Tables): Tables => JSON.parse(JSON.stringify(t));
 type Row = Record<string, unknown>;
 
@@ -259,5 +264,127 @@ describe("buildData — mock 모드와 Supabase 모드", () => {
     await expect(
       buildData({ env: { NEXT_PUBLIC_SUPABASE_URL: cfg.url, NEXT_PUBLIC_SUPABASE_ANON_KEY: "a" }, outFile: outFile(), fetchImpl, log: () => {} }),
     ).rejects.toThrow(/콘텐츠 검증 실패/);
+  });
+});
+
+describe("시술 MDX(content/procedures) ↔ 시드 — T-103", () => {
+  it("저장소의 MDX 10편과 시드가 규칙을 모두 통과한다", () => {
+    const { tables, docs, problems } = seedTablesWithContent();
+    expect(problems).toEqual([]);
+    expect(docs.map((d) => d.id).sort()).toEqual(tables.procedures.map((p) => p.id as string).sort());
+    for (const p of tables.procedures) expect(String(p.content_mdx)).toMatch(/^---\n/);
+  });
+
+  it("data/seed/procedures.json 은 id·view_count 만 둔다(콘텐츠는 MDX)", () => {
+    for (const row of readSeed().procedures) expect(Object.keys(row).sort()).toEqual(["id", "view_count"]);
+    const docs = seedTablesWithContent().docs;
+    expect(seedProcedureProblems([{ id: "double-eyelid", view_count: 1, summary: "x" }], docs).join("\n")).toMatch(
+      /summary — 시술 콘텐츠는 content\/procedures\/double-eyelid\.mdx/,
+    );
+    expect(seedProcedureProblems([{ id: "hair-transplant", view_count: 1 }], docs).join("\n")).toMatch(/hair-transplant\.mdx 없음/);
+  });
+
+  it("MDX 없이 시드만 쓰면 본문이 없는 시술로 막힌다", () => {
+    expect(validateTables(flattenSeed(readSeed())).join("\n")).toMatch(/content_mdx\(가이드 MDX\) 없음/);
+  });
+
+  it("파일 이름·프런트매터 형식 오류는 파일 단위로 알린다", () => {
+    const problems = mdxProblems([
+      { id: "Double_Eyelid", file: "x", source: "---\nname: a\n---\n" },
+      { id: "broken", file: "y", source: "본문만 있음" },
+    ]);
+    expect(problems.join("\n")).toMatch(/Double_Eyelid\.mdx: 파일 이름/);
+    expect(problems.join("\n")).toMatch(/broken\.mdx: 프런트매터/);
+  });
+
+  it("MDX 를 덮어쓰면 view_count 는 유지하고 FAQ 는 MDX 로 바뀐다. 새 시술은 view_count 0", () => {
+    const { tables, docs } = seedTablesWithContent();
+    const doc = docs.find((d) => d.id === "double-eyelid")!;
+    const stale = clone(tables);
+    (stale.procedures.find((p) => p.id === "double-eyelid") as Row).summary = "오래된 요약";
+    stale.procedure_faqs = stale.procedure_faqs.filter((f) => f.procedure_id !== "double-eyelid");
+    const merged = applyProcedureDocs(stale, [doc, { ...doc, id: "double-eyelid-revision" }]);
+    const row = merged.procedures.find((p) => p.id === "double-eyelid")!;
+    expect(row.summary).not.toBe("오래된 요약");
+    expect(row.view_count).toBe(4820);
+    expect(merged.procedure_faqs.filter((f) => f.procedure_id === "double-eyelid")).toHaveLength(5);
+    expect(merged.procedures.find((p) => p.id === "double-eyelid-revision")!.view_count).toBe(0);
+  });
+
+  it.each([
+    ["DB 가격이 MDX 와 다름", (t: Tables) => ((t.procedures[0] as Row).price_low = 1), /price_low 가 MDX 프런트매터와 다름/],
+    ["DB FAQ 가 MDX 와 다름", (t: Tables) => ((t.procedure_faqs[0] as Row).answer = "다른 답변"), /procedure_faqs 가 MDX 프런트매터 faqs 와 다름/],
+    ["DB 출처가 MDX 와 다름", (t: Tables) => ((t.procedures[0] as Row).sources = [{ title: "a", url: "https://a.kr" }]), /sources 가 MDX/],
+    [
+      "없는 저자",
+      (t: Tables) => {
+        const p = t.procedures[0] as Row;
+        p.content_mdx = String(p.content_mdx).replace('author: "editorial"', 'author: "ghost"');
+      },
+      /MDX author ghost 없음/,
+    ],
+    [
+      "MDX 규칙 위반(H2 4개)",
+      (t: Tables) => {
+        const p = t.procedures[0] as Row;
+        p.content_mdx = String(p.content_mdx).replace(/\n## [^\n]*누가[^\n]*\n/, "\n");
+      },
+      /H2 는 5개 고정/,
+    ],
+  ])("Supabase 행 검사: %s", (_name, fn, expected) => {
+    const t = clone(seedTables());
+    fn(t);
+    expect(validateTables(t).join("\n")).toMatch(expected);
+  });
+
+  it("회복기 추천템: 참조·https·시술당 3개 이하, 화면 JSON 에는 order 순 최대 3개", () => {
+    const t = clone(seedTables());
+    const item = (i: number, extra: Row = {}) => ({
+      id: `cold-pack-${i}`,
+      procedure_id: "double-eyelid",
+      name: `냉찜질 팩 ${i}`,
+      url: "https://link.coupang.com/a/x",
+      image: null,
+      order: 5 - i,
+      ...extra,
+    });
+    t.affiliate_items = [item(1), item(2), item(3), item(4)];
+    expect(validateTables(t).join("\n")).toMatch(new RegExp(`상품 4개 > ${AFFILIATE_MAX}개`));
+    const content = assemble(t, {}) as { procedures: (Row & { affiliate_items: Row[] })[] };
+    const items = content.procedures.find((p) => p.id === "double-eyelid")!.affiliate_items;
+    expect(items.map((i) => i.id)).toEqual(["cold-pack-4", "cold-pack-3", "cold-pack-2"]);
+    expect(items[0]).not.toHaveProperty("procedure_id");
+
+    t.affiliate_items = [item(1, { url: "http://a.kr" }), item(2, { procedure_id: "nope" }), item(3, { image: "ftp://x" })];
+    const problems = validateTables(t).join("\n");
+    expect(problems).toMatch(/url 은 https/);
+    expect(problems).toMatch(/procedure_id nope 없음/);
+    expect(problems).toMatch(/image 는 https 또는 null/);
+  });
+
+  it("화면 JSON 시술에 guide(설명·H2 5개·본문)가 붙는다", () => {
+    const content = assemble(seedTables(), {}) as { procedures: (Row & { guide: Row & { sections: Row[] } })[] };
+    for (const p of content.procedures) {
+      expect(p.guide.sections.map((s) => s.id)).toEqual(["who", "cost", "recovery", "risks", "compare"]);
+      expect(String(p.guide.description).length).toBeGreaterThanOrEqual(120);
+      expect(String(p.guide.body)).not.toMatch(/^---/);
+    }
+  });
+
+  it("Supabase 모드에서도 저장소 MDX 가 DB 행보다 우선한다", async () => {
+    const t = clone(seedTables());
+    (t.procedures[0] as Row).summary = "DB에만 있는 오래된 요약입니다. 두 번째 문장입니다.";
+    const fetchImpl = (async (url: string) =>
+      new Response(JSON.stringify(t[new URL(url).pathname.split("/").pop() as keyof Tables]))) as typeof fetch;
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "build-data-"));
+    tmp.push(dir);
+    const r = await buildData({
+      env: { NEXT_PUBLIC_SUPABASE_URL: "https://x.supabase.co", NEXT_PUBLIC_SUPABASE_ANON_KEY: "a" },
+      outFile: path.join(dir, "c.json"),
+      fetchImpl,
+      log: () => {},
+    });
+    const procs = (r.content as { procedures: Row[] }).procedures;
+    expect(procs.find((p) => p.id === t.procedures[0]!.id)!.summary).not.toMatch(/DB에만/);
   });
 });

@@ -21,7 +21,18 @@ import { HeaderSearch } from "@/components/common/HeaderSearch";
 import { SiteFooter } from "@/components/common/SiteFooter";
 import { SkeletonList, SkeletonText } from "@/components/common/Skeleton";
 import { TrackedLink } from "@/components/common/TrackedLink";
+import { AffiliateItems } from "@/components/procedure/AffiliateItems";
+import { ClinicPriceTable } from "@/components/procedure/ClinicPriceTable";
+import { FaqAccordion } from "@/components/procedure/FaqAccordion";
+import { GuideBody } from "@/components/procedure/GuideBody";
+import { GuideMeta } from "@/components/procedure/GuideMeta";
+import { GuideToc } from "@/components/procedure/GuideToc";
+import { ProcedureSummary } from "@/components/procedure/ProcedureSummary";
+import { ScrollDepthTracker, ViewProcedureTracker } from "@/components/procedure/ProcedureTrackers";
+import { RelatedProcedures } from "@/components/procedure/RelatedProcedures";
 import { CONSENT_ATTR } from "@/lib/consent";
+import { loadContent } from "@/lib/content";
+import { clinicPriceRows, relatedProcedures, summaryCells, tocItems } from "@/lib/procedure";
 
 (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
@@ -212,6 +223,26 @@ describe("ConsentBanner (3절 쿠키·동의 배너)", () => {
     expect($("a")).toBeNull();
   });
 
+  it("낮은 화면용 접기: 항목 설정 버튼이 토글 영역을 열고 닫고, 상태를 data 속성으로 알린다", () => {
+    render(<ConsentBanner />);
+    const banner = $("[data-testid=consent-banner]")!;
+    const disclosure = $("[data-testid=consent-disclosure]")!;
+    expect(disclosure.getAttribute("aria-expanded")).toBe("false");
+    expect(document.getElementById(disclosure.getAttribute("aria-controls")!)?.querySelectorAll("[role=switch]")).toHaveLength(2);
+    expect(banner.hasAttribute("data-expanded")).toBe(false);
+    expect(banner.hasAttribute("data-any-on")).toBe(false);
+    // 접힌 상태 + 모두 꺼짐이면 CSS 가 "동의 안 함" 라벨을 보여 준다(두 라벨 모두 DOM 에 있음)
+    expect($("[data-testid=consent-save]")?.textContent).toBe("선택 저장동의 안 함");
+    act(() => disclosure.click());
+    expect(disclosure.getAttribute("aria-expanded")).toBe("true");
+    expect(disclosure.textContent).toBe("설정 접기");
+    expect(banner.hasAttribute("data-expanded")).toBe(true);
+    act(() => $$("[role=switch]")[0]!.click());
+    expect(banner.hasAttribute("data-any-on")).toBe(true);
+    // 끝 표시가 마지막 자식 — CSS 는 이것이 파싱된 뒤에만 배너를 그린다(CLS 방지)
+    expect(banner.lastElementChild?.hasAttribute("data-consent-end")).toBe(true);
+  });
+
   it("모두 동의 → 두 토글 모두 켜짐", () => {
     render(<ConsentBanner />);
     act(() => $("[data-testid=consent-accept-all]")!.click());
@@ -254,5 +285,143 @@ describe("Skeleton·Breadcrumb·SiteFooter", () => {
     expect($$("a").map((a) => a.textContent)).toEqual(["이용약관", "개인정보처리방침"]);
     act(() => root.render(<SiteFooter variant="minimal" />));
     expect($$("a")).toHaveLength(0);
+  });
+});
+
+describe("P-03 시술 상세 컴포넌트 (4절 P-03 이벤트)", () => {
+  const content = loadContent();
+  const p = content.procedures.find((x) => x.id === "double-eyelid")!;
+
+  it("view_procedure: 로드 시 1회(다시 그려도 1회)", () => {
+    const ui = <ViewProcedureTracker procedure_id={p.id} procedure_name={p.name} category={p.category_id} />;
+    render(ui);
+    render(ui);
+    expect(events()).toEqual([{ event: "view_procedure", procedure_id: "double-eyelid", procedure_name: "쌍꺼풀 수술", category: "eye" }]);
+  });
+
+  it("scroll_depth: 넘은 구간마다 1회, 프레임당 한 번 계산, 해제 시 리스너 제거", () => {
+    const frames: FrameRequestCallback[] = [];
+    vi.stubGlobal("requestAnimationFrame", (cb: FrameRequestCallback) => frames.push(cb));
+    vi.stubGlobal("cancelAnimationFrame", () => {});
+    Object.defineProperty(document.documentElement, "scrollHeight", { configurable: true, value: 4000 });
+    Object.defineProperty(window, "innerHeight", { configurable: true, value: 800 });
+    const scrollTo = (y: number) => {
+      Object.defineProperty(window, "scrollY", { configurable: true, value: y });
+      window.dispatchEvent(new Event("scroll"));
+      window.dispatchEvent(new Event("scroll")); // 같은 프레임 두 번째는 무시
+      act(() => frames.splice(0).forEach((f) => f(0)));
+    };
+    render(<ScrollDepthTracker pageType="procedure" />);
+    scrollTo(1300); // 52.5%
+    scrollTo(1300);
+    scrollTo(3200); // 끝
+    expect(events()).toEqual([
+      { event: "scroll_depth", percent: 25, page_type: "procedure" },
+      { event: "scroll_depth", percent: 50, page_type: "procedure" },
+      { event: "scroll_depth", percent: 75, page_type: "procedure" },
+      { event: "scroll_depth", percent: 100, page_type: "procedure" },
+    ]);
+    act(() => root.unmount());
+    root = createRoot(container);
+    scrollTo(0);
+    expect(events()).toHaveLength(4);
+    vi.unstubAllGlobals();
+  });
+
+  it("FAQ 아코디언: 열 때만 expand_faq(question_index 1부터), 답변은 처음부터 DOM 에", () => {
+    render(<FaqAccordion procedureId={p.id} faqs={p.faqs} />);
+    const details = $$("details") as HTMLDetailsElement[];
+    expect(details).toHaveLength(5);
+    expect(details[1]!.querySelector("p")?.textContent).toBe(p.faqs[1]!.answer);
+    expect(details[0]!.querySelector("summary")?.getAttribute("data-track")).toBe("expand_faq");
+    act(() => {
+      details[1]!.open = true;
+      details[1]!.dispatchEvent(new Event("toggle"));
+    });
+    act(() => {
+      details[1]!.open = false;
+      details[1]!.dispatchEvent(new Event("toggle"));
+    });
+    expect(events()).toEqual([{ event: "expand_faq", procedure_id: "double-eyelid", question_index: 2 }]);
+  });
+
+  it("가격 비교 표: 병원명 → P-05 링크 + select_clinic(from=procedure), 예시 데이터 안내, 빈 상태", () => {
+    render(<ClinicPriceTable id="prices" title="가격" rows={clinicPriceRows(content.clinics, p.id)} />);
+    const links = $$("[data-testid=procedure-prices] a");
+    expect(links.map((a) => a.textContent)).toEqual(["새솔결의원", "단하늘성형외과"]);
+    expect(links[0]!.getAttribute("href")).toBe("/clinics/새솔결의원/");
+    click(links[0]!);
+    expect(events()).toEqual([{ event: "select_clinic", clinic_id: "saesolgyeol", from: "procedure" }]);
+    expect($("[data-testid=procedure-prices-demo]")).not.toBeNull();
+    expect($("td")?.textContent).toContain("2026.10.05 기준");
+
+    vi.stubEnv("RS_PREVIEW", ""); // 병원 상세(P-05)가 아직 없으면 링크 없이 이름만
+    act(() => root.render(<ClinicPriceTable id="prices" title="가격" rows={clinicPriceRows(content.clinics, p.id)} />));
+    expect($$("[data-testid=procedure-prices] a")).toHaveLength(0);
+    expect($("tbody")?.textContent).toContain("새솔결의원");
+
+    act(() => root.render(<ClinicPriceTable id="prices" title="가격" rows={[]} />));
+    expect($("[data-testid=procedure-prices-empty]")?.textContent).toContain("병원별 가격 정보가 없습니다");
+    expect($("table")).toBeNull();
+  });
+
+  it("회복기 추천템: 광고 표기·sponsored 새 창·click_affiliate, 상품이 없으면 그리지 않음", () => {
+    const items = [{ id: "cold-pack", name: "냉찜질 팩", url: "https://link.coupang.com/a/x", image: null, order: 1 }];
+    render(<AffiliateItems procedureId={p.id} items={items} />);
+    expect($("[data-testid=procedure-affiliates]")?.textContent).toContain("광고");
+    expect($("[data-testid=procedure-affiliates]")?.textContent).toContain("쿠팡 파트너스");
+    const a = $<HTMLAnchorElement>("a")!;
+    expect(a.getAttribute("rel")).toBe("sponsored noopener noreferrer");
+    expect(a.getAttribute("target")).toBe("_blank");
+    click(a);
+    expect(events()).toEqual([{ event: "click_affiliate", item_id: "cold-pack", procedure_id: "double-eyelid" }]);
+    act(() => root.render(<AffiliateItems procedureId={p.id} items={[]} />));
+    expect(container.innerHTML).toBe("");
+  });
+
+  it("관련 시술 카드 4개: select_procedure(from_page=procedure), 화면이 없으면 숨김", () => {
+    const related = relatedProcedures(content.procedures, p);
+    const name = (id: string) => content.categories.find((c) => c.id === id)?.name;
+    render(<RelatedProcedures items={related} categoryName={name} />);
+    const cards = $$("[data-testid=procedure-related] a");
+    expect(cards).toHaveLength(4);
+    expect(cards[0]!.getAttribute("href")).toBe("/procedures/눈매교정/");
+    expect(cards[0]!.textContent).toContain("60만~350만 원");
+    click(cards[0]!);
+    expect(events()).toEqual([{ event: "select_procedure", procedure_id: "ptosis-correction", from_page: "procedure" }]);
+    act(() => root.render(<RelatedProcedures items={[]} categoryName={name} />));
+    expect(container.innerHTML).toBe("");
+  });
+
+  it("요약 박스·목차·메타: 4칸 값, H2 앵커 목록, 의료 자문 미정 표기와 출처 번호", () => {
+    render(
+      <>
+        <ProcedureSummary name={p.name} category="눈" summary={p.summary} cells={summaryCells(p)} updatedLabel="2026.10.24" updatedIso={p.updated_at} authorName="리얼성형 편집팀" />
+        <GuideToc items={tocItems(p, { prices: true, faq: true })} />
+        <GuideMeta author={content.authors[0]} reviewer={undefined} updatedLabel="2026.10.24" updatedIso={p.updated_at} sources={p.sources} />
+      </>,
+    );
+    expect($("h1")?.textContent).toBe("쌍꺼풀 수술");
+    expect($$("[data-fact-value]").map((e) => e.textContent)).toEqual(["50만~250만 원", "약 1시간", "약 7일", "국소 마취 (수면 마취 병행 가능)"]);
+    expect($$("[data-testid=procedure-toc] a").map((a) => a.getAttribute("href"))).toHaveLength(7);
+    expect($("[data-testid=procedure-reviewer]")?.textContent).toContain("자문의 검토 전");
+    expect($$("[data-testid=procedure-sources] li").map((li) => li.id)).toEqual(["source-1", "source-2", "source-3"]);
+    act(() =>
+      root.render(<GuideMeta author={undefined} reviewer={{ id: "dr", name: "김자문", role: "성형외과 전문의" }} updatedLabel="x" updatedIso="x" sources={[]} />),
+    );
+    expect($("[data-testid=procedure-reviewer]")?.textContent).toBe("김자문 (성형외과 전문의)");
+  });
+
+  it("MDX 본문: H2 앵커 5개·[n] 각주 sup·표 스크롤 영역, 물결표는 취소선이 되지 않는다", async () => {
+    const el = await GuideBody({ body: p.guide!.body, sectionIds: p.guide!.sections.map((s) => s.id) });
+    render(el);
+    expect($$("h2").map((h) => h.id)).toEqual(["guide-who", "guide-cost", "guide-recovery", "guide-risks", "guide-compare"]);
+    expect($$("sup[data-cite]").length).toBeGreaterThanOrEqual(5);
+    expect($("sup[data-cite]")?.textContent).toBe("⁠[1]");
+    expect($("del")).toBeNull();
+    expect($("[data-testid=procedure-body]")?.textContent).toContain("50만~150만 원");
+    const region = $("[role=region]")!;
+    expect(region.getAttribute("tabindex")).toBe("0");
+    expect(region.querySelector("table th")?.getAttribute("scope")).toBe("col");
   });
 });
