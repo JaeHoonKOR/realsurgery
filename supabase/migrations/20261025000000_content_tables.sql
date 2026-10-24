@@ -103,10 +103,18 @@ alter table public.clinics enable row level security;
 alter table public.clinic_procedures enable row level security;
 alter table public.posts enable row level security;
 
+-- create policy 에는 if not exists 가 없으므로 drop policy if exists 를 먼저 둬 재실행해도 실패하지 않게 한다(테이블과 동일하게 멱등).
+drop policy if exists "categories are publicly readable" on public.categories;
 create policy "categories are publicly readable" on public.categories for select to anon, authenticated using (true);
+drop policy if exists "authors are publicly readable" on public.authors;
 create policy "authors are publicly readable" on public.authors for select to anon, authenticated using (true);
+drop policy if exists "procedures are publicly readable" on public.procedures;
 create policy "procedures are publicly readable" on public.procedures for select to anon, authenticated using (true);
+drop policy if exists "procedure_faqs are publicly readable" on public.procedure_faqs;
 create policy "procedure_faqs are publicly readable" on public.procedure_faqs for select to anon, authenticated using (true);
+drop policy if exists "clinics are publicly readable" on public.clinics;
 create policy "clinics are publicly readable" on public.clinics for select to anon, authenticated using (true);
+drop policy if exists "clinic_procedures are publicly readable" on public.clinic_procedures;
 create policy "clinic_procedures are publicly readable" on public.clinic_procedures for select to anon, authenticated using (true);
+drop policy if exists "posts are publicly readable" on public.posts;
 create policy "posts are publicly readable" on public.posts for select to anon, authenticated using (true);

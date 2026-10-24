@@ -66,21 +66,24 @@ export function ConsentBanner({ privacyHref }: { privacyHref?: string }) {
       aria-labelledby={titleId}
       className="fixed inset-x-0 bottom-0 z-(--z-banner) border-t border-line bg-surface pb-safe-4 shadow-lg"
     >
-      <div className="mx-auto max-w-content px-5 pt-4 md:flex md:items-end md:gap-10 md:px-10 md:pt-5">
+      <div className="mx-auto max-w-content px-5 pt-2 md:flex md:items-end md:gap-10 md:px-10 md:pt-3">
         <div className="md:flex-1">
-          <p id={titleId} className="font-bold text-ink">
-            쿠키 사용 동의
-          </p>
-          <p className="mt-1 text-sm text-ink-muted">
-            방문 통계와 광고 성과 측정에 쿠키를 사용합니다. 동의하지 않아도 모든 정보를 그대로 볼 수 있습니다.
+          {/* 제목 줄 높이 44px: 개인정보처리방침 링크를 문장 안이 아니라 이 줄 오른쪽에 둬 터치 영역 44×44 를 확보한다 */}
+          <div className="flex min-h-11 items-center justify-between gap-4">
+            <p id={titleId} className="font-bold text-ink">
+              쿠키 사용 동의
+            </p>
             {privacyHref && (
-              <>
-                {" "}
-                <Link href={privacyHref} className="font-semibold text-brand underline">
-                  개인정보처리방침
-                </Link>
-              </>
+              <Link
+                href={privacyHref}
+                className="-mx-2 inline-flex h-11 shrink-0 items-center px-2 text-sm font-semibold text-brand underline"
+              >
+                개인정보처리방침
+              </Link>
             )}
+          </div>
+          <p className="text-sm text-ink-muted">
+            방문 통계와 광고 성과 측정에 쿠키를 사용합니다. 동의하지 않아도 모든 정보를 그대로 볼 수 있습니다.
           </p>
           <div className="mt-2 divide-y divide-line">
             <Toggle label="방문 통계" detail="Google Analytics 4" checked={analytics} onChange={setAnalytics} />

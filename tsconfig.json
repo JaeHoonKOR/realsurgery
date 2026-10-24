@@ -40,7 +40,7 @@
     "node_modules",
     "out",
     ".next/cache",
-    ".next-preview",
+    ".next-preview/cache",
     "test-results",
     "playwright-report",
     "coverage"

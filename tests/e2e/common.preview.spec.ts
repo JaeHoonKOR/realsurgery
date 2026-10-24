@@ -1,5 +1,6 @@
 import type { Page } from "@playwright/test";
 import { test, expect } from "../fixtures";
+import { MIN_TARGET, tooSmall, visibleTargets } from "./touch-targets";
 
 /**
  * 공통 컴포넌트 (screen-spec 3절) — 개발 서버 미리보기(/preview/, RS_PREVIEW=1)에서 검증.
@@ -201,6 +202,33 @@ test.describe("모바일 하단 고정 바 (3절: 전화·카카오톡·무료 �
     expect((disclaimer?.y ?? 0) + (disclaimer?.height ?? 0)).toBeLessThanOrEqual(barTop);
   });
 
+  test("모바일 첫 방문: 동의 배너는 하단 바 위에 뜨고 바의 버튼 3개를 가리지 않는다", async ({ page }, info) => {
+    test.skip(!isMobile(info.project.name), "모바일 전용 요소");
+    await page.goto("./");
+    const banner = page.getByTestId("consent-banner");
+    const bar = page.getByTestId("bottom-bar");
+    await expect(banner).toBeVisible();
+    await expect(bar).toBeVisible();
+    const bannerBox = await banner.boundingBox();
+    const links = await bar.getByRole("link").all();
+    expect(links).toHaveLength(3);
+    for (const link of links) {
+      const box = await link.boundingBox();
+      expect((bannerBox?.y ?? 0) + (bannerBox?.height ?? 0), "배너 아래 끝 ≤ 버튼 위 끝").toBeLessThanOrEqual(box?.y ?? 0);
+      // 버튼 가운데를 실제로 누르면 그 버튼이 맞는다(다른 요소가 덮지 않음)
+      const hit = await link.evaluate((el) => {
+        const r = el.getBoundingClientRect();
+        return el.contains(document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2));
+      });
+      expect(hit, `${await link.textContent()} 버튼이 가려짐`).toBe(true);
+    }
+    await bar.getByRole("link", { name: "무료 상담 예약" }).click();
+    expect(await events(page)).toContainEqual({ event: "click_cta", location: "bottom_bar", procedure_id: "double-eyelid" });
+    // 배너의 저장·동의 버튼도 그대로 누를 수 있다
+    await page.getByTestId("consent-save").click();
+    await expect(banner).toBeHidden();
+  });
+
   test("데스크톱: 하단 고정 바를 숨긴다", async ({ page }, info) => {
     test.skip(isMobile(info.project.name), "데스크톱 전용 검사");
     await page.goto("./");
@@ -301,24 +329,54 @@ test.describe("레이아웃 기준 (QUALITY 3절)", () => {
     expect(overflow).toBeLessThanOrEqual(0);
   });
 
-  test("모바일 터치 타겟 44px 이상", async ({ page }, info) => {
+  test("모바일 터치 타겟 44px 이상 — 보이는 인터랙티브 요소 전부(첫 방문·검색 목록·동의 후·본문 바로가기)", async ({
+    page,
+  }, info) => {
     test.skip(!isMobile(info.project.name), "모바일 기준");
     await page.goto("./");
-    const targets = [
-      page.getByTestId("site-logo"),
-      page.getByTestId("header-cta"),
-      ...(await page.getByTestId("gnb-mobile").getByRole("link").all()),
-      page.getByRole("combobox", { name: "시술 검색" }),
-      ...(await page.getByTestId("consent-banner").getByRole("switch").all()),
-      ...(await page.getByTestId("consent-banner").getByRole("button").all()),
-      ...(await page.getByTestId("bottom-bar").getByRole("link").all()),
-    ];
-    for (const t of targets) {
-      const box = await t.boundingBox();
-      const label = (await t.textContent())?.trim() || (await t.getAttribute("aria-label")) || "요소";
-      expect(box?.height ?? 0, `${label} 높이`).toBeGreaterThanOrEqual(44);
-      expect(box?.width ?? 0, `${label} 너비`).toBeGreaterThanOrEqual(44);
+
+    // 1) 첫 방문: 헤더·GNB·검색창·브레드크럼·CTA 블록·푸터 링크·동의 배너·하단 바
+    const first = await visibleTargets(page);
+    // 선택자가 영역을 놓치지 않았는지: 3절 공통 요소마다 최소 1개는 잡혀야 한다
+    for (const area of [
+      "site-logo",
+      "gnb-mobile",
+      "header-search-mobile",
+      "breadcrumb",
+      "consult-cta-mid",
+      "consult-cta-bottom",
+      "footer-links",
+      "consent-banner",
+      "bottom-bar",
+    ]) {
+      expect(first.some((t) => t.label.startsWith(`[${area}]`)), `${area} 의 요소를 찾지 못함`).toBe(true);
     }
+    expect(first.find((t) => t.label.startsWith("[breadcrumb]") && t.label.includes('"홈"'))).toBeTruthy();
+    expect(tooSmall(first), "첫 방문 화면의 44px 미만 요소").toEqual([]);
+
+    // 2) 검색 자동완성 목록이 열린 상태(옵션 링크)
+    const input = page.getByRole("combobox", { name: "시술 검색" });
+    await input.fill("눈");
+    await expect(page.getByRole("listbox")).toBeVisible();
+    const searching = await visibleTargets(page);
+    const options = searching.filter((t) => t.label.startsWith("[header-search-mobile] a"));
+    expect(options.length).toBeGreaterThan(0);
+    expect(tooSmall(searching), "검색 목록이 열린 화면의 44px 미만 요소").toEqual([]);
+    await input.press("Escape");
+
+    // 3) 동의 저장 후(배너 사라짐)
+    await page.getByTestId("consent-save").click();
+    await expect(page.getByTestId("consent-banner")).toBeHidden();
+    expect(tooSmall(await visibleTargets(page)), "동의 후 화면의 44px 미만 요소").toEqual([]);
+
+    // 4) 본문 바로가기: 평소 sr-only(1×1), 키보드 포커스를 받으면 보인다 → 그때 잰다
+    await page.goto("./");
+    await page.keyboard.press("Tab");
+    const skip = page.getByRole("link", { name: "본문 바로가기" });
+    await expect(skip).toBeFocused();
+    const box = await skip.boundingBox();
+    expect(box?.width ?? 0).toBeGreaterThanOrEqual(MIN_TARGET);
+    expect(box?.height ?? 0).toBeGreaterThanOrEqual(MIN_TARGET);
   });
 
   test("1280: 콘텐츠 최대폭 1120px, 좌우 여백 균형", async ({ page }, info) => {

@@ -1,4 +1,5 @@
 import { test, expect } from "../fixtures";
+import { tooSmall, visibleTargets } from "./touch-targets";
 
 test.describe("홈 (T-100 스캐폴드)", () => {
   test("basePath 하위에서 렌더링되고 필수 영역이 있다", async ({ page }) => {
@@ -120,6 +121,19 @@ test.describe("홈 (T-100 스캐폴드)", () => {
     }
     testInfo.annotations.push({ type: "font-swap", description: report.join(", ") });
     console.log(`[font-swap] ${report.join(" | ")}`);
+  });
+
+  test("모바일 터치 타겟 44px 이상 — 보이는 인터랙티브 요소 전부(첫 방문·동의 후)", async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name !== "mobile-375", "모바일 기준");
+    await page.goto("./");
+    const first = await visibleTargets(page);
+    for (const area of ["site-logo", "consent-banner"]) {
+      expect(first.some((t) => t.label.startsWith(`[${area}]`)), `${area} 의 요소를 찾지 못함`).toBe(true);
+    }
+    expect(tooSmall(first), "첫 방문 화면의 44px 미만 요소").toEqual([]);
+    await page.getByTestId("consent-save").click();
+    await expect(page.getByTestId("consent-banner")).toBeHidden();
+    expect(tooSmall(await visibleTargets(page)), "동의 후 화면의 44px 미만 요소").toEqual([]);
   });
 
   test("canonical·description 메타가 있다", async ({ page }) => {

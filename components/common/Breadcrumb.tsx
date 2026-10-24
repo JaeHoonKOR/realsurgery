@@ -1,4 +1,4 @@
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, House } from "lucide-react";
 import Link from "next/link";
 import { isPathBuilt } from "@/lib/built-routes";
 import { siteUrl } from "@/lib/env.public";
@@ -34,7 +34,13 @@ export function Breadcrumb({ items }: { items: Crumb[] }) {
           <li key={`${i}-${c.name}`} className="flex items-center gap-1">
             {i > 0 && <ChevronRight aria-hidden="true" className="size-4" />}
             {c.href ? (
-              <Link href={c.href} className="inline-flex min-h-11 items-center hover:text-ink hover:underline">
+              // 터치 영역 44×44 이상(QUALITY 3절): min-h-11·min-w-11 + 좌우 px-2. -mx-2 로 패딩만큼 되돌려
+              // 글자 위치·단계 간격은 그대로 두고 누르는 영역만 넓힌다. "홈"처럼 짧은 이름은 가운데 정렬.
+              <Link
+                href={c.href}
+                className="-mx-2 inline-flex min-h-11 min-w-11 items-center justify-center gap-1 px-2 hover:text-ink hover:underline"
+              >
+                {i === 0 && <House aria-hidden="true" className="size-4" />}
                 {c.name}
               </Link>
             ) : (
