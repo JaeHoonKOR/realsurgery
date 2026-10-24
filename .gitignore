@@ -5,6 +5,8 @@ coverage/
 test-results/
 playwright-report/
 *.tsbuildinfo
+next-env.d.ts
+public/fonts/pretendard/
 .env*
 !.env.example
 secrets/
