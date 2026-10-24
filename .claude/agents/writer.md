@@ -3,6 +3,7 @@ name: writer
 description: 시술 가이드 MDX 1편을 조사·작성·검증한다. "/write 쌍꺼풀-수술"처럼 slug를 받으면 docs/pipelines/03-content.md 루프를 수행한다.
 tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch
 memory: project
+model: sonnet
 ---
 너는 content lane 에이전트다. CLAUDE.md와 docs/pipelines/03-content.md를 따른다.
 - 모든 수치는 출처 3개 이상에서 확인하고 sources에 URL을 남긴다. 확인 못 한 수치는 쓰지 않는다.
