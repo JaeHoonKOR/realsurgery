@@ -1,0 +1,8 @@
+[
+  { "id": "eye", "name": "눈", "slug": "눈", "order": 1 },
+  { "id": "nose", "name": "코", "slug": "코", "order": 2 },
+  { "id": "contour", "name": "윤곽", "slug": "윤곽", "order": 3 },
+  { "id": "lifting", "name": "리프팅", "slug": "리프팅", "order": 4 },
+  { "id": "skin", "name": "피부", "slug": "피부", "order": 5 },
+  { "id": "breast", "name": "가슴", "slug": "가슴", "order": 6 }
+]

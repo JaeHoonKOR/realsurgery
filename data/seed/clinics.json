@@ -1,0 +1,86 @@
+[
+  {
+    "id": "danhaneul",
+    "name": "단하늘성형외과",
+    "slug": "단하늘성형외과",
+    "region": "서울 강남구",
+    "address": "서울특별시 강남구 신사동",
+    "lat": 37.5216,
+    "lng": 127.0204,
+    "phone": null,
+    "kakao_url": null,
+    "hours": [
+      { "label": "월·화·목·금", "days": ["Mo", "Tu", "Th", "Fr"], "open": "10:00", "close": "19:00" },
+      { "label": "수", "days": ["We"], "open": "10:00", "close": "21:00" },
+      { "label": "토", "days": ["Sa"], "open": "10:00", "close": "15:00" }
+    ],
+    "description": "눈 성형과 코 성형을 중심으로 진료하는 성형외과입니다. 수요일은 오후 9시까지 진료합니다. 일요일·공휴일은 휴진합니다.",
+    "specialties": ["성형외과"],
+    "is_premium": false,
+    "is_partner": false,
+    "is_demo": true,
+    "ad_review_no": null,
+    "procedures": [
+      { "procedure_id": "double-eyelid", "price_low": 700000, "price_high": 2200000, "price_note": null, "duration_min": 60, "price_updated_at": "2026-10-01" },
+      { "procedure_id": "epicanthoplasty", "price_low": 800000, "price_high": 1800000, "price_note": null, "duration_min": 40, "price_updated_at": "2026-10-01" },
+      { "procedure_id": "ptosis-correction", "price_low": 1500000, "price_high": 3200000, "price_note": null, "duration_min": 90, "price_updated_at": "2026-10-01" },
+      { "procedure_id": "lower-fat-repositioning", "price_low": 1300000, "price_high": 2800000, "price_note": null, "duration_min": 60, "price_updated_at": "2026-10-01" },
+      { "procedure_id": "rhinoplasty", "price_low": 2000000, "price_high": 5500000, "price_note": null, "duration_min": 120, "price_updated_at": "2026-10-01" }
+    ]
+  },
+  {
+    "id": "hagyeol",
+    "name": "하결성형외과",
+    "slug": "하결성형외과",
+    "region": "서울 서초구",
+    "address": "서울특별시 서초구 서초동",
+    "lat": 37.4877,
+    "lng": 127.0174,
+    "phone": null,
+    "kakao_url": null,
+    "hours": [
+      { "label": "월–금", "days": ["Mo", "Tu", "We", "Th", "Fr"], "open": "09:30", "close": "18:30" },
+      { "label": "토", "days": ["Sa"], "open": "09:30", "close": "14:00" }
+    ],
+    "description": "얼굴 윤곽 수술과 가슴 성형을 주로 진료하는 성형외과입니다. 수술 전 CT 촬영과 마취 상담을 같은 날 진행합니다. 일요일·공휴일은 휴진합니다.",
+    "specialties": ["성형외과"],
+    "is_premium": false,
+    "is_partner": false,
+    "is_demo": true,
+    "ad_review_no": null,
+    "procedures": [
+      { "procedure_id": "square-jaw-reduction", "price_low": 4000000, "price_high": 7000000, "price_note": null, "duration_min": 150, "price_updated_at": "2026-09-28" },
+      { "procedure_id": "zygoma-reduction", "price_low": 4500000, "price_high": 7500000, "price_note": null, "duration_min": 120, "price_updated_at": "2026-09-28" },
+      { "procedure_id": "rhinoplasty", "price_low": 1500000, "price_high": 6000000, "price_note": null, "duration_min": 120, "price_updated_at": "2026-09-28" },
+      { "procedure_id": "breast-augmentation", "price_low": 6500000, "price_high": 11000000, "price_note": null, "duration_min": 120, "price_updated_at": "2026-09-28" },
+      { "procedure_id": "thread-lift", "price_low": 800000, "price_high": 3000000, "price_note": null, "duration_min": 40, "price_updated_at": "2026-09-28" }
+    ]
+  },
+  {
+    "id": "saesolgyeol",
+    "name": "새솔결의원",
+    "slug": "새솔결의원",
+    "region": "경기 성남시 분당구",
+    "address": "경기도 성남시 분당구 정자동",
+    "lat": 37.3595,
+    "lng": 127.1086,
+    "phone": null,
+    "kakao_url": null,
+    "hours": [
+      { "label": "월–금", "days": ["Mo", "Tu", "We", "Th", "Fr"], "open": "10:00", "close": "20:00" },
+      { "label": "토", "days": ["Sa"], "open": "10:00", "close": "16:00" }
+    ],
+    "description": "피부 시술과 리프팅, 눈 성형을 진료하는 의원입니다. 평일은 오후 8시까지 진료합니다. 일요일·공휴일은 휴진합니다.",
+    "specialties": ["성형외과", "피부과"],
+    "is_premium": false,
+    "is_partner": false,
+    "is_demo": true,
+    "ad_review_no": null,
+    "procedures": [
+      { "procedure_id": "laser-toning", "price_low": 40000, "price_high": 120000, "price_note": "1회 기준", "duration_min": 20, "price_updated_at": "2026-10-05" },
+      { "procedure_id": "thread-lift", "price_low": 600000, "price_high": 2500000, "price_note": null, "duration_min": 40, "price_updated_at": "2026-10-05" },
+      { "procedure_id": "double-eyelid", "price_low": 600000, "price_high": 1800000, "price_note": null, "duration_min": 60, "price_updated_at": "2026-10-05" },
+      { "procedure_id": "lower-fat-repositioning", "price_low": 1200000, "price_high": 2600000, "price_note": null, "duration_min": 60, "price_updated_at": "2026-10-05" }
+    ]
+  }
+]

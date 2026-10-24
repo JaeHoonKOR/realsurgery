@@ -2,12 +2,22 @@
 @import "../styles/tokens.css";
 @import "../styles/fonts.css";
 
+/* 안전 영역(아이폰 홈 인디케이터) 패딩 — 하단 고정 바·동의 배너가 콘텐츠·제스처 영역을 가리지 않게 (QUALITY 3절) */
+@utility pb-safe-2 {
+  padding-bottom: calc(var(--spacing) * 2 + env(safe-area-inset-bottom, 0px));
+}
+@utility pb-safe-4 {
+  padding-bottom: calc(var(--spacing) * 4 + env(safe-area-inset-bottom, 0px));
+}
+
 @layer base {
   html {
     background-color: var(--color-canvas);
     color: var(--color-ink);
     font-family: var(--font-sans);
     -webkit-text-size-adjust: 100%;
+    /* 상단 고정 헤더(h-14 / md:h-16) 아래로 앵커가 숨지 않게 */
+    scroll-padding-top: calc(var(--spacing) * 18);
   }
 
   body {
@@ -18,9 +28,29 @@
     -webkit-font-smoothing: antialiased;
   }
 
+  /* 검색창의 브라우저 기본 지우기 버튼(파란 X)은 쓰지 않는다 — Esc 로 지운다 */
+  input[type="search"]::-webkit-search-cancel-button,
+  input[type="search"]::-webkit-search-decoration {
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
   :focus-visible {
     outline: 2px solid var(--color-brand);
     outline-offset: 2px;
+  }
+
+  /* 모바일 하단 고정 바(components/common/BottomBar)가 있는 화면: 바 높이(pt-2 + 버튼 h-14 + pb-safe-2)만큼
+     문서 끝에 여백을 둬 푸터·마지막 콘텐츠가 바에 가리지 않게 한다. md(48rem) 이상은 바가 숨겨진다. */
+  @media (width < 48rem) {
+    body:has([data-bottom-bar]) {
+      padding-bottom: calc(var(--spacing) * 18 + env(safe-area-inset-bottom, 0px));
+    }
+  }
+
+  /* 쿠키·동의: 이미 선택한 방문자는 첫 페인트부터 배너를 숨긴다(app/layout.tsx 인라인 스크립트가 속성을 붙임) */
+  html[data-consent="set"] [data-consent-banner] {
+    display: none;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -32,5 +62,19 @@
       transition-duration: 0.01ms !important;
       scroll-behavior: auto !important;
     }
+  }
+}
+
+/* 헤더: 스크롤을 시작하면 그림자로 떠 있는 상태를 표시(스크롤 연동 애니메이션 지원 브라우저만, 레이아웃 이동 없음) */
+@supports (animation-timeline: scroll()) {
+  .site-header {
+    animation: site-header-raise linear both;
+    animation-timeline: scroll(root);
+    animation-range: 0 calc(var(--spacing) * 16);
+  }
+}
+@keyframes site-header-raise {
+  to {
+    box-shadow: var(--shadow-sm);
   }
 }

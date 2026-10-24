@@ -6,6 +6,8 @@ const config = [
   {
     ignores: [
       ".next/**",
+      ".next-preview/**",
+      "data/generated/**",
       "out/**",
       "node_modules/**",
       "coverage/**",

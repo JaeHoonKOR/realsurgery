@@ -1,0 +1,32 @@
+[
+  {
+    "id": "double-eyelid-consult-questions",
+    "slug": "쌍꺼풀-수술-상담-질문",
+    "title": "쌍꺼풀 수술 상담 전에 준비할 질문 7가지",
+    "summary": "매몰법과 절개법 중 무엇이 맞는지, 재수술 기준은 어떻게 되는지처럼 상담 자리에서 놓치기 쉬운 질문을 정리했습니다.",
+    "content_mdx": null,
+    "author_id": "editorial",
+    "published_at": "2026-10-21",
+    "updated_at": "2026-10-23"
+  },
+  {
+    "id": "lower-fat-vs-lower-blepharoplasty",
+    "slug": "눈밑지방재배치-하안검-차이",
+    "title": "눈밑지방재배치와 하안검 수술, 어떻게 다를까",
+    "summary": "눈밑 그늘이 고민일 때 두 수술을 가르는 기준은 피부 처짐 정도입니다. 접근 방식과 회복 기간 차이를 표로 비교했습니다.",
+    "content_mdx": null,
+    "author_id": "editorial",
+    "published_at": "2026-10-17",
+    "updated_at": "2026-10-17"
+  },
+  {
+    "id": "reading-surgery-quotes",
+    "slug": "성형-견적서-읽는-법",
+    "title": "성형 견적서 읽는 법: 가격 범위에 포함되는 항목",
+    "summary": "같은 시술도 병원마다 가격이 다른 이유는 마취, 검사, 사후 관리 포함 여부가 다르기 때문입니다. 견적서에서 확인할 항목을 정리했습니다.",
+    "content_mdx": null,
+    "author_id": "editorial",
+    "published_at": "2026-10-12",
+    "updated_at": "2026-10-12"
+  }
+]
