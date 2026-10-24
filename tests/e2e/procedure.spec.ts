@@ -46,7 +46,10 @@ test.describe("P-03 구성 요소 (4절 표 전 행)", () => {
     for (const id of ids) await expect(page.getByTestId(id), id).toBeVisible();
     // 요약 박스 4칸
     await expect(page.locator("[data-fact] dt")).toHaveText(["가격 범위", "소요시간", "회복기간", "마취 방식"]);
-    await expect(page.locator("[data-fact-value]")).toHaveText(["50만~250만 원", "약 1시간", "약 7일", "국소 마취 (수면 마취 병행 가능)"]);
+    await expect(page.locator("[data-fact-value]")).toHaveText(["50만~250만 원", "약 1시간", "약 7일", "국소 마취 (필요하면 진정제 병행)"]);
+    // 출처로 확인 못 한 칸(쌍꺼풀은 가격)은 값 아래 "출처 검증 전" (리뷰 T-103 r2 반려 1)
+    await expect(page.locator("[data-fact-unverified]")).toHaveCount(1);
+    await expect(page.locator('[data-fact="price"]')).toContainText("출처 검증 전");
     // 본문 H2: 검색 질문 형태 5개 + 앵커, 섹션마다 출처 각주
     const h2 = page.getByTestId("procedure-body").locator("h2");
     await expect(h2).toHaveText([/누가 받나요\?$/, /비용은 얼마인가요\?$/, /회복은 며칠 걸리나요\?$/, /부작용과 주의할 점은 무엇인가요\?$/, /비슷한 시술은 어떻게 다른가요\?$/]);
@@ -253,9 +256,17 @@ test.describe("RSC 페이로드(*.rsc.js) 실패 — 정적 HTML 유지 (리뷰 
     expect(await page.evaluate(() => document.body.innerText.length)).toBeGreaterThan(2000);
   };
 
+  /** 최종 실패: <html data-rsc-failed> 로 반응하지 않는 동의 배너를 숨긴다(리뷰 T-103 r2 권고 R2). 동의 기록은 남지 않는다. */
+  const bannerHiddenAfterFailure = async (page: Page) => {
+    await expect(page.locator("html")).toHaveAttribute("data-rsc-failed", "");
+    await expect(page.getByTestId("consent-banner")).toBeHidden();
+    expect(await page.evaluate(() => Object.keys(localStorage).filter((k) => /consent/i.test(k)))).toEqual([]);
+  };
+
   test("abort: 재요청까지 실패해도 H1·본문·FAQ 답변이 남고 화면이 비지 않는다", async ({ browser, baseURL, viewport, isMobile: mobile, hasTouch }) => {
     const { ctx, page, issues, rscUrls } = await open({ browser, baseURL, viewport, isMobile: mobile, hasTouch }, (r) => r.abort());
     await settledWithoutHydration(page, rscUrls);
+    await bannerHiddenAfterFailure(page);
     await staticContentIntact(page);
     expect(issues).toEqual([]);
     await ctx.close();
@@ -266,6 +277,7 @@ test.describe("RSC 페이로드(*.rsc.js) 실패 — 정적 HTML 유지 (리뷰 
       r.fulfill({ status: 404, contentType: "text/html; charset=utf-8", body: "<!DOCTYPE html><title>404</title><h1>Not Found</h1>" }),
     );
     await settledWithoutHydration(page, rscUrls);
+    await bannerHiddenAfterFailure(page);
     await staticContentIntact(page);
     expect(issues).toEqual([]);
     await ctx.close();
@@ -279,6 +291,7 @@ test.describe("RSC 페이로드(*.rsc.js) 실패 — 정적 HTML 유지 (리뷰 
       { event: "view_procedure", procedure_id: "double-eyelid", procedure_name: "쌍꺼풀 수술", category: "eye" },
     ]);
     expect(rscUrls).toHaveLength(2);
+    await expect(page.locator("html")).not.toHaveAttribute("data-rsc-failed");
     await page.getByTestId("consent-save").click();
     await expect(page.getByTestId("consent-banner")).toBeHidden();
     await staticContentIntact(page);

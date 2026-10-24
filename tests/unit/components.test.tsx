@@ -394,6 +394,11 @@ describe("P-03 시술 상세 컴포넌트 (4절 P-03 이벤트)", () => {
     expect(cards).toHaveLength(4);
     expect(cards[0]!.getAttribute("href")).toBe("/procedures/눈매교정/");
     expect(cards[0]!.textContent).toContain("60만~350만 원");
+    expect(cards[0]!.textContent).toContain("회복 약 2주");
+    // 카드도 요약 박스와 같이 검증 전 칸을 밝힌다: 눈매교정은 가격만, 앞트임은 가격·회복
+    const byHref = (slug: string) => cards.find((a) => a.getAttribute("href") === `/procedures/${slug}/`)!;
+    expect(byHref("눈매교정").querySelector("[data-card-unverified]")?.textContent).toBe("출처 검증 전: 가격");
+    expect(byHref("앞트임").querySelector("[data-card-unverified]")?.textContent).toBe("출처 검증 전: 가격·회복");
     click(cards[0]!);
     expect(events()).toEqual([{ event: "select_procedure", procedure_id: "ptosis-correction", from_page: "procedure" }]);
     act(() => root.render(<RelatedProcedures items={[]} categoryName={name} />));
@@ -409,9 +414,14 @@ describe("P-03 시술 상세 컴포넌트 (4절 P-03 이벤트)", () => {
       </>,
     );
     expect($("h1")?.textContent).toBe("쌍꺼풀 수술");
-    expect($$("[data-fact-value]").map((e) => e.textContent)).toEqual(["50만~250만 원", "약 1시간", "약 7일", "국소 마취 (수면 마취 병행 가능)"]);
+    expect($$("[data-fact-value]").map((e) => e.textContent)).toEqual(["50만~250만 원", "약 1시간", "약 7일", "국소 마취 (필요하면 진정제 병행)"]);
+    // 출처로 확인 못 한 칸(쌍꺼풀은 가격)만 "출처 검증 전" 표시 (리뷰 T-103 r2 반려 1)
+    expect($$("[data-fact-unverified]").map((e) => e.getAttribute("data-fact"))).toEqual(["price"]);
+    expect($("[data-fact=price]")?.textContent).toContain("출처 검증 전");
+    expect($("[data-fact=duration]")?.textContent).not.toContain("검증 전");
     expect($$("[data-testid=procedure-toc] a").map((a) => a.getAttribute("href"))).toHaveLength(7);
     expect($("[data-testid=procedure-reviewer]")?.textContent).toContain("자문의 검토 전");
+    expect($("[data-testid=procedure-reviewer]")?.textContent).toContain("가격과 “출처 검증 전”으로 표시한 값·문장");
     expect($$("[data-testid=procedure-sources] li").map((li) => li.id)).toEqual(["source-1", "source-2", "source-3"]);
     act(() =>
       root.render(<GuideMeta author={undefined} reviewer={{ id: "dr", name: "김자문", role: "성형외과 전문의" }} updatedLabel="x" updatedIso="x" sources={[]} />),

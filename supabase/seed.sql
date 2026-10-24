@@ -16,7 +16,7 @@ insert into public.authors ("id", "name", "role") values
 on conflict ("id") do update set "name" = excluded."name", "role" = excluded."role";
 
 insert into public.procedures ("id", "category_id", "name", "slug", "summary", "price_low", "price_high", "price_note", "duration_min", "recovery_days", "anesthesia", "content_mdx", "sources", "updated_at", "view_count") values
-  ('double-eyelid', 'eye', '쌍꺼풀 수술', '쌍꺼풀-수술', '쌍꺼풀 수술은 눈꺼풀에 접히는 선을 만드는 수술로, 피부를 절개하는 절개법과 절개하지 않는 매몰법으로 나뉩니다. 참고 가격은 대략 50만~250만 원이며, 보통 1주일 정도면 일상생활로 돌아갈 수 있습니다.', 500000, 2500000, null, 60, 7, '국소 마취 (수면 마취 병행 가능)', '---
+  ('double-eyelid', 'eye', '쌍꺼풀 수술', '쌍꺼풀-수술', '쌍꺼풀 수술은 눈꺼풀에 접히는 선을 만드는 수술로, 피부를 절개하는 절개법과 절개하지 않는 매몰법으로 나뉩니다. 참고 가격은 대략 50만~250만 원이며, 보통 1주일 정도면 일상생활로 돌아갈 수 있습니다.', 500000, 2500000, null, 60, 7, '국소 마취 (필요하면 진정제 병행)', '---
 name: "쌍꺼풀 수술"
 slug: "쌍꺼풀-수술"
 category: "eye"
@@ -27,12 +27,13 @@ price_high: 2500000
 price_note: null
 duration_min: 60
 recovery_days: 7
-anesthesia: "국소 마취 (수면 마취 병행 가능)"
+anesthesia: "국소 마취 (필요하면 진정제 병행)"
 procedure_type: "surgical"
 body_location: "윗눈꺼풀"
 preparation: "진찰로 눈꺼풀 두께와 지방량, 눈을 뜨는 힘을 확인해 매몰법·절개법과 라인 높이를 정하고, 복용 중인 약은 미리 알립니다."
 author: "editorial"
 medical_reviewer: null
+unverified_facts: ["price"]
 updated_at: "2026-10-25"
 sources:
   - title: "서울아산병원 검사·시술·수술정보 — 쌍꺼풀 수술"
@@ -77,6 +78,8 @@ faqs:
 
 보통 수술 후 3~4일째 봉합실을 제거하고, 1주일 정도면 정상생활로 돌아갈 수 있습니다.[1]
 
+수술은 일반적으로 국소 마취로 하고 필요에 따라 진정제를 사용합니다.[1] 수술 시간은 방법에 따라 다르지만 대개 1시간 정도 걸립니다.[2]
+
 | 시점 | 일반적인 경과 |
 | --- | --- |
 | 수술 후 2~3일 | 베개를 높이고 얼음찜질로 붓기를 가라앉히는 시기 |
@@ -103,10 +106,10 @@ faqs:
 | 시술 | 참고 가격(검증 전) | 회복기간 |
 | --- | --- | --- |
 | 쌍꺼풀 수술 | 50만~250만 원 | 약 7일 |
-| 눈매교정 | 60만~350만 원 | 약 10일 |
-| 앞트임 | 70만~200만 원 | 약 7일 |
+| 눈매교정 | 60만~350만 원 | 약 2주 |
+| 앞트임 | 70만~200만 원 | 약 7일(검증 전) |
 
-표의 가격과 회복기간은 각 시술 가이드 요약 박스와 같은 참고 값입니다. 세 수술을 함께 받는다면 각 수술 비용이 견적서에 나뉘어 적혀 있는지 확인하세요.
+표의 가격과 회복기간은 각 시술 가이드 요약 박스와 같은 참고 값이며, "검증 전"은 아직 출처로 확인하지 않은 값입니다. 세 수술을 함께 받는다면 각 수술 비용이 견적서에 나뉘어 적혀 있는지 확인하세요.
 ', '[{"title":"서울아산병원 검사·시술·수술정보 — 쌍꺼풀 수술","url":"https://www.amc.seoul.kr/asan/healthinfo/management/managementDetail.do?managementId=156"},{"title":"서울대학교병원 의학정보 — 쌍꺼풀 수술","url":"https://www.snuh.org/health/nMedInfo/nView.do?medid=BB000070"},{"title":"국민건강보험 요양급여의 기준에 관한 규칙 [별표 2] 비급여대상 (2026. 4. 15. 개정)","url":"https://www.law.go.kr/flDownload.do?flSeq=163452831"}]'::jsonb, '2026-10-25'::date, 4820),
   ('epicanthoplasty', 'eye', '앞트임', '앞트임', '앞트임은 눈 안쪽의 몽고주름을 제거해 눈매를 시원하게 하는 내안각 성형술입니다. 참고 가격은 대략 70만~200만 원이며, 눈 안쪽 피부를 절개하므로 1~2개월 정도는 흉터가 붉게 보일 수 있습니다.', 700000, 2000000, null, 40, 7, '국소 마취', '---
 name: "앞트임"
@@ -125,6 +128,7 @@ body_location: "눈 앞쪽 눈구석"
 preparation: "진찰로 몽고주름 정도와 쌍꺼풀 선과의 조화를 확인해 절개 범위를 정하고, 흉터가 생길 수 있는 위치를 미리 설명받습니다."
 author: "editorial"
 medical_reviewer: null
+unverified_facts: ["price", "duration", "recovery", "anesthesia"]
 updated_at: "2026-10-25"
 sources:
   - title: "서울대학교병원 의학정보 — 쌍꺼풀 수술 (관련 치료법: 내안각 성형술)"
@@ -174,6 +178,8 @@ faqs:
 
 대개는 화장으로 흉터를 덜 띄게 할 수 있지만, 체질적으로 흉이 부푸는 경우에는 연고나 주사 치료가 필요할 수 있습니다.[1]
 
+{/* MD-REVIEW: 요약 박스 소요시간(약 40분)·회복기간(약 7일)·마취 방식(국소 마취)은 시드 값으로 출처 검증 전(unverified_facts). 인용한 SNUH070 은 쌍꺼풀 수술과 함께 할 때 "30분에서 1시간 정도가 더 소요"만 적고 있어, 앞트임 단독 수술의 기관 출처를 찾으면 본문에 근거 문장을 넣고 unverified_facts 에서 뺀다 */}
+
 ## 앞트임 부작용과 주의할 점은 무엇인가요?
 
 앞트임 뒤에는 흉터가 붉게 남거나 부풀 수 있고, 지나치게 크게 열면 얼굴 전체 균형과 맞지 않을 수 있습니다.[1]
@@ -191,13 +197,13 @@ faqs:
 
 | 시술 | 참고 가격(검증 전) | 회복기간 |
 | --- | --- | --- |
-| 앞트임 | 70만~200만 원 | 약 7일 |
+| 앞트임 | 70만~200만 원 | 약 7일(검증 전) |
 | 쌍꺼풀 수술 | 50만~250만 원 | 약 7일 |
-| 눈매교정 | 60만~350만 원 | 약 10일 |
+| 눈매교정 | 60만~350만 원 | 약 2주 |
 
-두 수술은 동시에 할 수 있으며, 이때 수술 시간이 30분에서 1시간 정도 더 걸립니다.[1] 표의 가격과 회복기간은 각 시술 가이드 요약 박스와 같은 참고 값입니다.
+두 수술은 동시에 할 수 있으며, 이때 수술 시간이 30분에서 1시간 정도 더 걸립니다.[1] 표의 가격과 회복기간은 각 시술 가이드 요약 박스와 같은 참고 값이며, "검증 전"은 아직 출처로 확인하지 않은 값입니다.
 ', '[{"title":"서울대학교병원 의학정보 — 쌍꺼풀 수술 (관련 치료법: 내안각 성형술)","url":"https://www.snuh.org/health/nMedInfo/nView.do?medid=BB000070"},{"title":"서울아산병원 검사·시술·수술정보 — 쌍꺼풀 수술","url":"https://www.amc.seoul.kr/asan/healthinfo/management/managementDetail.do?managementId=156"},{"title":"국민건강보험 요양급여의 기준에 관한 규칙 [별표 2] 비급여대상 (2026. 4. 15. 개정)","url":"https://www.law.go.kr/flDownload.do?flSeq=163452831"}]'::jsonb, '2026-10-25'::date, 2150),
-  ('ptosis-correction', 'eye', '눈매교정', '눈매교정', '눈매교정은 눈을 뜨는 근육의 힘이 약해 눈동자가 가려지거나 졸려 보이는 눈을 교정하는 안검하수 교정 수술입니다. 참고 가격은 방식에 따라 대략 60만~350만 원이며, 붓기는 1~2주 뒤 나아지고 6개월 정도 지나야 자연스러워집니다.', 600000, 3500000, null, 90, 10, '국소 마취 + 수면 마취', '---
+  ('ptosis-correction', 'eye', '눈매교정', '눈매교정', '눈매교정은 눈을 뜨는 근육의 힘이 약해 눈동자가 가려지거나 졸려 보이는 눈을 교정하는 안검하수 교정 수술입니다. 참고 가격은 방식에 따라 대략 60만~350만 원이며, 붓기는 1~2주 뒤 나아지고 6개월 정도 지나야 자연스러워집니다.', 600000, 3500000, null, 120, 14, '국소 마취 (경우에 따라 전신 마취)', '---
 name: "눈매교정"
 slug: "눈매교정"
 category: "eye"
@@ -206,14 +212,15 @@ description: "눈매교정은 눈을 뜨는 근육의 힘을 보완해 눈 뜨�
 price_low: 600000
 price_high: 3500000
 price_note: null
-duration_min: 90
-recovery_days: 10
-anesthesia: "국소 마취 + 수면 마취"
+duration_min: 120
+recovery_days: 14
+anesthesia: "국소 마취 (경우에 따라 전신 마취)"
 procedure_type: "surgical"
 body_location: "윗눈꺼풀 눈꺼풀올림근"
 preparation: "진찰로 눈꺼풀이 처진 정도와 눈을 뜨는 근육(윗눈꺼풀 올림근)의 기능을 확인해 수술 방법과 교정량을 정하고, 안구 건조 증상이 있으면 미리 알립니다."
 author: "editorial"
 medical_reviewer: null
+unverified_facts: ["price"]
 updated_at: "2026-10-25"
 sources:
   - title: "서울아산병원 검사·시술·수술정보 — 안검하수 교정 수술"
@@ -258,6 +265,8 @@ faqs:
 
 수술 후 붓기는 1~2주 정도 지나면 나아지고, 6개월 정도 지나야 자연스러워집니다.[1]
 
+협조가 가능한 성인은 국소 마취로 수술할 수 있고, 경우에 따라서는 전신 마취로 합니다.[1] 소요 시간은 2시간 정도로 추정되며 수술 진행 상황에 따라 달라질 수 있습니다.[1]
+
 | 시점 | 일반적인 경과 |
 | --- | --- |
 | 1~2주 | 붓기가 나아짐 |
@@ -284,11 +293,11 @@ faqs:
 | --- | --- | --- |
 | 바꾸는 것 | 눈 뜨는 높이 | 쌍꺼풀 선 |
 | 대표적인 방법 | 올림근 절제술, 올림근 주름 형성술 등 | 매몰법, 절개법 |
-| 참고 회복기간 | 약 10일 | 약 7일 |
+| 참고 회복기간 | 약 2주 | 약 7일 |
 
 나이가 들어 윗눈꺼풀이 처진 경우에는 노인성 안검하수가 함께 있는 일이 많아, 눈꺼풀 성형과 안검하수 교정을 함께 고려하기도 합니다.[1]
 ', '[{"title":"서울아산병원 검사·시술·수술정보 — 안검하수 교정 수술","url":"https://www.amc.seoul.kr/asan/healthinfo/management/managementDetail.do?managementId=154"},{"title":"서울아산병원 검사·시술·수술정보 — 쌍꺼풀 수술","url":"https://www.amc.seoul.kr/asan/healthinfo/management/managementDetail.do?managementId=156"},{"title":"국민건강보험 요양급여의 기준에 관한 규칙 [별표 2] 비급여대상 (2026. 4. 15. 개정)","url":"https://www.law.go.kr/flDownload.do?flSeq=163452831"}]'::jsonb, '2026-10-25'::date, 3360),
-  ('lower-fat-repositioning', 'eye', '눈밑지방재배치', '눈밑지방재배치', '눈밑지방재배치는 앞으로 밀려나온 눈밑 지방을 제거하거나 부족한 부위로 옮겨 불룩함과 그늘을 줄이는 수술입니다. 참고 가격은 대략 100만~300만 원이며, 약 1주 뒤 일상생활이 가능하지만 멍과 붓기는 2~3주 이상 갈 수 있습니다.', 1000000, 3000000, null, 60, 7, '수면 마취 + 국소 마취', '---
+  ('lower-fat-repositioning', 'eye', '눈밑지방재배치', '눈밑지방재배치', '눈밑지방재배치는 앞으로 밀려나온 눈밑 지방을 제거하거나 부족한 부위로 옮겨 불룩함과 그늘을 줄이는 수술입니다. 참고 가격은 대략 100만~300만 원이며, 약 1주 뒤 일상생활이 가능하지만 멍과 붓기는 2~3주 이상 갈 수 있습니다.', 1000000, 3000000, null, 60, 7, '국소 마취 (필요하면 진정제 병행)', '---
 name: "눈밑지방재배치"
 slug: "눈밑지방재배치"
 category: "eye"
@@ -299,12 +308,13 @@ price_high: 3000000
 price_note: null
 duration_min: 60
 recovery_days: 7
-anesthesia: "수면 마취 + 국소 마취"
+anesthesia: "국소 마취 (필요하면 진정제 병행)"
 procedure_type: "surgical"
 body_location: "아래눈꺼풀 눈밑"
 preparation: "진찰로 지방 돌출 정도와 피부 처짐을 확인해 결막 쪽 접근이 가능한지, 피부 절개가 필요한지 정하고, 혈액을 묽게 하는 약은 복용 여부를 미리 알립니다."
 author: "editorial"
 medical_reviewer: null
+unverified_facts: ["price"]
 updated_at: "2026-10-25"
 sources:
   - title: "서울아산병원 검사·시술·수술정보 — 안검성형술 (하안검 성형 수술)"
@@ -349,6 +359,8 @@ faqs:
 
 피부를 절개한 경우 보통 4일 전후로 봉합실을 제거하고, 약 1주가 지나면 일상생활이 가능합니다.[1]
 
+수술은 일반적으로 국소 마취로 하고 필요에 따라 진정제를 사용합니다.[1] 소요 시간은 피부를 절개하는 외과적 시술이 40~60분, 레이저 시술이 30~40분 정도입니다.[2]
+
 | 시점 | 일반적인 경과 |
 | --- | --- |
 | 수술 후 3~4일 | 안정을 취하고 얼음찜질 |
@@ -380,7 +392,7 @@ faqs:
 
 피부나 근육이 늘어지지 않고 지방만 불룩한 경우에는 피부 절개 없이 눈 안쪽 절개선을 이용해 수술하기도 합니다.[1]
 ', '[{"title":"서울아산병원 검사·시술·수술정보 — 안검성형술 (하안검 성형 수술)","url":"https://www.amc.seoul.kr/asan/healthinfo/management/managementDetail.do?managementId=155"},{"title":"서울대학교병원 의학정보 — 눈밑지방 제거술","url":"https://www.snuh.org/health/nMedInfo/nView.do?medid=BB000166"},{"title":"국민건강보험 요양급여의 기준에 관한 규칙 [별표 2] 비급여대상 (2026. 4. 15. 개정)","url":"https://www.law.go.kr/flDownload.do?flSeq=163452831"}]'::jsonb, '2026-10-25'::date, 2980),
-  ('rhinoplasty', 'nose', '코 성형', '코-성형', '코 성형은 보형물이나 자가 연골로 콧대 높이와 코끝 모양을 다듬는 수술입니다. 참고 가격은 수술 범위와 재료에 따라 대략 100만~600만 원이며, 대부분의 붓기는 2주 정도면 나아집니다.', 1000000, 6000000, null, 120, 14, '수면 마취 또는 전신 마취', '---
+  ('rhinoplasty', 'nose', '코 성형', '코-성형', '코 성형은 보형물이나 자가 연골로 콧대 높이와 코끝 모양을 다듬는 수술입니다. 참고 가격은 수술 범위와 재료에 따라 대략 100만~600만 원이며, 대부분의 붓기는 2주 정도면 나아집니다.', 1000000, 6000000, null, 120, 21, '수면 마취 또는 전신 마취', '---
 name: "코 성형"
 slug: "코-성형"
 category: "nose"
@@ -390,13 +402,14 @@ price_low: 1000000
 price_high: 6000000
 price_note: null
 duration_min: 120
-recovery_days: 14
+recovery_days: 21
 anesthesia: "수면 마취 또는 전신 마취"
 procedure_type: "surgical"
 body_location: "코"
 preparation: "X선·CT 촬영과 진찰로 콧대 높이·코끝 모양과 피부 두께를 확인해 보형물이나 자가 연골 사용 여부를 정하고, 비염 등 코 질환이 있으면 미리 알립니다."
 author: "editorial"
 medical_reviewer: null
+unverified_facts: ["price", "duration", "anesthesia"]
 updated_at: "2026-10-25"
 sources:
   - title: "서울아산병원 검사·시술·수술정보 — 코성형술"
@@ -442,7 +455,9 @@ faqs:
 
 ## 코 성형 회복은 며칠 걸리나요?
 
-개방형 절개를 했다면 수술 후 5~6일째 외부 봉합사와 부목을 제거하고, 대부분의 붓기는 2주 정도면 나아집니다.[1]
+개방형 절개를 했다면 수술 후 5~6일째 외부 봉합사와 부목을 제거하고, 대부분의 붓기는 2주 정도면 나아집니다.[1] 일상적인 활동은 2주부터 서서히 늘려 3주 말 무렵부터 정상생활이 가능합니다.[1]
+
+{/* MD-REVIEW: 요약 박스 소요시간(약 2시간)·마취 방식(수면 마취 또는 전신 마취)은 시드 값으로 출처 검증 전(unverified_facts). 인용한 AMC234·AMC235 에 소요 시간·마취 방식 서술이 없음 */}
 
 | 시점 | 일반적인 경과 |
 | --- | --- |
@@ -477,7 +492,7 @@ faqs:
 
 코 필러를 맞았다면 일주일 동안 안경을 쓰지 않도록 안내됩니다.[4]
 ', '[{"title":"서울아산병원 검사·시술·수술정보 — 코성형술","url":"https://www.amc.seoul.kr/asan/healthinfo/management/managementDetail.do?managementId=234"},{"title":"서울아산병원 검사·시술·수술정보 — 코높임술","url":"https://www.amc.seoul.kr/asan/healthinfo/management/managementDetail.do?managementId=235"},{"title":"국민건강보험 요양급여의 기준에 관한 규칙 [별표 2] 비급여대상 (2026. 4. 15. 개정)","url":"https://www.law.go.kr/flDownload.do?flSeq=163452831"},{"title":"서울아산병원 검사·시술·수술정보 — 필러 시술","url":"https://www.amc.seoul.kr/asan/healthinfo/management/managementDetail.do?managementId=539"}]'::jsonb, '2026-10-25'::date, 3710),
-  ('square-jaw-reduction', 'contour', '사각턱 수술', '사각턱-수술', '사각턱 수술은 입 안을 절개해 턱뼈의 바깥층을 자르거나 깎아 턱뼈각을 줄이는 수술입니다. 참고 가격은 범위에 따라 대략 350만~700만 원이며, 보통 7~10일 지나면 일상적인 사회활동이 가능합니다.', 3500000, 7000000, null, 150, 28, '전신 마취', '---
+  ('square-jaw-reduction', 'contour', '사각턱 수술', '사각턱-수술', '사각턱 수술은 입 안을 절개해 턱뼈의 바깥층을 자르거나 깎아 턱뼈각을 줄이는 수술입니다. 참고 가격은 범위에 따라 대략 350만~700만 원이며, 보통 7~10일 지나면 일상적인 사회활동이 가능합니다.', 3500000, 7000000, null, 60, 10, '전신 마취', '---
 name: "사각턱 수술"
 slug: "사각턱-수술"
 category: "contour"
@@ -486,14 +501,15 @@ description: "사각턱 수술은 아래턱뼈의 각진 부위를 줄여 얼굴
 price_low: 3500000
 price_high: 7000000
 price_note: null
-duration_min: 150
-recovery_days: 28
+duration_min: 60
+recovery_days: 10
 anesthesia: "전신 마취"
 procedure_type: "surgical"
 body_location: "아래턱뼈 하악각"
 preparation: "얼굴 사진과 X선 촬영으로 얼굴형을 분석해 수술 계획을 세우고, 전신 마취 전 검사(흉부 X선·심전도·혈액·소변 검사)와 금식 안내를 받습니다."
 author: "editorial"
 medical_reviewer: null
+unverified_facts: ["price"]
 updated_at: "2026-10-25"
 sources:
   - title: "서울아산병원 검사·시술·수술정보 — 턱뼈각축소술"
@@ -571,7 +587,7 @@ faqs:
 
 얼굴 폭이 넓어 보이는 원인이 뼈인지 근육인지에 따라 맞는 방법이 달라집니다.[2]
 ', '[{"title":"서울아산병원 검사·시술·수술정보 — 턱뼈각축소술","url":"https://www.amc.seoul.kr/asan/healthinfo/management/managementDetail.do?managementId=237"},{"title":"서울대학교병원 의학정보 — 사각턱 치료","url":"https://www.snuh.org/health/nMedInfo/nView.do?medid=BB000023"},{"title":"국민건강보험 요양급여의 기준에 관한 규칙 [별표 2] 비급여대상 (2026. 4. 15. 개정)","url":"https://www.law.go.kr/flDownload.do?flSeq=163452831"}]'::jsonb, '2026-10-25'::date, 1640),
-  ('zygoma-reduction', 'contour', '광대 축소술', '광대-축소술', '광대 축소술은 돌출된 광대뼈를 자르거나 갈아 크기를 줄여 얼굴 폭을 좁히는 수술입니다. 참고 가격은 대략 400만~750만 원이며, 대부분 1~2주 지나면 일반적인 생활이 가능합니다.', 4000000, 7500000, null, 120, 28, '전신 마취', '---
+  ('zygoma-reduction', 'contour', '광대 축소술', '광대-축소술', '광대 축소술은 돌출된 광대뼈를 자르거나 갈아 크기를 줄여 얼굴 폭을 좁히는 수술입니다. 참고 가격은 대략 400만~750만 원이며, 대부분 1~2주 지나면 일반적인 생활이 가능합니다.', 4000000, 7500000, null, 240, 14, '전신 마취', '---
 name: "광대 축소술"
 slug: "광대-축소술"
 category: "contour"
@@ -580,14 +596,15 @@ description: "광대 축소술은 돌출된 광대뼈를 자르거나 갈아 크
 price_low: 4000000
 price_high: 7500000
 price_note: null
-duration_min: 120
-recovery_days: 28
+duration_min: 240
+recovery_days: 14
 anesthesia: "전신 마취"
 procedure_type: "surgical"
 body_location: "광대뼈·광대활"
 preparation: "얼굴 사진·X선 사진 분석과 치아 교합 상태 분석, 악관절 검사로 광대뼈가 돌출된 정도를 확인해 수술 방법을 정하고, 전신 마취 전 검사를 받습니다."
 author: "editorial"
 medical_reviewer: null
+unverified_facts: ["price", "anesthesia"]
 updated_at: "2026-10-25"
 sources:
   - title: "서울대학교병원 의학정보 — 안면 윤곽 수술"
@@ -630,6 +647,10 @@ faqs:
 
 대부분 1~2주 정도 지나면 일반적인 생활을 할 수 있고, 무리한 운동은 3~4주간 피하는 것이 좋습니다.[1]
 
+수술 시간은 상태에 따라 차이가 크지만 대략 4시간 정도 걸립니다.[1]
+
+{/* MD-REVIEW: 요약 박스 마취 방식(전신 마취)은 시드 값으로 출처 검증 전(unverified_facts). 인용한 SNUH066 에 마취 방식 서술이 없음 */}
+
 | 시점 | 일반적인 경과 |
 | --- | --- |
 | 수술 후 1~2일 | 통증이 심할 수 있어 진통제로 조절 |
@@ -657,8 +678,8 @@ faqs:
 
 | 시술 | 참고 가격(검증 전) | 회복기간 |
 | --- | --- | --- |
-| 광대 축소술 | 400만~750만 원 | 약 4주 |
-| 사각턱 수술 | 350만~700만 원 | 약 4주 |
+| 광대 축소술 | 400만~750만 원 | 약 2주 |
+| 사각턱 수술 | 350만~700만 원 | 약 10일 |
 
 표의 가격과 회복기간은 각 시술 가이드 요약 박스와 같은 참고 값입니다. 두 수술을 함께 받을지는 회복 일정까지 놓고 의료진과 상의하세요.
 ', '[{"title":"서울대학교병원 의학정보 — 안면 윤곽 수술","url":"https://www.snuh.org/health/nMedInfo/nView.do?medid=BB000066"},{"title":"서울아산병원 검사·시술·수술정보 — 턱뼈각축소술","url":"https://www.amc.seoul.kr/asan/healthinfo/management/managementDetail.do?managementId=237"},{"title":"국민건강보험 요양급여의 기준에 관한 규칙 [별표 2] 비급여대상 (2026. 4. 15. 개정)","url":"https://www.law.go.kr/flDownload.do?flSeq=163452831"}]'::jsonb, '2026-10-25'::date, 1380),
@@ -679,6 +700,7 @@ body_location: "볼·턱선 피부 아래"
 preparation: "진찰로 처짐 정도와 피부 두께를 확인해 실의 종류와 개수를 정하고, 사용할 실의 제품명과 허가 여부를 견적서에서 확인합니다."
 author: "editorial"
 medical_reviewer: null
+unverified_facts: ["price", "duration", "recovery", "anesthesia"]
 updated_at: "2026-10-25"
 sources:
   - title: "서울아산병원 검사·시술·수술정보 — 안면 거상 수술"
@@ -722,7 +744,7 @@ faqs:
 
 붓기와 당김이 며칠 이어질 수 있지만, 기간은 실의 종류·개수와 시술 범위에 따라 달라 시술한 병원의 안내를 따라야 합니다. 비교하면, 피부를 절개하는 안면 거상 수술은 붓기가 1~2주 이어질 수 있고 2~3주가 지나면 일상생활과 사회생활에 지장이 없습니다.[1]
 
-{/* MD-REVIEW: 실리프팅 회복 기간 출처 필요(검증 전) */}
+{/* MD-REVIEW: 요약 박스 소요시간(약 40분)·회복기간(약 3일)·마취 방식(국소 마취, 수면 마취 선택)은 시드 값으로 출처 검증 전(unverified_facts). 실리프팅 회복 기간·마취 방식의 기관 출처 필요 */}
 
 ## 실리프팅 부작용과 주의할 점은 무엇인가요?
 
@@ -743,12 +765,12 @@ faqs:
 | 구분 | 실리프팅 | 안면 거상 수술 |
 | --- | --- | --- |
 | 방식 | 녹는 실 삽입 | 피부 절개 후 피부·근육을 당겨 고정 |
-| 마취·소요시간 | 요약 박스 참고 값 | 입원해 전신 마취, 약 3시간 |
-| 회복 | 시술 병원 안내 확인 | 1주 뒤 외출, 2~3주 뒤 일상생활 |
+| 마취·소요시간 | 출처 검증 전(요약 박스 참고 값) | 입원해 전신 마취, 약 3시간 |
+| 회복 | 출처 검증 전, 시술 병원 안내 확인 | 1주 뒤 외출, 2~3주 뒤 일상생활 |
 
 주름 성형술은 절개법(안면 거상술 등), 부분 절개법(엔도타인 리프트·지방 이식술), 비절개법(보톡스·필러)으로 나눠 설명하기도 합니다.[1] 처짐 정도와 원하는 회복 기간을 함께 놓고 의료진과 방법을 고르세요.
 ', '[{"title":"서울아산병원 검사·시술·수술정보 — 안면 거상 수술","url":"https://www.amc.seoul.kr/asan/healthinfo/management/managementDetail.do?managementId=153"},{"title":"서울대학교병원 의학정보 — 얼굴 주름 제거 성형술","url":"https://www.snuh.org/health/nMedInfo/nView.do?medid=BB000158"},{"title":"국민건강보험 요양급여의 기준에 관한 규칙 [별표 2] 비급여대상 (2026. 4. 15. 개정)","url":"https://www.law.go.kr/flDownload.do?flSeq=163452831"}]'::jsonb, '2026-10-25'::date, 1920),
-  ('laser-toning', 'skin', '레이저 토닝', '레이저-토닝', '레이저 토닝은 낮은 에너지의 레이저를 일정 주기로 반복해 쬐어 기미 같은 색소를 옅게 하는 치료 방식입니다. 참고 가격은 1회 기준 대략 3만~15만 원이며, 여러 번 반복해 받는 만큼 총비용은 횟수에 따라 달라집니다.', 30000, 150000, '1회 기준', 20, 0, '마취 크림', '---
+  ('laser-toning', 'skin', '레이저 토닝', '레이저-토닝', '레이저 토닝은 낮은 에너지의 레이저를 일정 주기로 반복해 쬐어 기미 같은 색소를 옅게 하는 치료 방식입니다. 참고 가격은 1회 기준 대략 3만~15만 원이며, 여러 번 반복해 받는 만큼 총비용은 횟수에 따라 달라집니다.', 30000, 150000, '1회 기준', 30, 0, '마취 연고 또는 국소 마취', '---
 name: "레이저 토닝"
 slug: "레이저-토닝"
 category: "skin"
@@ -757,14 +779,15 @@ description: "레이저 토닝은 낮은 에너지의 레이저로 기미 같은
 price_low: 30000
 price_high: 150000
 price_note: "1회 기준"
-duration_min: 20
+duration_min: 30
 recovery_days: 0
-anesthesia: "마취 크림"
+anesthesia: "마취 연고 또는 국소 마취"
 procedure_type: "noninvasive"
 body_location: "얼굴 피부"
 preparation: "진찰로 색소의 종류(기미·잡티·주근깨)와 피부 상태를 확인해 레이저 종류와 횟수를 정하고, 최근 햇볕 노출이나 사용 중인 연고는 미리 알립니다."
 author: "editorial"
 medical_reviewer: null
+unverified_facts: ["price", "recovery"]
 updated_at: "2026-10-25"
 sources:
   - title: "한양대학교병원 Hihy건강백과 — 기미"
@@ -809,7 +832,9 @@ faqs:
 
 시술 뒤 반응과 관리 기간은 레이저 종류와 피부 상태에 따라 달라, 진찰한 병원의 안내를 따르는 것이 좋습니다.
 
-{/* MD-REVIEW: 토닝 단독의 회복 기간(당일 세안·화장 가능 여부 등) 출처 필요 */}
+레이저 시술 전에는 국소 마취를 하거나 마취 연고를 바르며, 시술 시간은 종류에 따라 10~30분 정도입니다.[2]
+
+{/* MD-REVIEW: 요약 박스 회복기간(당일 복귀)은 시드 값으로 출처 검증 전(unverified_facts). 토닝 단독의 회복 기간(당일 세안·화장 가능 여부 등) 출처 필요 */}
 
 | 항목 | 일반적인 안내 |
 | --- | --- |
@@ -841,7 +866,7 @@ faqs:
 
 환자 상태에 따라 여러 종류의 레이저를 함께 쓰기도 합니다.[1]
 ', '[{"title":"한양대학교병원 Hihy건강백과 — 기미","url":"https://seoul.hyumc.com/hydic/view002001001.do?no=1472"},{"title":"서울아산병원 검사·시술·수술정보 — 레이저 시술","url":"https://www.amc.seoul.kr/asan/healthinfo/management/managementDetail.do?managementId=537"},{"title":"서울대학교병원 의학정보 — 레이저 수술","url":"https://www.snuh.org/health/nMedInfo/nView.do?medid=BB000167"}]'::jsonb, '2026-10-25'::date, 1210),
-  ('breast-augmentation', 'breast', '가슴 확대 수술', '가슴-확대-수술', '가슴 확대 수술은 보형물을 유방조직이나 가슴 근육 아래에 넣어 가슴 크기를 키우는 수술입니다. 참고 가격은 보형물 종류와 절개 위치에 따라 대략 600만~1,200만 원이며, 과격한 운동은 수술 후 2~3주까지 삼가는 것이 좋습니다.', 6000000, 12000000, null, 120, 14, '전신 마취', '---
+  ('breast-augmentation', 'breast', '가슴 확대 수술', '가슴-확대-수술', '가슴 확대 수술은 보형물을 유방조직이나 가슴 근육 아래에 넣어 가슴 크기를 키우는 수술입니다. 참고 가격은 보형물 종류와 절개 위치에 따라 대략 600만~1,200만 원이며, 과격한 운동은 수술 후 2~3주까지 삼가는 것이 좋습니다.', 6000000, 12000000, null, 120, 21, '전신 마취', '---
 name: "가슴 확대 수술"
 slug: "가슴-확대-수술"
 category: "breast"
@@ -851,13 +876,14 @@ price_low: 6000000
 price_high: 12000000
 price_note: null
 duration_min: 120
-recovery_days: 14
+recovery_days: 21
 anesthesia: "전신 마취"
 procedure_type: "surgical"
 body_location: "가슴"
 preparation: "유방의 모양·크기·대칭과 처짐 정도를 진찰하고 필요하면 유방 촬영술 등으로 유방 질환 여부를 확인한 뒤, 보형물의 종류·크기와 절개 위치를 정합니다."
 author: "editorial"
 medical_reviewer: null
+unverified_facts: ["price"]
 updated_at: "2026-10-25"
 sources:
   - title: "서울아산병원 검사·시술·수술정보 — 유방확대술"
@@ -902,6 +928,8 @@ faqs:
 ## 가슴 확대 수술 회복은 며칠 걸리나요?
 
 수술 후 일상생활은 가능하지만 과격한 운동은 2~3주까지 삼가고, 3주간 스포츠 브래지어를 착용합니다.[2]
+
+수술은 수면 마취로 할 수도 있지만 보통 전신 마취로 합니다.[2] 예상 소요 시간은 2시간 정도이며, 수술 진행 상황에 따라 달라질 수 있습니다.[1]
 
 | 시점 | 일반적인 경과 |
 | --- | --- |

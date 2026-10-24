@@ -13,6 +13,7 @@
     "data": "node scripts/build-data.mjs",
     "data:sql": "node scripts/build-data.mjs --sql",
     "lint:medical": "node scripts/lint-medical.mjs",
+    "verify:sources": "node scripts/verify-sources.mjs",
     "lint": "eslint . --max-warnings 0 && node scripts/check-tokens.mjs && node scripts/build-data.mjs --check-sql",
     "typecheck": "tsc --noEmit",
     "test": "vitest run --coverage",

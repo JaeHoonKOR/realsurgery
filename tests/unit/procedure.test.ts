@@ -2,7 +2,7 @@
 import { describe, expect, it } from "vitest";
 import { checkTripleHtml } from "../../scripts/check-triple.mjs";
 import { extractJsonLd, validateJsonLdHtml } from "../../scripts/validate-jsonld.mjs";
-import { loadContent, type Clinic, type Procedure } from "@/lib/content";
+import { loadContent, type Clinic, type Guide, type Procedure } from "@/lib/content";
 import { formatDate, formatDuration, formatPriceRange, formatRecovery, formatWon, procedureTitle } from "@/lib/format.mjs";
 import {
   UNKNOWN,
@@ -61,13 +61,34 @@ describe("lib/procedure", () => {
       ["가격 범위", "50만~250만 원"],
       ["소요시간", "약 1시간"],
       ["회복기간", "약 7일"],
-      ["마취 방식", "국소 마취 (수면 마취 병행 가능)"],
+      ["마취 방식", "국소 마취 (필요하면 진정제 병행)"],
     ]);
+    expect(summaryCells(eyelid).filter((c) => c.unverified).map((c) => c.key)).toEqual(["price"]);
     const toning = content.procedures.find((p) => p.id === "laser-toning")!;
-    expect(summaryCells(toning)[0]).toMatchObject({ value: "3만~15만 원", note: "1회 기준" });
-    expect(summaryCells(toning)[2]!.value).toBe("당일 복귀");
+    expect(summaryCells(toning)[0]).toMatchObject({ value: "3만~15만 원", note: "1회 기준", unverified: true });
+    expect(summaryCells(toning)[2]).toMatchObject({ value: "당일 복귀", unverified: true });
+    expect(summaryCells(toning)[1]).not.toHaveProperty("unverified");
     const empty = summaryCells({ price_low: null, price_high: null, price_note: null, duration_min: null, recovery_days: null, anesthesia: " " });
     expect(empty.map((c) => c.value)).toEqual([UNKNOWN.price, UNKNOWN.other, UNKNOWN.other, UNKNOWN.other]);
+    // 값이 없는 칸은 unverified_facts 에 있어도 "검증 전" 을 붙이지 않는다("진료 후 안내" 는 값이 아니다)
+    const emptyUnverified = summaryCells({
+      price_low: null,
+      price_high: null,
+      price_note: null,
+      duration_min: null,
+      recovery_days: 3,
+      anesthesia: null,
+      guide: { unverified_facts: ["price", "duration", "recovery", "anesthesia"] },
+    });
+    expect(emptyUnverified.map((c) => c.unverified ?? false)).toEqual([false, false, true, false]);
+    expect(followupText(emptyUnverified)).toBe("회복기간: 약 3일 [출처 검증 전]");
+  });
+
+  it("r2 반려 사례: 요약 박스 값이 같은 페이지 본문·출처 값으로 바뀌었다(사각턱·광대·눈매교정)", () => {
+    const cellsOf = (id: string) => Object.fromEntries(summaryCells(content.procedures.find((p) => p.id === id)!).map((c) => [c.key, c.value]));
+    expect(cellsOf("square-jaw-reduction")).toMatchObject({ duration: "약 1시간", recovery: "약 10일", anesthesia: "전신 마취" });
+    expect(cellsOf("zygoma-reduction")).toMatchObject({ duration: "약 4시간", recovery: "약 2주" });
+    expect(cellsOf("ptosis-correction")).toMatchObject({ duration: "약 2시간", recovery: "약 2주", anesthesia: "국소 마취 (경우에 따라 전신 마취)" });
   });
 
   it("slug 찾기: 한글·퍼센트 인코딩·잘못된 인코딩", () => {
@@ -100,7 +121,9 @@ describe("lib/procedure", () => {
       howPerformed: howPerformedText(cells),
       followup: followupText(cells),
     });
-    expect(howPerformedText(cells)).toBe("마취 방식: 국소 마취 (수면 마취 병행 가능) · 소요시간: 약 1시간");
+    expect(howPerformedText(cells)).toBe("마취 방식: 국소 마취 (필요하면 진정제 병행) · 소요시간: 약 1시간");
+    const thread = content.procedures.find((p) => p.id === "thread-lift")!;
+    expect(howPerformedText(summaryCells(thread))).toBe("마취 방식: 국소 마취 (수면 마취 선택) [출처 검증 전] · 소요시간: 약 40분 [출처 검증 전]");
     expect((faq!.mainEntity as unknown[]).length).toBe(eyelid.faqs.length);
     expect(JSON.stringify(ld)).not.toMatch(/AggregateRating|aggregateRating|review/i);
 
@@ -207,14 +230,36 @@ describe("scripts/validate-jsonld · check-triple — 요약 박스 = JSON-LD = 
       { "@type": "ListItem", position: 2, name: eyelid.name },
     ],
   };
-  const page = (o: { ld?: unknown; h1?: string; answer?: string; recovery?: string; faqAnswer?: string } = {}) => `<!doctype html><html><body>
+  // 실제 쌍꺼풀 본문의 회복 섹션 문단(각주는 화면처럼 단어 결합자 + [n])
+  const BODY = [
+    "보통 수술 후 3~4일째 봉합실을 제거하고, 1주일 정도면 정상생활로 돌아갈 수 있습니다.⁠[1]",
+    "수술은 일반적으로 국소 마취로 하고 필요에 따라 진정제를 사용합니다.⁠[1] 수술 시간은 방법에 따라 다르지만 대개 1시간 정도 걸립니다.⁠[2]",
+  ];
+  type PageOpts = {
+    ld?: unknown;
+    h1?: string;
+    answer?: string;
+    recovery?: string;
+    faqAnswer?: string;
+    body?: string[] | null;
+    table?: string;
+    hideUnverifiedLabel?: boolean;
+    cells?: typeof cells;
+  };
+  const page = (o: PageOpts = {}) => `<!doctype html><html><body>
     <script type="application/ld+json">${jsonLdString(crumbs)}</script>
     <script type="application/ld+json">${jsonLdString(o.ld ?? ld)}</script>
     <h1>${o.h1 ?? eyelid.name}</h1>
     <p data-testid="procedure-answer">${o.answer ?? eyelid.summary}</p>
-    <dl>${cells
-      .map((c) => `<div data-fact="${c.key}"><dt>${c.label}</dt><dd><span data-fact-value="">${c.key === "recovery" && o.recovery ? o.recovery : c.value}</span></dd></div>`)
+    <dl>${(o.cells ?? cells)
+      .map(
+        (c) =>
+          `<div data-fact="${c.key}"${c.unverified ? " data-fact-unverified" : ""}><dt>${c.label}</dt><dd><span data-fact-value="">${
+            c.key === "recovery" && o.recovery ? o.recovery : c.value
+          }</span>${c.unverified && !o.hideUnverifiedLabel ? "<span>출처 검증 전</span>" : ""}</dd></div>`,
+      )
       .join("")}</dl>
+    ${o.body === null ? "" : `<div data-testid="procedure-body">${(o.body ?? BODY).map((t) => `<p>${t}</p>`).join("")}${o.table ?? ""}</div>`}
     <section data-testid="procedure-faq">${eyelid.faqs
       .map((f, i) => `<details><summary><span>${f.question}</span></summary><p>${i === 0 && o.faqAnswer ? o.faqAnswer : f.answer}</p></details>`)
       .join("")}</section></body></html>`;
@@ -230,6 +275,38 @@ describe("scripts/validate-jsonld · check-triple — 요약 박스 = JSON-LD = 
     expect(checkTripleHtml(page({ recovery: "약 9일" })).join("\n")).toMatch(/followup/);
     expect(checkTripleHtml(page({ faqAnswer: "다른 답" })).join("\n")).toMatch(/화면 FAQ/);
     expect(checkTripleHtml("<html></html>")).toEqual(["MedicalProcedure·FAQPage JSON-LD 없음"]);
+  });
+
+  it("요약 박스 수치 = 본문·FAQ 근거 (r2 반려 1): 근거 문장이 없으면 칸마다 잡고, 표·자기 참조 문장은 근거로 치지 않는다", () => {
+    // 본문에서 마취·소요시간 문장을 빼면(회복기간은 FAQ "회복기간" 답변에 1주일이 있어 통과)
+    const noBody = checkTripleHtml(page({ body: [BODY[0]!] })).join("\n");
+    expect(noBody).toMatch(/소요시간 "약 1시간" 의 근거 문장이 본문·FAQ 에 없음/);
+    expect(noBody).toMatch(/마취 방식 "국소 마취 \(필요하면 진정제 병행\)" 의 "국소" 근거/);
+    expect(noBody).not.toMatch(/회복기간/);
+    // 같은 값이 표에만 있거나 "요약 박스" 를 가리키는 문장에만 있으면 근거가 아니다
+    const tableOnly = page({
+      body: [BODY[0]!, "표의 소요시간은 요약 박스와 같은 값입니다. 수술은 국소 마취로 하고 진정제를 쓰며 1시간 정도 걸립니다."],
+      table: "<table><tbody><tr><td>수술 시간</td><td>약 1시간</td></tr><tr><td>마취</td><td>국소 마취, 진정제</td></tr></tbody></table>",
+    });
+    expect(checkTripleHtml(tableOnly).join("\n")).toMatch(/소요시간 "약 1시간"/);
+    // 본문이 없으면 대조할 수 없다는 문제
+    expect(checkTripleHtml(page({ body: null })).join("\n")).toMatch(/본문\(procedure-body\) 없음/);
+  });
+
+  it("검증 전 칸(unverified_facts): 화면 표시가 없으면 실패, JSON-LD 단서가 다르면 실패", () => {
+    expect(checkTripleHtml(page({ hideUnverifiedLabel: true })).join("\n")).toMatch(/"price" 칸이 검증 전인데 화면에 "출처 검증 전" 표시가 없음/);
+    // 회복기간 "약 9일" 은 본문·FAQ 어디에도 없다 → 검증된 값처럼 두면 실패
+    const ldOf = (procedure: Procedure) => procedureJsonLd({ procedure, author: undefined, siteName: "리얼성형", base: "https://a.kr" });
+    const asVerified = { ...eyelid, recovery_days: 9 };
+    expect(checkTripleHtml(page({ cells: summaryCells(asVerified), ld: ldOf(asVerified) })).join("\n")).toMatch(/회복기간 "약 9일" 의 근거 문장이 본문·FAQ 에 없음/);
+    // 같은 값을 unverified_facts 로 "출처 검증 전" 표시하면 본문 대조에서 빠지고, 화면·JSON-LD 단서가 맞으면 통과
+    const asUnverified = { ...asVerified, guide: { ...eyelid.guide!, unverified_facts: ["price", "recovery"] as Guide["unverified_facts"] } };
+    expect(followupText(summaryCells(asUnverified))).toBe("회복기간: 약 9일 [출처 검증 전]");
+    expect(checkTripleHtml(page({ cells: summaryCells(asUnverified), ld: ldOf(asUnverified) }))).toEqual([]);
+    // 화면은 검증 전인데 JSON-LD 에 단서가 없으면(값만 사실처럼) 실패
+    expect(checkTripleHtml(page({ cells: summaryCells(asUnverified), ld: ldOf(asVerified) })).join("\n")).toMatch(
+      /followup "회복기간: 약 9일" ≠ 요약 박스 "회복기간: 약 9일 \[출처 검증 전\]"/,
+    );
   });
 
   it("JSON-LD: 평점 금지·필수 속성·시술 상세 4종·파싱 오류", () => {

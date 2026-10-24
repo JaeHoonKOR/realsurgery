@@ -4,7 +4,10 @@ import type { Author, Source } from "@/lib/content";
  * 메타 (4절 P-03: 작성자(의료 자문 포함)·최종 수정일, E-E-A-T) + 출처 목록.
  * 본문 각주 [n] 번호 = 이 목록 번호(frontmatter sources 순서).
  * 의료 자문의가 정해지기 전에는 이름을 지어내지 않고 "검토 전"으로 밝힌다(spec-question T-009).
+ * 문구는 사실대로(리뷰 T-103 r2 반려 1-c): 출처로 확인한 문장에만 각주가 있고, 가격과 "출처 검증 전" 표시가 붙은 값·문장은 아직 확인 전이다.
  */
+export const UNREVIEWED_NOTE =
+  "자문의 검토 전입니다. 편집팀이 아래 출처의 의료기관·공공기관 자료를 바탕으로 작성했으며, 각주 번호는 그 문장을 확인한 출처입니다. 가격과 “출처 검증 전”으로 표시한 값·문장은 아직 출처로 확인하지 않은 참고 정보입니다.";
 export function GuideMeta({
   author,
   reviewer,
@@ -31,7 +34,7 @@ export function GuideMeta({
         <div className="flex flex-col gap-1 sm:flex-row sm:gap-4">
           <dt className="shrink-0 font-semibold text-ink sm:w-24">의료 자문</dt>
           <dd data-testid="procedure-reviewer" className="text-ink-muted">
-            {reviewer ? `${reviewer.name}${reviewer.role ? ` (${reviewer.role})` : ""}` : "자문의 검토 전입니다. 아래 출처의 의료기관·공공기관 자료를 바탕으로 편집팀이 작성했으며, 가격은 출처 검증 전 예시 데이터입니다."}
+            {reviewer ? `${reviewer.name}${reviewer.role ? ` (${reviewer.role})` : ""}` : UNREVIEWED_NOTE}
           </dd>
         </div>
         <div className="flex flex-col gap-1 sm:flex-row sm:gap-4">

@@ -3,12 +3,14 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
-import { DONE_MARK, GATE, externalizeAll, externalizeRsc, guardScript } from "../../scripts/externalize-rsc.mjs";
+import { DONE_MARK, FAILED_ATTR, GATE, assertGateHook, externalizeAll, externalizeRsc, guardScript } from "../../scripts/externalize-rsc.mjs";
 
 const BOOT = "(self.__next_f=self.__next_f||[]).push([0])";
 const DATA1 = 'self.__next_f.push([1,"0:{\\"a\\":\\"쌍꺼풀\\u003c/b\\u003e\\"}\\n"])';
 const DATA2 = 'self.__next_f.push([1,"1:[\\"$\\",\\"p\\",null,{}]\\n"])';
 const MAIN_APP = '<script src="/realsurgery/_next/static/chunks/main-app-abc.js" async=""></script>';
+// Next 15.5 next/dist/client/app-bootstrap.js 의 빌드 결과 형태(실제 청크 409-*.js 에서 발췌)
+const HOOK_CHUNK = 'Object.defineProperty(t,"appBootstrap",{enumerable:!0,get:function(){return u}});function u(e){var t,r;t=self.__next_s,r=()=>{e()},t&&t.length?t.reduce(()=>{}):r()}';
 const page = (body: string, head = "") =>
   `<!DOCTYPE html><html><head>${head}<script>window.dataLayer=[]</script><script type="application/ld+json">{"a":1}</script></head><body><main>본문</main>${body}</body></html>`;
 const processed = (body: string) => page(body).replace("<head>", `<head>${GATE}`);
@@ -26,10 +28,13 @@ const tmpOut = () => {
 /** GATE·GUARD 를 가짜 self/document 로 실행해 하이드레이션 시작 여부를 본다. */
 function runtime() {
   const self: Record<string, unknown> = {};
-  const appended: { src: string; onload?: () => void }[] = [];
+  type El = { src: string; onload?: () => void; onerror?: () => void };
+  const appended: El[] = [];
+  const htmlAttrs: Record<string, string> = {};
   const document = {
-    createElement: () => ({ src: "" }) as { src: string; onload?: () => void },
-    head: { appendChild: (el: { src: string; onload?: () => void }) => appended.push(el) },
+    createElement: () => ({ src: "" }) as El,
+    head: { appendChild: (el: El) => appended.push(el) },
+    documentElement: { setAttribute: (k: string, v: string) => (htmlAttrs[k] = v) },
   };
   const run = (tag: string) => new Function("self", "document", tag.replace(/^<script>|<\/script>$/g, ""))(self, document);
   run(GATE);
@@ -38,7 +43,7 @@ function runtime() {
   // Next(app-bootstrap.js) 가 하는 일: __next_s.length 가 있으면 reduce(...) 가 돌려준 Promise 뒤에 hydrate
   void nextS.reduce().then(() => (hydrated = true));
   const flush = () => new Promise((r) => setTimeout(r, 0));
-  return { self, appended, run, flush, isHydrated: () => hydrated, nextS };
+  return { self, appended, htmlAttrs, run, flush, isHydrated: () => hydrated, nextS };
 }
 
 describe("externalizeRsc", () => {
@@ -106,6 +111,7 @@ describe("GATE·GUARD — 페이로드가 끝까지 실행됐을 때만 하이�
     await rt.flush();
     expect(rt.isHydrated()).toBe(true);
     expect(rt.appended).toEqual([]);
+    expect(rt.htmlAttrs).toEqual({});
   });
 
   it("실패(abort·404): 1회 재요청 — 재요청 성공이면 하이드레이션, 재요청도 실패·잘린 응답이면 영영 보류(정적 HTML 유지)", async () => {
@@ -118,13 +124,24 @@ describe("GATE·GUARD — 페이로드가 끝까지 실행됐을 때만 하이�
     ok.appended[0]!.onload!();
     await ok.flush();
     expect(ok.isHydrated()).toBe(true);
+    expect(ok.htmlAttrs).toEqual({}); // 재요청 성공 — 동의 배너는 그대로
 
-    const fail = runtime();
-    fail.run(guardScript("/x.rsc.js"));
-    expect(fail.appended.map((e) => e.src)).toEqual(["/x.rsc.js?retry=1"]);
-    fail.appended[0]!.onload!(); // 200 이지만 끝까지 실행되지 않은 응답(완료 표시 없음) — onerror 는 아무것도 안 함
-    await fail.flush();
-    expect(fail.isHydrated()).toBe(false);
+    // 재요청이 200 이지만 끝까지 실행되지 않은 응답(완료 표시 없음): 하이드레이션 보류 + <html data-rsc-failed> (배너 숨김, r2 권고 R2)
+    const truncated = runtime();
+    truncated.run(guardScript("/x.rsc.js"));
+    expect(truncated.appended.map((e) => e.src)).toEqual(["/x.rsc.js?retry=1"]);
+    truncated.appended[0]!.onload!();
+    await truncated.flush();
+    expect(truncated.isHydrated()).toBe(false);
+    expect(truncated.htmlAttrs).toEqual({ [FAILED_ATTR]: "" });
+
+    // 재요청도 네트워크 실패(onerror): 같은 결과
+    const aborted = runtime();
+    aborted.run(guardScript("/x.rsc.js"));
+    aborted.appended[0]!.onerror!();
+    await aborted.flush();
+    expect(aborted.isHydrated()).toBe(false);
+    expect(aborted.htmlAttrs).toEqual({ [FAILED_ATTR]: "" });
   });
 });
 
@@ -135,8 +152,9 @@ describe("externalizeAll", () => {
     fs.writeFileSync(path.join(out, "index.html"), html(DATA1));
     fs.mkdirSync(path.join(out, "procedures", "쌍꺼풀-수술"), { recursive: true });
     fs.writeFileSync(path.join(out, "procedures", "쌍꺼풀-수술", "index.html"), html(DATA2));
-    fs.mkdirSync(path.join(out, "_next"));
+    fs.mkdirSync(path.join(out, "_next", "static", "chunks"), { recursive: true });
     fs.writeFileSync(path.join(out, "_next", "skip.html"), html(DATA2));
+    fs.writeFileSync(path.join(out, "_next", "static", "chunks", "a.js"), HOOK_CHUNK);
 
     const r = externalizeAll({ outDir: out, buildId: "B1" });
     expect(r).toMatchObject({ files: 2, moved: 2, already: 0 });
@@ -167,5 +185,21 @@ describe("externalizeAll", () => {
     const out = tmpOut();
     fs.writeFileSync(path.join(out, "index.html"), processed(`<script src="/index.rsc.js"></script>`));
     expect(() => externalizeAll({ outDir: out, buildId: "B1" })).toThrow(/index\.rsc\.js 없음/);
+  });
+
+  it("GATE 훅(r2 권고 R1): HTML 이 불러오는 Next 청크에 appBootstrap 의 self.__next_s 읽기가 없으면 실패", () => {
+    const out = tmpOut();
+    const chunks = path.join(out, "_next", "static", "chunks");
+    fs.mkdirSync(chunks, { recursive: true });
+    const html = page(`<script src="/realsurgery/_next/static/chunks/b.js" async=""></script><script>${BOOT}</script><script>${DATA1}</script>`);
+    fs.writeFileSync(path.join(out, "index.html"), html);
+    // Next 가 더 이상 __next_s 를 읽지 않는 버전이라고 가정한 청크
+    fs.writeFileSync(path.join(chunks, "b.js"), "function appBootstrap(e){e()}");
+    expect(() => externalizeAll({ outDir: out, buildId: "B1" })).toThrow(/appBootstrap 의 self\.__next_s 읽기를 찾지 못함/);
+    // 청크 파일이 없어도 실패(조용히 통과하지 않음)
+    expect(() => assertGateHook(out, "/realsurgery", html.replace("b.js", "missing.js"))).toThrow(/찾지 못함/);
+    // 실제 Next 15.5 형태(쿼리 붙은 src 포함)는 통과
+    fs.writeFileSync(path.join(chunks, "b.js"), HOOK_CHUNK);
+    expect(() => assertGateHook(out, "/realsurgery", html.replace("b.js", "b.js?dpl=1"))).not.toThrow();
   });
 });

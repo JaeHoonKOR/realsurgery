@@ -46,7 +46,11 @@ const REQUIRED = [
   "sources",
   "faqs",
 ];
-const OPTIONAL = ["price_note", "medical_reviewer"];
+const OPTIONAL = ["price_note", "medical_reviewer", "unverified_facts"];
+
+/** 요약 박스 칸 — unverified_facts 에 넣을 수 있는 값(출처로 확인 못 한 칸은 화면·JSON-LD 에 "출처 검증 전") */
+export const FACT_KEYS = ["price", "duration", "recovery", "anesthesia"];
+const FACT_FIELDS = { price: ["price_low", "price_high"], duration: ["duration_min"], recovery: ["recovery_days"], anesthesia: ["anesthesia"] };
 const KNOWN = new Set([...REQUIRED, ...OPTIONAL]);
 
 export const SITE_NAME = "리얼성형"; // lib/site.ts SITE.name 과 같아야 한다(title 길이 계산용)
@@ -125,6 +129,16 @@ function lintFrontmatter(fm, bad) {
   if ("medical_reviewer" in fm && fm.medical_reviewer !== null && !nonEmpty(fm.medical_reviewer)) bad("medical_reviewer 는 저자 id 또는 null");
   if ("updated_at" in fm && !(typeof fm.updated_at === "string" && DATE_RE.test(fm.updated_at) && !Number.isNaN(Date.parse(fm.updated_at)))) {
     bad(`updated_at 은 "YYYY-MM-DD" 문자열 (따옴표로 감싸기)`);
+  }
+  if ("unverified_facts" in fm) {
+    const u = fm.unverified_facts;
+    if (!Array.isArray(u) || u.some((k) => !FACT_KEYS.includes(k)) || new Set(u).size !== u.length) {
+      bad(`unverified_facts 는 ${FACT_KEYS.join(" | ")} 중복 없는 배열`);
+    } else {
+      for (const k of u) {
+        if (FACT_FIELDS[k].every((f) => fm[f] === null || fm[f] === undefined)) bad(`unverified_facts "${k}" — 값이 없는 칸(null)은 넣지 않는다`);
+      }
+    }
   }
 
   if (nonEmpty(fm.name) && typeof fm.updated_at === "string") {
@@ -231,6 +245,12 @@ function lintBody(body, fm, sections, bad) {
     }
   });
   for (let n = 1; n <= sourceCount; n++) if (!cited.has(n)) bad(`sources[${n - 1}] 이 본문에서 [${n}] 로 인용되지 않음`);
+
+  // 검증 전 칸이 있으면 무엇을 확인해야 하는지 본문 검토 메모로 남긴다(content lane 이 출처를 찾으면 메모와 unverified_facts 를 지운다)
+  const boxUnverified = (Array.isArray(fm.unverified_facts) ? fm.unverified_facts : []).filter((k) => k !== "price");
+  if (boxUnverified.length && !/\{\/\*\s*MD-REVIEW:[^*]*요약 박스[\s\S]*?\*\/\}/.test(body)) {
+    bad(`unverified_facts(${boxUnverified.join(", ")}) 가 있으면 본문에 {/* MD-REVIEW: 요약 박스 … */} 메모로 확인할 값을 적는다`);
+  }
 }
 
 /** MDX 원문 1개를 린트한다. 빈 배열 = 통과. (참조 무결성·DB 행 일치는 build-data validateTables 가 본다) */
@@ -340,6 +360,7 @@ export function guideOf(contentMdx) {
     preparation: fm.preparation ?? "",
     author_id: fm.author ?? null,
     medical_reviewer_id: fm.medical_reviewer ?? null,
+    unverified_facts: Array.isArray(fm.unverified_facts) ? fm.unverified_facts.filter((k) => FACT_KEYS.includes(k)) : [],
     body,
     sections: sections.slice(0, SECTIONS.length),
   };

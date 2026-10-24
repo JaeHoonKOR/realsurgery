@@ -18,7 +18,9 @@
 //     - 실패하면 GUARD 가 1회 다시 받는다(일시 장애). 그것도 실패하면 Promise 는 영영 안 풀리고 app-index 가 실행되지 않으므로
 //       정적 HTML(본문·FAQ·링크·<details>)이 그대로 남는다. e2e: tests/e2e/procedure.spec.ts "RSC 페이로드 실패".
 // 출력 형식 감시(리뷰 T-103 r1 반려 2): 조각을 하나도 못 찾은 App Router HTML, 처리 후에도 self.__next_f 가 남은 HTML,
-//     부트스트랩이 첫 조각이 아닌 경우, Next 가 self.__next_s 를 쓰는 경우(beforeInteractive 스크립트) → 전부 throw = 빌드 실패.
+//     부트스트랩이 첫 조각이 아닌 경우, Next 가 self.__next_s 를 쓰는 경우(beforeInteractive 스크립트),
+//     HTML 이 불러오는 Next 청크에 appBootstrap 의 self.__next_s 읽기가 없는 경우(Next 업그레이드, r2 권고 R1) → 전부 throw = 빌드 실패.
+// 최종 실패 시 <html data-rsc-failed> → 동작하지 않는 동의 배너를 CSS 로 숨긴다(r2 권고 R2, app/globals.css).
 // 캐시: GitHub Pages 는 HTML·JS 를 각각 10분 캐시하므로 빌드 ID 를 쿼리로 붙여 다른 빌드의 페이로드와 섞이지 않게 한다.
 // 사용: pnpm build 가 next build 직후 실행.   회귀 테스트: tests/unit/externalize-rsc.test.ts, e2e 전체(하이드레이션 후 이벤트)
 import fs from "node:fs";
@@ -37,14 +39,42 @@ export const GATE =
 /** 외부 페이로드 끝에 붙는 완료 표시. 파일이 끝까지 실행되어야만 설정된다(잘린 응답·HTML 404 페이지는 문법 오류로 실행 안 됨). */
 export const DONE_MARK = "self.__rs_rsc_ok=1";
 
-/** 외부 <script src> 바로 뒤 인라인 확인: 완료면 하이드레이션 시작, 아니면 1회 재요청(성공 시에만 시작). */
+/** 재요청까지 실패했을 때 <html> 에 다는 속성 — globals.css 가 동작하지 않는 동의 배너를 숨긴다(리뷰 T-103 r2 권고 R2) */
+export const FAILED_ATTR = "data-rsc-failed";
+
+/**
+ * 외부 <script src> 바로 뒤 인라인 확인: 완료면 하이드레이션 시작, 아니면 1회 재요청(성공 시에만 시작).
+ * 재요청도 실패(onerror)하거나 끝까지 실행되지 않으면(완료 표시 없음) <html data-rsc-failed> — React 가 돌지 않아 동의 배너 버튼이
+ * 반응하지 않으므로 배너를 숨긴다. Consent Mode 는 인라인 스크립트가 넣은 기본 denied 그대로라 수집되는 것은 없다.
+ */
 export function guardScript(src) {
   const retry = `${src}${src.includes("?") ? "&" : "?"}retry=1`;
   return (
     "<script>(function(s,u){if(s.__rs_rsc_ok)return s.__rs_hydrate();s.__next_f=void 0;" +
-    'var e=document.createElement("script");e.src=u;e.onload=function(){s.__rs_rsc_ok&&s.__rs_hydrate()};document.head.appendChild(e)})' +
+    `var d=document,e=d.createElement("script"),f=function(){d.documentElement.setAttribute("${FAILED_ATTR}","")};` +
+    "e.src=u;e.onload=function(){s.__rs_rsc_ok?s.__rs_hydrate():f()};e.onerror=f;d.head.appendChild(e)})" +
     `(self,${JSON.stringify(retry)})</script>`
   );
+}
+
+/**
+ * GATE 가 기대는 Next 내부 동작이 이 빌드에 있는지(리뷰 T-103 r2 권고 R1): HTML 이 불러오는 /_next/static/chunks/*.js 중
+ * appBootstrap 이 self.__next_s 를 읽는 청크가 있어야 한다. Next 가 업그레이드되어 __next_s 를 읽지 않게 되면 GATE 가 조용히
+ * 무력해지므로(페이로드 실패 시 빈 화면 회귀) 빌드를 실패시킨다.
+ */
+export function assertGateHook(outDir, basePath, html) {
+  const srcs = [...html.matchAll(/<script src="([^"?]*\/_next\/static\/chunks\/[^"?]+\.js)(?:\?[^"]*)?"/g)].map((m) => m[1]);
+  const hit = srcs.some((src) => {
+    const file = path.join(outDir, ...decodeURI(src.slice(basePath.length)).split("/").filter(Boolean));
+    if (!fs.existsSync(file)) return false;
+    const js = fs.readFileSync(file, "utf8");
+    return js.includes("appBootstrap") && js.includes("self.__next_s");
+  });
+  if (!hit) {
+    throw new Error(
+      "[externalize-rsc] HTML 이 불러오는 Next 청크에서 appBootstrap 의 self.__next_s 읽기를 찾지 못함 — GATE 가 하이드레이션을 막지 못한다(Next 버전·출력 형식 확인, tests/e2e/procedure.spec.ts 'RSC 페이로드 실패' 재확인)",
+    );
+  }
 }
 
 /** GATE 를 <head> 의 첫 스크립트보다 앞(문자 집합 meta 바로 뒤)에 둔다. */
@@ -115,6 +145,7 @@ export function externalizeAll({ outDir = OUT_DIR, buildId } = {}) {
   let already = 0;
   let before = 0;
   let after = 0;
+  let sample = null; // 처리된 HTML 하나 — GATE 훅 확인용
   for (const file of files) {
     const html = fs.readFileSync(file, "utf8");
     const jsFile = file.replace(/\.html$/, ".rsc.js");
@@ -129,18 +160,22 @@ export function externalizeAll({ outDir = OUT_DIR, buildId } = {}) {
     if (r.already) {
       if (!fs.existsSync(jsFile)) throw new Error(`[externalize-rsc] ${path.relative(outDir, file)}: 처리된 HTML 인데 ${rel} 없음`);
       already++;
+      sample ??= html;
       continue;
     }
     if (!r.count) continue;
     fs.writeFileSync(jsFile, r.js, "utf8");
     fs.writeFileSync(file, r.html, "utf8");
     moved++;
+    sample ??= r.html;
     before += Buffer.byteLength(html);
     after += Buffer.byteLength(r.html);
   }
   // 사후 조건: 어떤 경로로든 인라인 페이로드가 남으면 실패
   const left = files.filter((f) => fs.readFileSync(f, "utf8").includes("self.__next_f")).map((f) => path.relative(outDir, f));
   if (left.length) throw new Error(`[externalize-rsc] 처리 후 인라인 self.__next_f 가 남은 HTML: ${left.join(", ")}`);
+  // 사후 조건: GATE 가 기대는 Next 내부 동작(appBootstrap 의 self.__next_s)이 실제 청크에 있음
+  if (sample) assertGateHook(outDir, basePath, sample);
   return { files: files.length, moved, already, before, after };
 }
 

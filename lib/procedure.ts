@@ -4,7 +4,7 @@
  * Node·브라우저 공용 순수 함수(파일 I/O 없음). 데이터는 lib/content.ts 의 Content.
  */
 import { formatDate, formatDuration, formatPriceRange, formatRecovery, procedureTitle } from "./format.mjs";
-import type { Author, Clinic, Content, Procedure } from "./content";
+import type { Author, Clinic, Content, Guide, Procedure } from "./content";
 import { procedurePath } from "./routes";
 
 export { procedureTitle };
@@ -23,36 +23,51 @@ export function findProcedureBySlug(content: Content, rawSlug: string): Procedur
   return content.procedures.find((p) => p.slug.normalize("NFC") === slug);
 }
 
-export type SummaryCell = { key: "price" | "duration" | "recovery" | "anesthesia"; label: string; value: string; note?: string };
+export type FactKey = "price" | "duration" | "recovery" | "anesthesia";
+export type SummaryCell = { key: FactKey; label: string; value: string; note?: string; unverified?: true };
 
 /** 값이 없을 때 표기(QUALITY 2절 경계값: 가격 미정 null 등) */
 export const UNKNOWN = { price: "병원 상담 후 안내", other: "진료 후 안내" } as const;
 
-/** 요약 박스 4칸: 가격 범위·소요시간·회복기간·마취 방식 */
-export function summaryCells(p: Pick<Procedure, "price_low" | "price_high" | "price_note" | "duration_min" | "recovery_days" | "anesthesia">): SummaryCell[] {
+/** 출처로 확인하지 못한 칸(프런트매터 unverified_facts)의 화면·JSON-LD 표기 (리뷰 T-103 r2 반려 1) */
+export const UNVERIFIED_LABEL = "출처 검증 전";
+
+/** 요약 박스 4칸: 가격 범위·소요시간·회복기간·마취 방식. unverified_facts 칸은 "출처 검증 전" 표시(값이 없으면 표시하지 않음). */
+export function summaryCells(
+  p: Pick<Procedure, "price_low" | "price_high" | "price_note" | "duration_min" | "recovery_days" | "anesthesia"> & {
+    guide?: Pick<Guide, "unverified_facts"> | null;
+  },
+): SummaryCell[] {
+  const unverified = new Set(p.guide?.unverified_facts ?? []);
+  const cell = (key: FactKey, label: string, value: string | null, unknown: string, note?: string | null): SummaryCell => ({
+    key,
+    label,
+    value: value ?? unknown,
+    ...(note ? { note } : {}),
+    ...(value !== null && unverified.has(key) ? { unverified: true as const } : {}),
+  });
   return [
-    {
-      key: "price",
-      label: "가격 범위",
-      value: formatPriceRange(p.price_low, p.price_high) ?? UNKNOWN.price,
-      ...(p.price_note ? { note: p.price_note } : {}),
-    },
-    { key: "duration", label: "소요시간", value: formatDuration(p.duration_min) ?? UNKNOWN.other },
-    { key: "recovery", label: "회복기간", value: formatRecovery(p.recovery_days) ?? UNKNOWN.other },
-    { key: "anesthesia", label: "마취 방식", value: p.anesthesia?.trim() || UNKNOWN.other },
+    cell("price", "가격 범위", formatPriceRange(p.price_low, p.price_high), UNKNOWN.price, p.price_note),
+    cell("duration", "소요시간", formatDuration(p.duration_min), UNKNOWN.other),
+    cell("recovery", "회복기간", formatRecovery(p.recovery_days), UNKNOWN.other),
+    cell("anesthesia", "마취 방식", p.anesthesia?.trim() || null, UNKNOWN.other),
   ];
 }
 
-const cellValue = (cells: SummaryCell[], key: SummaryCell["key"]) => cells.find((c) => c.key === key)?.value ?? "";
+/** 칸 값(+ 검증 전 표시) — JSON-LD 에 화면과 같은 단서를 붙인다 */
+const cellText = (cells: SummaryCell[], key: FactKey) => {
+  const c = cells.find((x) => x.key === key);
+  return c ? `${c.value}${c.unverified ? ` [${UNVERIFIED_LABEL}]` : ""}` : "";
+};
 
-/** MedicalProcedure.howPerformed — 요약 박스의 마취 방식·소요시간 값을 그대로 */
+/** MedicalProcedure.howPerformed — 요약 박스의 마취 방식·소요시간 값을 그대로(검증 전 표시 포함) */
 export function howPerformedText(cells: SummaryCell[]): string {
-  return `마취 방식: ${cellValue(cells, "anesthesia")} · 소요시간: ${cellValue(cells, "duration")}`;
+  return `마취 방식: ${cellText(cells, "anesthesia")} · 소요시간: ${cellText(cells, "duration")}`;
 }
 
-/** MedicalProcedure.followup — 요약 박스의 회복기간 값을 그대로 */
+/** MedicalProcedure.followup — 요약 박스의 회복기간 값을 그대로(검증 전 표시 포함) */
 export function followupText(cells: SummaryCell[]): string {
-  return `회복기간: ${cellValue(cells, "recovery")}`;
+  return `회복기간: ${cellText(cells, "recovery")}`;
 }
 
 const PROCEDURE_TYPE_URL = {

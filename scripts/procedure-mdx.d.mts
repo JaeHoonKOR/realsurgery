@@ -6,9 +6,12 @@ export type Guide = {
   preparation: string;
   author_id: string | null;
   medical_reviewer_id: string | null;
+  unverified_facts: FactKey[];
   body: string;
   sections: GuideSection[];
 };
+export type FactKey = "price" | "duration" | "recovery" | "anesthesia";
+export const FACT_KEYS: FactKey[];
 export const PROCEDURES_DIR: string;
 export const SECTIONS: { id: string; label: string; re: RegExp }[];
 export const PROCEDURE_TYPES: Record<Guide["procedure_type"], string>;

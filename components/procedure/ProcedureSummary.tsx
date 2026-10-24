@@ -1,11 +1,12 @@
 import { CalendarClock, Clock, HeartPulse, Wallet } from "lucide-react";
-import type { SummaryCell } from "@/lib/procedure";
+import { UNVERIFIED_LABEL, type SummaryCell } from "@/lib/procedure";
 
 const ICON = { price: Wallet, duration: Clock, recovery: CalendarClock, anesthesia: HeartPulse } as const;
 
 /**
  * 상단 요약 박스 (4절 P-03: 시술명 H1, 직답 요약, 가격 범위·소요시간·회복기간·마취 방식 4칸)
  * 4칸 값은 lib/procedure summaryCells — JSON-LD(howPerformed·followup·description)와 같은 문자열.
+ * 출처로 확인 못 한 칸(프런트매터 unverified_facts)은 값 아래 "출처 검증 전"(JSON-LD 에도 같은 단서, scripts/check-triple.mjs 검사).
  * AEO: 첫 문단 = 직답 2~3문장(summary).
  */
 export function ProcedureSummary({
@@ -41,7 +42,12 @@ export function ProcedureSummary({
           {cells.map((c) => {
             const Icon = ICON[c.key];
             return (
-              <div key={c.key} data-fact={c.key} className="rounded-sm bg-canvas px-4 py-3">
+              <div
+                key={c.key}
+                data-fact={c.key}
+                {...(c.unverified ? { "data-fact-unverified": "" } : {})}
+                className="rounded-sm bg-canvas px-4 py-3"
+              >
                 <dt className="flex items-center gap-1 text-sm text-ink-muted">
                   <Icon aria-hidden="true" className="size-4 text-brand" />
                   {c.label}
@@ -49,6 +55,7 @@ export function ProcedureSummary({
                 <dd className="mt-1 font-bold text-ink">
                   <span data-fact-value="">{c.value}</span>
                   {c.note && <span className="mt-1 block text-sm font-normal text-ink-muted">{c.note}</span>}
+                  {c.unverified && <span className="mt-1 block text-sm font-normal text-ink-muted">{UNVERIFIED_LABEL}</span>}
                 </dd>
               </div>
             );

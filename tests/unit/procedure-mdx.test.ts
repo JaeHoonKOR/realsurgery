@@ -82,12 +82,27 @@ describe("lintProcedureMdx — 템플릿 규칙", () => {
     ["이미지", valid.replace("받는 수술입니다.[1]", "받는 수술입니다.[1] ![a](b.png)"), /이미지 금지/],
     ["import", valid.replace("## 쌍꺼풀 수술은 누가", "import X from 'x'\n\n## 쌍꺼풀 수술은 누가"), /import·export 금지/],
     ["코드 블록", valid.replace("받는 수술입니다.[1]", "받는 수술입니다.[1]\n\n```\ncode\n```"), /코드 블록 금지/],
+    ["unverified_facts 모르는 칸", fmReplace("unverified_facts", '["price", "cost"]'), /unverified_facts 는 price \| duration \| recovery \| anesthesia/],
+    ["unverified_facts 중복", fmReplace("unverified_facts", '["price", "price"]'), /중복 없는 배열/],
+    ["unverified_facts 문자열", fmReplace("unverified_facts", '"price"'), /중복 없는 배열/],
+    ["unverified_facts 값 없는 칸", fmReplace("duration_min", "null").replace('unverified_facts: ["price"]', 'unverified_facts: ["price", "duration"]'), /"duration" — 값이 없는 칸/],
+    ["unverified_facts 검토 메모 없음", fmReplace("unverified_facts", '["price", "recovery"]'), /\{\/\* MD-REVIEW: 요약 박스 … \*\/\} 메모/],
   ])("%s", (_name, source, expected) => {
     expect(lint(source)).toMatch(expected);
   });
 
   it("검토 메모 {/* MD-REVIEW */} 는 허용한다", () => {
     expect(lintProcedureMdx(valid.replace("받는 수술입니다.[1]", "받는 수술입니다.[1] {/* MD-REVIEW: 표현 확인 */}"))).toEqual([]);
+  });
+
+  it("unverified_facts: 요약 박스 메모가 있으면 가격 외 칸도 허용, 키 자체는 선택", () => {
+    const withMemo = fmReplace("unverified_facts", '["price", "recovery"]').replace(
+      "받는 수술입니다.[1]",
+      "받는 수술입니다.[1]\n\n{/* MD-REVIEW: 요약 박스 회복기간은 출처 검증 전 */}\n",
+    );
+    expect(lintProcedureMdx(withMemo)).toEqual([]);
+    expect(lintProcedureMdx(valid.replace(/^unverified_facts: .*\n/m, ""))).toEqual([]);
+    expect(guideOf(valid.replace(/^unverified_facts: .*\n/m, ""))!.unverified_facts).toEqual([]);
   });
 
   it("인용되지 않은 출처를 잡는다", () => {
@@ -122,7 +137,7 @@ describe("docToRows · rowMismatches · guideOf", () => {
 
   it("guideOf: 화면용 필드", () => {
     const g = guideOf(valid)!;
-    expect(g).toMatchObject({ procedure_type: "surgical", body_location: "윗눈꺼풀", author_id: "editorial", medical_reviewer_id: null });
+    expect(g).toMatchObject({ procedure_type: "surgical", body_location: "윗눈꺼풀", author_id: "editorial", medical_reviewer_id: null, unverified_facts: ["price"] });
     expect(g.sections).toHaveLength(5);
     expect(guideOf(null)).toBeNull();
   });

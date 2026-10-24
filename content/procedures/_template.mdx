@@ -4,6 +4,8 @@
 # 규칙 전체: docs/content/procedure-mdx.md  ·  검사: pnpm lint:medical (파일 지정 가능) → pnpm data:sql → pnpm build
 # 출처 규칙: sources 는 기관 홈·목록 페이지가 아니라 각주를 단 문장의 내용이 실제로 적힌 구체 페이지 URL.
 #            확인할 수 없는 문장(특히 가격)에는 기관 각주를 달지 않고 "출처 검증 전 예시 데이터"라고 적고 MD-REVIEW 표시.
+# 요약 박스: duration_min·recovery_days·anesthesia 는 본문 문장(각주 있는)이나 FAQ 답변에 같은 값이 있어야 빌드가 통과한다(check-triple).
+#            출처로 확인하지 못한 칸은 unverified_facts 에 넣어 화면·JSON-LD 에 "출처 검증 전"을 표시하고, 본문에 MD-REVIEW 로 남긴다.
 name: "시술명"
 slug: "시술명-한글-하이픈"
 category: "eye"
@@ -20,6 +22,7 @@ body_location: "시술 부위"
 preparation: "수술 전 진찰·검사로 무엇을 확인하고 정하는지 1~2문장."
 author: "editorial"
 medical_reviewer: null
+unverified_facts: ["price", "anesthesia"]
 updated_at: "2026-10-25"
 sources:
   - title: "기관명 — 이 시술을 설명하는 페이지 제목"
@@ -59,6 +62,10 @@ faqs:
 ## 시술명 회복은 며칠 걸리나요?
 
 회복 경과를 한 문장으로 먼저 답합니다.[1]
+
+수술 시간은 대개 1시간 정도 걸리며, 일상생활은 7일 정도 지나면 가능합니다.[2]
+
+{/* MD-REVIEW: 요약 박스 마취 방식(국소 마취)은 출처 검증 전(unverified_facts). 출처를 찾으면 근거 문장을 넣고 unverified_facts 에서 뺀다 */}
 
 ## 시술명 부작용과 주의할 점은 무엇인가요?
 

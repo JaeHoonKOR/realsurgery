@@ -21,6 +21,8 @@ export type Guide = {
   preparation: string;
   author_id: string | null;
   medical_reviewer_id: string | null;
+  /** 요약 박스에서 출처로 확인하지 못한 칸(화면에 "출처 검증 전" 표시) */
+  unverified_facts: ("price" | "duration" | "recovery" | "anesthesia")[];
   /** 프런트매터를 뺀 MDX 본문 */
   body: string;
   /** 본문 H2 5개 — id 는 앵커 (#guide-who …) */

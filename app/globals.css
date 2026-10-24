@@ -149,6 +149,12 @@
     display: none;
   }
 
+  /* RSC 페이로드를 재요청까지 못 받으면(scripts/externalize-rsc.mjs GUARD) React 가 돌지 않아 배너 버튼이 반응하지 않는다.
+     동의 수집이 불가능한 상태(Consent Mode 기본 denied 유지)이므로 화면을 가리지 않게 배너를 숨긴다(리뷰 T-103 r2 권고 R2). */
+  html[data-rsc-failed] [data-consent-banner] {
+    display: none;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     *,
     *::before,
