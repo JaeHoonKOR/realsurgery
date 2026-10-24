@@ -1,0 +1,9 @@
+node_modules
+.next
+.env*
+reports/ads/inbox/*.csv
+reports/seo/inbox/*.csv
+secrets/
+.env*
+secrets/
+.env.local
