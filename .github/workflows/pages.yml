@@ -28,10 +28,16 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: 20, cache: pnpm }
       - run: pnpm install --frozen-lockfile
+      # Pages 설정에서 base_path(/realsurgery, 커스텀 도메인이면 "")·base_url 을 읽는다.
+      # Variables 에 NEXT_PUBLIC_BASE_PATH·NEXT_PUBLIC_SITE_URL 이 있으면 그 값이 우선.
+      - id: pages
+        uses: actions/configure-pages@v5
+      - run: pnpm lint
+      - run: pnpm test
       - run: pnpm build
         env:
-          NEXT_PUBLIC_SITE_URL: ${{ vars.NEXT_PUBLIC_SITE_URL }}
-          NEXT_PUBLIC_BASE_PATH: ${{ vars.NEXT_PUBLIC_BASE_PATH }}
+          NEXT_PUBLIC_SITE_URL: ${{ vars.NEXT_PUBLIC_SITE_URL || steps.pages.outputs.base_url }}
+          NEXT_PUBLIC_BASE_PATH: ${{ vars.NEXT_PUBLIC_BASE_PATH || steps.pages.outputs.base_path }}
           NEXT_PUBLIC_SUPABASE_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
           NEXT_PUBLIC_GTM_ID: ${{ vars.NEXT_PUBLIC_GTM_ID }}
@@ -41,6 +47,7 @@ jobs:
           NEXT_PUBLIC_NAVER_ANALYTICS_ID: ${{ vars.NEXT_PUBLIC_NAVER_ANALYTICS_ID }}
           NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION: ${{ vars.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION }}
           NEXT_PUBLIC_NAVER_MAP_CLIENT_ID: ${{ vars.NEXT_PUBLIC_NAVER_MAP_CLIENT_ID }}
+      - run: pnpm typecheck
       - run: touch out/.nojekyll
       - uses: actions/upload-pages-artifact@v3
         with: { path: out }

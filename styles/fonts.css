@@ -1,0 +1,252 @@
+/*
+ * Pretendard Variable 로딩 전략 (LCP·CLS 게이트용)
+ * 1) 웹폰트(동적 서브셋 CSS)는 첫 콘텐츠 페인트 뒤에 붙인다 → app/layout.tsx 의 FONT_LOADER.
+ *    폰트 청크가 렌더링 경로에 끼지 않아 LCP를 늦추지 않는다.
+ * 2) 그 전까지는 아래 "메트릭 맞춘" 시스템 폰트로 그린다. swap 때 줄바꿈이 바뀌어 블록이 밀리지 않도록
+ *    글자 종류별(unicode-range) size-adjust 로 폭을 Pretendard 에 맞추고,
+ *    ascent/descent-override 로 세로 메트릭을 Pretendard(ascent 0.95em, descent 0.24em, line-gap 0)에 맞춘다.
+ *    - 비율 = Pretendard 폭 / 시스템 폰트 폭. Chromium canvas 실측(2026-10-24, 400·600·700).
+ *      Malgun Gothic: 한글 0.864, 공백 0.714, 숫자 1.058, 라틴 1.012, , . · : ; 1.16, 기타 문장부호 0.97 (400 기준)
+ *      Noto Sans KR : 한글 0.939, 공백 0.896, 숫자 1.05,  라틴 0.975, , . · : ; 0.915, 기타 문장부호 0.95 (400 기준)
+ *    - override 값 = Pretendard 메트릭 / size-adjust.
+ *    - 같은 패밀리에서 unicode-range 가 겹치면 뒤에 선언한 면이 우선 → 기본(한글) 면을 먼저, 세부 범위를 뒤에 둔다.
+ *    - Apple SD Gothic Neo(iOS·macOS)는 측정 환경이 없어 보정하지 않고 그대로 쓴다.
+ * 검증: tests/e2e/home.spec.ts "웹폰트 교체(swap) 전후 블록 위치가 같다" (폭 360~1280 스윕)
+ */
+
+@font-face {
+  font-family: "Pretendard Fallback Noto";
+  font-weight: 100 500;
+  src: local("Noto Sans KR"), local("NotoSansKR-Regular"), local("Noto Sans CJK KR"), local("NotoSansCJKkr-Regular");
+  size-adjust: 93.9%;
+  ascent-override: 101.17%;
+  descent-override: 25.56%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "Pretendard Fallback Noto";
+  font-weight: 100 500;
+  src: local("Noto Sans KR"), local("NotoSansKR-Regular"), local("Noto Sans CJK KR"), local("NotoSansCJKkr-Regular");
+  unicode-range: U+0020, U+00A0;
+  size-adjust: 89.6%;
+  ascent-override: 106.03%;
+  descent-override: 26.79%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "Pretendard Fallback Noto";
+  font-weight: 100 500;
+  src: local("Noto Sans KR"), local("NotoSansKR-Regular"), local("Noto Sans CJK KR"), local("NotoSansCJKkr-Regular");
+  unicode-range: U+0030-0039;
+  size-adjust: 105%;
+  ascent-override: 90.48%;
+  descent-override: 22.86%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "Pretendard Fallback Noto";
+  font-weight: 100 500;
+  src: local("Noto Sans KR"), local("NotoSansKR-Regular"), local("Noto Sans CJK KR"), local("NotoSansCJKkr-Regular");
+  unicode-range: U+0041-005A, U+0061-007A;
+  size-adjust: 97.5%;
+  ascent-override: 97.44%;
+  descent-override: 24.62%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "Pretendard Fallback Noto";
+  font-weight: 100 500;
+  src: local("Noto Sans KR"), local("NotoSansKR-Regular"), local("Noto Sans CJK KR"), local("NotoSansCJKkr-Regular");
+  unicode-range: U+002C, U+002E, U+003A-003B, U+00B7, U+201C-201D;
+  size-adjust: 91.5%;
+  ascent-override: 103.83%;
+  descent-override: 26.23%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "Pretendard Fallback Noto";
+  font-weight: 100 500;
+  src: local("Noto Sans KR"), local("NotoSansKR-Regular"), local("Noto Sans CJK KR"), local("NotoSansCJKkr-Regular");
+  unicode-range: U+0021-002B, U+002D, U+002F, U+003C-0040, U+005B-0060, U+007B-007E, U+2018-2019, U+2026;
+  size-adjust: 95%;
+  ascent-override: 100%;
+  descent-override: 25.26%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "Pretendard Fallback Noto";
+  font-weight: 501 900;
+  src: local("Noto Sans KR Bold"), local("NotoSansKR-Bold"), local("Noto Sans CJK KR Bold"), local("NotoSansCJKkr-Bold");
+  size-adjust: 93.9%;
+  ascent-override: 101.17%;
+  descent-override: 25.56%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "Pretendard Fallback Noto";
+  font-weight: 501 900;
+  src: local("Noto Sans KR Bold"), local("NotoSansKR-Bold"), local("Noto Sans CJK KR Bold"), local("NotoSansCJKkr-Bold");
+  unicode-range: U+0020, U+00A0;
+  size-adjust: 83.7%;
+  ascent-override: 113.5%;
+  descent-override: 28.67%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "Pretendard Fallback Noto";
+  font-weight: 501 900;
+  src: local("Noto Sans KR Bold"), local("NotoSansKR-Bold"), local("Noto Sans CJK KR Bold"), local("NotoSansCJKkr-Bold");
+  unicode-range: U+0030-0039;
+  size-adjust: 103.4%;
+  ascent-override: 91.88%;
+  descent-override: 23.21%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "Pretendard Fallback Noto";
+  font-weight: 501 900;
+  src: local("Noto Sans KR Bold"), local("NotoSansKR-Bold"), local("Noto Sans CJK KR Bold"), local("NotoSansCJKkr-Bold");
+  unicode-range: U+0041-005A, U+0061-007A;
+  size-adjust: 98%;
+  ascent-override: 96.94%;
+  descent-override: 24.49%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "Pretendard Fallback Noto";
+  font-weight: 501 900;
+  src: local("Noto Sans KR Bold"), local("NotoSansKR-Bold"), local("Noto Sans CJK KR Bold"), local("NotoSansCJKkr-Bold");
+  unicode-range: U+002C, U+002E, U+003A-003B, U+00B7, U+201C-201D;
+  size-adjust: 85%;
+  ascent-override: 111.76%;
+  descent-override: 28.24%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "Pretendard Fallback Noto";
+  font-weight: 501 900;
+  src: local("Noto Sans KR Bold"), local("NotoSansKR-Bold"), local("Noto Sans CJK KR Bold"), local("NotoSansCJKkr-Bold");
+  unicode-range: U+0021-002B, U+002D, U+002F, U+003C-0040, U+005B-0060, U+007B-007E, U+2018-2019, U+2026;
+  size-adjust: 92%;
+  ascent-override: 103.26%;
+  descent-override: 26.09%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "Pretendard Fallback Malgun";
+  font-weight: 100 500;
+  src: local("Malgun Gothic"), local("MalgunGothic"), local("MalgunGothicRegular");
+  size-adjust: 86.4%;
+  ascent-override: 109.95%;
+  descent-override: 27.78%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "Pretendard Fallback Malgun";
+  font-weight: 100 500;
+  src: local("Malgun Gothic"), local("MalgunGothic"), local("MalgunGothicRegular");
+  unicode-range: U+0020, U+00A0;
+  size-adjust: 71.4%;
+  ascent-override: 133.05%;
+  descent-override: 33.61%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "Pretendard Fallback Malgun";
+  font-weight: 100 500;
+  src: local("Malgun Gothic"), local("MalgunGothic"), local("MalgunGothicRegular");
+  unicode-range: U+0030-0039;
+  size-adjust: 105.8%;
+  ascent-override: 89.79%;
+  descent-override: 22.68%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "Pretendard Fallback Malgun";
+  font-weight: 100 500;
+  src: local("Malgun Gothic"), local("MalgunGothic"), local("MalgunGothicRegular");
+  unicode-range: U+0041-005A, U+0061-007A;
+  size-adjust: 101.2%;
+  ascent-override: 93.87%;
+  descent-override: 23.72%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "Pretendard Fallback Malgun";
+  font-weight: 100 500;
+  src: local("Malgun Gothic"), local("MalgunGothic"), local("MalgunGothicRegular");
+  unicode-range: U+002C, U+002E, U+003A-003B, U+00B7, U+201C-201D;
+  size-adjust: 116%;
+  ascent-override: 81.9%;
+  descent-override: 20.69%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "Pretendard Fallback Malgun";
+  font-weight: 100 500;
+  src: local("Malgun Gothic"), local("MalgunGothic"), local("MalgunGothicRegular");
+  unicode-range: U+0021-002B, U+002D, U+002F, U+003C-0040, U+005B-0060, U+007B-007E, U+2018-2019, U+2026;
+  size-adjust: 97%;
+  ascent-override: 97.94%;
+  descent-override: 24.74%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "Pretendard Fallback Malgun";
+  font-weight: 501 900;
+  src: local("Malgun Gothic Bold"), local("MalgunGothicBold"), local("MalgunGothic-Bold");
+  size-adjust: 86.4%;
+  ascent-override: 109.95%;
+  descent-override: 27.78%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "Pretendard Fallback Malgun";
+  font-weight: 501 900;
+  src: local("Malgun Gothic Bold"), local("MalgunGothicBold"), local("MalgunGothic-Bold");
+  unicode-range: U+0020, U+00A0;
+  size-adjust: 66.7%;
+  ascent-override: 142.43%;
+  descent-override: 35.98%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "Pretendard Fallback Malgun";
+  font-weight: 501 900;
+  src: local("Malgun Gothic Bold"), local("MalgunGothicBold"), local("MalgunGothic-Bold");
+  unicode-range: U+0030-0039;
+  size-adjust: 105.2%;
+  ascent-override: 90.3%;
+  descent-override: 22.81%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "Pretendard Fallback Malgun";
+  font-weight: 501 900;
+  src: local("Malgun Gothic Bold"), local("MalgunGothicBold"), local("MalgunGothic-Bold");
+  unicode-range: U+0041-005A, U+0061-007A;
+  size-adjust: 100%;
+  ascent-override: 95%;
+  descent-override: 24%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "Pretendard Fallback Malgun";
+  font-weight: 501 900;
+  src: local("Malgun Gothic Bold"), local("MalgunGothicBold"), local("MalgunGothic-Bold");
+  unicode-range: U+002C, U+002E, U+003A-003B, U+00B7, U+201C-201D;
+  size-adjust: 105%;
+  ascent-override: 90.48%;
+  descent-override: 22.86%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "Pretendard Fallback Malgun";
+  font-weight: 501 900;
+  src: local("Malgun Gothic Bold"), local("MalgunGothicBold"), local("MalgunGothic-Bold");
+  unicode-range: U+0021-002B, U+002D, U+002F, U+003C-0040, U+005B-0060, U+007B-007E, U+2018-2019, U+2026;
+  size-adjust: 93%;
+  ascent-override: 102.15%;
+  descent-override: 25.81%;
+  line-gap-override: 0%;
+}
