@@ -30,15 +30,15 @@
 - 첫 Pages 배포 성공(T-100의 Actions 통과, 에이전트 확인) → seo 루프 시작.
 - T-001 키 투입(사람) → tracking·seo의 needs-key 항목 자동 재검증.
 - 광고 집행 승인(사람, T-500) → ads 루프 시작.
-- 모든 lane: reviewer 통과 + 사람 `done` 전까지 다음 의존 작업 착수 금지.
+- 모든 lane: 선행 작업이 `done`이 되기 전까지 다음 의존 작업 착수 금지. reviewer approve → 오케스트레이터가 `done`으로 바꾼다. `[human-gate]` 작업만 사람이 `done`으로 바꾼다(CLAUDE.md 루프 프로토콜 6).
 
 ## 상태 전이
 `todo → doing → review → done` / `doing → blocked` / `todo → needs-approval` / `any → spec-question`
 
 ## 실행 방법 (Claude Code)
 ```
-# 오케스트레이터 1회 (순차 기본, 병렬은 "/loop --parallel")
-claude -p "docs/pipelines/00-overview.md와 backlog/TASKS.md를 읽고 오케스트레이터 역할을 수행해. 사용 가능한 서브에이전트를 lane별로 1개씩 병렬로 띄우고, 끝나면 TASKS.md를 갱신하고 요약해."
+# 오케스트레이터 1회 (순차 기본, 병렬은 "/loop --parallel"). 무인 반복은 run-night.ps1
+claude -p "/loop" --permission-mode acceptEdits
 
 # 특정 lane만
 claude -p "/build P-03"

@@ -1,9 +1,13 @@
 node_modules
 .next
+out/
+coverage/
+test-results/
+playwright-report/
+*.tsbuildinfo
 .env*
+!.env.example
+secrets/
 reports/ads/inbox/*.csv
 reports/seo/inbox/*.csv
-secrets/
-.env*
-secrets/
-.env.local
+.claude/settings.local.json

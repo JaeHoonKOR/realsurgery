@@ -18,7 +18,10 @@
 5. 표의 **기능·규칙 열**을 하나씩 구현. 구현 못 하는 규칙은 `// SPEC-GAP:` 주석 + TASKS.md spec-question.
 6. 3절 공통 요소(헤더·푸터·CTA 블록·동의 배너)는 `components/common/`에 1회만 만들고 재사용.
 
-## VERIFY (전부 통과해야 REPORT)
+## VERIFY (전부 통과해야 REPORT — `docs/QUALITY.md` 1·2·3절 포함)
+- [ ] QUALITY.md 1절 자동 게이트 전부 통과 (`pnpm lh`, `pnpm test`, `pnpm test:a11y`, `pnpm test:e2e`)
+- [ ] QUALITY.md 2절 상태(로딩·빈·에러·성공) 구현 + 스크린샷
+- [ ] 스크린샷 `backlog/log/screens/<ID>-375.png`, `<ID>-1280.png` 저장 후 **직접 Read로 열어** 3절 디자인 기준 자가 점검, 위반 시 수정
 - [ ] `pnpm lint && pnpm typecheck && pnpm build` 통과 (`out/`에 해당 화면 HTML 생성 확인)
 - [ ] 외부 키 없는 항목은 mock 가드로 통과하고 `needs-key`로 기록
 - [ ] 4절 표의 **구성 요소** 행 전부 화면에 존재 (playwright 스모크: 각 영역 testid 존재)
@@ -26,7 +29,6 @@
 - [ ] 375px 뷰포트에서 가로 스크롤 없음, CTA 1탭 도달
 - [ ] 하드코딩된 GA/Pixel 스크립트 없음 (`grep -r "gtag\|fbq(" app components` 결과 0)
 - [ ] 더미 데이터 외 개인정보 없음
-- [ ] 리뷰어용 스크린샷 `backlog/log/screens/<ID>.png` 저장
 
 ## REPORT
 로그: 변경 파일 목록, VERIFY 결과, SPEC-GAP 목록, 리스크 3줄. TASKS.md → review.

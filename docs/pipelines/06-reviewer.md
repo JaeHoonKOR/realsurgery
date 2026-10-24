@@ -8,11 +8,12 @@
 
 ## ACT
 1. 스펙 표의 각 행을 체크리스트로 변환해 diff·스크린샷과 1:1 대조.
-2. 해당 파이프라인 VERIFY 항목을 **직접 재실행**(테스트·빌드·스크립트). 로그의 "통과" 주장을 믿지 않는다.
+2. 해당 파이프라인 VERIFY 항목과 `docs/QUALITY.md` 1절 스크립트를 **직접 재실행**. 로그의 "통과" 주장을 믿지 않는다.
+2-1. 스크린샷(375·1280·상태별)을 **Read로 열어** QUALITY.md 3절을 항목별 대조. 위반은 요소·좌표·수정안을 적는다. "템플릿 느낌"이면 반려.
 3. 공통 위반 탐지: 하드코딩 태그, 개인정보, 금칙어, AggregateRating, 비용 발생 코드, 저장소 밖 경로.
 4. 판정:
-   - **approve**: 전 항목 통과 → TASKS.md에 `review ✔ reviewer` 표시(사람이 done으로)
-   - **request-changes**: 누락 행·실패 항목을 번호 목록으로 → 상태 `todo`로 되돌리고 원 lane에 재할당. 같은 작업 3회 반려 시 `blocked`.
+   - **approve**: 전 항목 통과 → 오케스트레이터가 `done`으로 (`[human-gate]`는 `review ✔ reviewer`로 두고 사람 대기)
+   - **request-changes**: 누락 행·실패 항목을 번호 목록으로 → 상태 `todo`로 되돌리고 원 lane에 재할당. 반려 횟수 제한 없음, 단 같은 사유 5회 반복 시 `blocked`.
 
 ## REPORT
 `backlog/log/<date>-reviewer-<task>.md`: 판정, 대조표(스펙 행 / 결과 / 증거 경로), 반려 사유.

@@ -4,10 +4,10 @@
 
 ## 세션 1 — 지금 (약 15분)
 1. `setup2.cmd` 더블클릭 (Git·Node·Claude Code·pnpm·gh·supabase 설치, 에이전트·권한 설치, C:\rs 링크, git 초기화). UAC 창은 "예". 끝나면 **새 터미널**을 연다
-2. 터미널에서 `gh auth login` → GitHub.com → HTTPS → 브라우저 로그인
-3. https://github.com/new → 이름 `realsurgery`, Public, 생성. (origin 연결·push는 에이전트가)
-4. 저장소 Settings → Pages → Build and deployment → Source = **GitHub Actions**
-5. `cd C:\rs` → `claude --permission-mode acceptEdits` → `/loop`  ← 여기서부터 에이전트가 T-099·T-100 진행
+2. ~~`gh auth login`~~ 완료 (JaeHoonKOR)
+3. ~~저장소 생성·Pages 설정~~ → T-100에서 에이전트가 `gh`로 처리
+4. 터미널: `cd C:\rs` → `claude` → "폴더 신뢰" 예, "MCP 서버 승인" 예 → `/exit`  (1분, 최초 1회)
+5. `run-night.cmd` 더블클릭 → 밤새 최대 12루프. 아침에 `backlog/log/night-*.log` 끝부분과 `TASKS.md` 상단 "사람 확인 필요"만 보면 됨
 
 ## 세션 2 — 첫 /loop 돌린 뒤 아무 때나 (약 45분)
 | # | 서비스 | 할 것 | `.env.local`에 넣을 값 |

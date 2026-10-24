@@ -1,5 +1,10 @@
 # 리얼성형 — 에이전트 작업 규칙
 
+## 품질 원칙
+- 배포보다 **로컬 품질**이 우선. `docs/QUALITY.md`가 모든 화면의 완료 기준이며, 동작만 하는 화면은 미완성이다.
+- 눈으로 본다: 리뷰어는 스크린샷을 Read로 열어 판정한다. 수치 통과 + 외관 미달 = 반려.
+- 더미 데이터도 실서비스처럼. "테스트"·"샘플" 표기 금지.
+
 ## 단일 진실 소스
 - 화면 정의서: `docs/spec/screen-spec.md` (SSOT). 모든 구현·검증은 이 문서 기준.
 - 파이프라인 정의: `docs/pipelines/*.md`. 각 에이전트는 자기 파이프라인 파일만 따른다.
@@ -10,9 +15,9 @@
 1. **PICK** — `backlog/TASKS.md`에서 자기 lane, 상태 `todo`, 우선순위 가장 높은 1건을 `doing`으로 바꾼다.
 2. **READ** — 해당 화면 ID·절을 `screen-spec.md`에서 다시 읽는다. 기억으로 작업하지 않는다.
 3. **ACT** — 파이프라인 파일의 Act 절대로 실행한다.
-4. **VERIFY** — 파이프라인의 Verify 체크리스트를 전부 통과할 때까지 ACT로 돌아간다. 최대 3회. 3회 실패 시 `blocked` + 사유 기록.
+4. **VERIFY** — 파이프라인의 Verify 체크리스트 + `docs/QUALITY.md` 전체를 통과할 때까지 ACT로 돌아간다. 횟수 제한 없음(루프 턴 예산 안에서). 같은 원인으로 5회 연속 실패하면 `blocked` + 원인·시도 목록 기록. 테스트를 통과시키기 위해 테스트를 약화하는 것은 금지.
 5. **REPORT** — 로그 파일에 변경 파일, 검증 결과, 남은 리스크 3줄. `TASKS.md` 상태를 `review`로.
-6. **HUMAN GATE** — `review` → `done`은 사람만 바꾼다. 에이전트는 다음 PICK으로.
+6. **REVIEW GATE** — reviewer가 approve하면 오케스트레이터가 `done`으로 바꾼다. 단 제목에 `[human-gate]`가 붙은 작업(약관·비용·외부 발송)은 approve 후 `review` 상태로 두고 사람을 기다린다.
 
 ## 절대 규칙
 - 작업 경로는 이 저장소 안으로 한정. 상위 폴더·다른 저장소 접근 금지.
@@ -22,19 +27,28 @@
 - 태그(GA4·Pixel)는 코드에 하드코딩하지 않는다. dataLayer.push만.
 - 스펙과 충돌하면 스펙을 고치지 말고 `backlog/TASKS.md`에 `spec-question`으로 올린다.
 
+## 한글 경로·파일명·인코딩 규칙 (Windows, 모든 에이전트)
+- 작업 디렉터리는 항상 **`C:\rs`**(ASCII 정션)에서 시작한다. `C:\Users\이재훈\...` 경로를 명령·설정·스크립트에 쓰지 않는다. 절대 경로가 필요하면 `process.cwd()`/`$PSScriptRoot`로 얻는다.
+- **소스 파일·폴더 이름은 ASCII만**: 컴포넌트, 스크립트, MDX 파일명(`double-eyelid-surgery.mdx`), 스크린샷(`P-03.png`), 로그 파일명. 한글은 파일 **내용**과 URL `slug` 프런트매터 값에만 쓴다(빌드 산출물 `out/`에 한글 디렉터리가 생기는 것은 허용).
+- 새 스크립트는 `.mjs`/`.ts`/`.ps1`로만. **`.cmd`/`.bat`에 한글 금지**(cmd가 UTF-8을 깨뜨림). `.ps1`은 UTF-8 BOM으로 저장.
+- 파일 I/O는 항상 인코딩 명시: `fs.readFileSync(p, 'utf8')`, Python `open(p, encoding='utf-8')`. 셸 출력은 `chcp 65001` 가정하지 말고 Node/PowerShell로 처리.
+- `.gitattributes`로 `* text=auto eol=lf` 고정, `git config core.quotepath false`. CRLF 경고는 무시하지 말고 `.gitattributes`로 해결한다.
+- `supabase` CLI는 전역 설치가 없으므로 **`npx supabase <cmd>`**로 호출한다.
+
 ## 외부 서비스 mock 모드
 - `.env.local`에 키가 없는 서비스(Supabase, GTM/GA4 서비스 계정, 메타, Resend)는 **인터페이스만 구현하고 더미 응답**으로 진행한다. 키가 필요한 지점은 `lib/env.ts`의 `hasKey('SUPABASE')` 같은 가드로 감싸고, 로그에 "mock 모드로 통과" 를 남긴다.
 - 키가 없어서 VERIFY를 완료할 수 없는 항목은 실패가 아니라 `needs-key`로 표시하고 TASKS.md T-001에 어떤 키인지 적는다.
+- `needs-key`는 **항목 단위** 표시다. 나머지 VERIFY가 mock으로 통과하면 작업은 정상적으로 `review`→`done`으로 가고, 해당 작업 비고에 `needs-key: <키 목록>`을 남긴다. 작업 상태 자체를 `needs-key`로 두는 것은 작업 전체가 키 없이 의미가 없을 때뿐이다(그래야 의존 체인이 끊기지 않는다).
 - 키가 들어오면 다음 루프에서 `needs-key` 항목을 자동 재검증한다.
 
 ## 권한 부트스트랩 (T-099)
-첫 루프에서 `.claude/settings.json`을 아래 허용 목록으로 생성한다. 이후 사용자는 `claude --permission-mode acceptEdits`로 실행한다.
-```json
-{"permissions":{"allow":["Read","Write","Edit","Glob","Grep","Bash(pnpm *)","Bash(npm *)","Bash(npx *)","Bash(node *)","Bash(git *)","Bash(gh *)","Bash(supabase *)","Bash(mkdir *)","Bash(ls *)","Bash(cat *)","WebSearch","WebFetch"],"deny":["Bash(rm -rf *)","Bash(git push --force*)","Bash(gh repo delete*)"]}}
-```
+권한 목록의 원본은 **`config/claude-settings.json`** 하나다. `run-night.ps1`이 매 실행 시 이를 `.claude/settings.json`으로 복사하므로 `.claude/settings.json`을 직접 고치지 말고 config 쪽을 고친다. 이후 사용자는 `claude --permission-mode acceptEdits`로 실행한다.
 비용·삭제·결제 명령은 허용 목록에 없으므로 자동으로 멈춘다.
 
 ## 루프 실행 규칙
+- **무인 모드**(`run-night.ps1`): 질문할 사람이 없다. 모호하면 스펙의 가장 단순한 해석으로 진행하고 로그에 "가정:" 줄을 남긴다. 되돌릴 수 없는 결정(외부 발송·결제·삭제·외부 서비스 설정 변경)만 멈춘다.
+- 같은 작업이 3회 연속 blocked면 건너뛰고 다음 todo로. 돌릴 todo가 없으면 마지막 줄에 `NOTHING_TO_DO`를 출력하고 끝낸다.
+- 권한 거부로 명령이 실패하면 우회하지 말고 `blocked` + 거부된 명령을 기록한다.
 - `/loop`는 기본 **순차**: 게이트 통과한 lane 중 우선순위 높은 1개 lane의 1건만 처리. `/loop --parallel`일 때만 lane별 병렬.
 - 요금제 한도 경고가 나오면 즉시 현재 작업을 REPORT하고 멈춘다. 다음 `/loop`가 이어받는다.
 
