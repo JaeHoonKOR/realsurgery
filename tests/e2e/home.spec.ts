@@ -1,13 +1,13 @@
 import { test, expect } from "../fixtures";
 import { tooSmall, visibleTargets } from "./touch-targets";
 
-test.describe("홈 (T-100 스캐폴드)", () => {
+test.describe("홈 P-01", () => {
   test("basePath 하위에서 렌더링되고 필수 영역이 있다", async ({ page }) => {
     const res = await page.goto("./");
     expect(res?.status()).toBe(200);
     await expect(page).toHaveTitle(/리얼성형/);
     await expect(page.locator("html")).toHaveAttribute("lang", "ko");
-    for (const id of ["site-header", "home-hero", "home-first-guides", "home-guide-fields", "site-footer"]) {
+    for (const id of ["site-header", "home-hero", "hero-price-card", "home-categories", "home-popular", "home-clinics", "site-footer"]) {
       await expect(page.getByTestId(id)).toBeVisible();
     }
     await expect(page.getByRole("heading", { level: 1 })).toHaveText(/시술 가격·회복기간,\s*한 번에 비교/);

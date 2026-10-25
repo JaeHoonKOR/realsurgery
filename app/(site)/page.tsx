@@ -74,7 +74,7 @@ export default function HomePage() {
                         href={procedurePath(p.slug)}
                         event="select_procedure"
                         params={{ procedure_id: p.id, from_page: "home_hero" }}
-                        className={cx(chip.base, chip.neutral, "h-9 hover:bg-line")}
+                        className={cx(chip.base, chip.neutral, "h-11 px-4 hover:bg-line")}
                       >
                         {p.name}
                       </TrackedLink>
