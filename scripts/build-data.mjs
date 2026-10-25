@@ -367,20 +367,29 @@ export function toSeedSql(tables) {
 
 // ---------- 로컬 콘텐츠 (본문 MD·구조화 보조 데이터) ----------
 export const CONTENT_DIR = path.join(ROOT, "content", "procedures");
+export const POSTS_DIR = path.join(ROOT, "content", "posts");
 export const EXTRAS_FILE = path.join(SEED_DIR, "procedure-extras.json");
 
 /**
  * 시술 본문(content/procedures/<id>.md)과 구조화 보조 데이터(data/seed/procedure-extras.json)를 붙인다.
  * DB content_mdx 가 비어 있을 때만 파일 본문을 쓴다. 시드 SQL 대상이 아니다(콘텐츠 파일이 원본).
  */
-export function attachLocalContent(content, { contentDir = CONTENT_DIR, extrasFile = EXTRAS_FILE } = {}) {
+export function attachLocalContent(
+  content,
+  { contentDir = CONTENT_DIR, postsDir = POSTS_DIR, extrasFile = EXTRAS_FILE } = {},
+) {
   const extras = fs.existsSync(extrasFile) ? readJson(extrasFile) : {};
-  const procedures = content.procedures.map((p) => {
-    const mdFile = path.join(contentDir, `${p.id}.md`);
-    const body = p.content_mdx ?? (fs.existsSync(mdFile) ? fs.readFileSync(mdFile, "utf8") : null);
-    return { ...p, content_mdx: body, extras: extras[p.id] ?? null };
-  });
-  return { ...content, procedures };
+  const readBody = (dir, id, current) => {
+    const mdFile = path.join(dir, `${id}.md`);
+    return current ?? (fs.existsSync(mdFile) ? fs.readFileSync(mdFile, "utf8") : null);
+  };
+  const procedures = content.procedures.map((p) => ({
+    ...p,
+    content_mdx: readBody(contentDir, p.id, p.content_mdx),
+    extras: extras[p.id] ?? null,
+  }));
+  const posts = content.posts.map((post) => ({ ...post, content_mdx: readBody(postsDir, post.id, post.content_mdx) }));
+  return { ...content, procedures, posts };
 }
 
 // ---------- Supabase ----------
