@@ -23,9 +23,18 @@ jobs:
       - run: npm i --no-save --no-package-lock sharp@0.34
       - name: Generate
         env:
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          # Repository secret 우선, 없으면 Actions variable·흔한 이름까지 찾는다(값은 로그에 남기지 않음)
+          K1: ${{ secrets.GEMINI_API_KEY }}
+          K2: ${{ vars.GEMINI_API_KEY }}
+          K3: ${{ secrets.GEMINI_KEY }}
+          K4: ${{ vars.GEMINI_KEY }}
+          K5: ${{ secrets.GOOGLE_API_KEY }}
+          K6: ${{ vars.GOOGLE_API_KEY }}
         run: |
           set -o pipefail
+          GEMINI_API_KEY=""
+          for n in K1 K2 K3 K4 K5 K6; do v="${!n}"; if [ -n "$v" ]; then GEMINI_API_KEY="$v"; echo "키 출처: $n (K1/K2=GEMINI_API_KEY secret/var, K3/K4=GEMINI_KEY, K5/K6=GOOGLE_API_KEY)"; break; fi; done
+          export GEMINI_API_KEY
           REQ=content/images/request.json
           SEL=$(node -p "const r=require('./$REQ'); r.ids ? '--ids '+r.ids : '--batch '+r.batch")
           MAX=$(node -p "require('./$REQ').max")
