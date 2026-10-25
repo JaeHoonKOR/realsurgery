@@ -341,7 +341,11 @@ describe("lib/clinic/view — JSON-LD·메타·링크", () => {
 
   it("description: 병원명·지역·시술·가격 범위, 150자 이내", () => {
     const d = clinicDescription(clinic, ["눈매교정", "쌍꺼풀 수술", "코 성형", "앞트임"], { low: 700000, high: 5500000 }, formatPriceRange);
-    expect(d).toContain("단하늘성형외과(서울 강남구)");
+    expect(d).toContain("단하늘성형외과(서울 강남구)가 공개한");
+    // 받침 있는 병원명은 "이"
+    expect(clinicDescription({ name: "하결의원", region: "서울 서초구" }, ["코 성형"], { low: null, high: null }, formatPriceRange)).toContain(
+      "하결의원(서울 서초구)이 공개한",
+    );
     expect(d).toContain("눈매교정·쌍꺼풀 수술·코 성형 등 4개");
     expect(d).toContain("70만~550만 원");
     expect(d.length).toBeLessThanOrEqual(150);
