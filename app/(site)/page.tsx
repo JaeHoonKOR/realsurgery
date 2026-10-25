@@ -5,6 +5,7 @@ import { HeaderSearch } from "@/components/common/HeaderSearch";
 import { TrackedLink } from "@/components/common/TrackedLink";
 import { HeroPriceCard, type HeroShowcase } from "@/components/home/HeroPriceCard";
 import { Emoji3D, categoryEmoji } from "@/components/ui/Emoji3D";
+import { Illustration } from "@/components/ui/Illustration";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { isPathBuilt } from "@/lib/built-routes";
 import { getSearchItems, loadContent, type Clinic, type Procedure } from "@/lib/content";
@@ -20,6 +21,28 @@ export const metadata: Metadata = {
 
 /** 인기 시술 칩(히어로 검색 아래) — 조회수 상위 */
 const QUICK_COUNT = 4;
+
+/** 이용 흐름 3단계 (일러스트: content/images/prompts.json flow-*) */
+const FLOW = [
+  {
+    id: "flow-compare",
+    fallback: "search",
+    title: "가격·회복기간 비교",
+    body: "시술별 공개 가격 범위와 회복 일정을 출처와 함께 확인합니다.",
+  },
+  {
+    id: "flow-request",
+    fallback: "clipboard",
+    title: "1분 상담 신청",
+    body: "관심 시술과 희망 지역·시기, 연락처만 남기면 됩니다. 비용은 들지 않습니다.",
+  },
+  {
+    id: "flow-connect",
+    fallback: "phone",
+    title: "영업일 1일 내 연락",
+    body: "상담 때 확인할 질문과 견적 체크리스트를 정리해 연락드립니다.",
+  },
+] as const;
 
 /** 히어로 비교 카드 탭: 시술 id → 탭 이름 */
 const SHOWCASE: [string, string][] = [
@@ -305,8 +328,31 @@ export default function HomePage() {
         </ul>
       </section>
 
+      {/* 이용 흐름 — 실제 순서이므로 단계 번호를 쓴다 */}
+      <section aria-labelledby="home-flow" data-testid="home-flow" className={cx("bg-canvas-soft", section)}>
+        <div className={container}>
+          <SectionHeading
+            id="home-flow"
+            title="상담까지 이렇게 진행돼요"
+            description="비교는 바로, 상담 신청은 1분이면 끝납니다. 신청 후 연락은 운영팀이 드립니다."
+          />
+          <ol className="mt-8 grid gap-4 md:grid-cols-3">
+            {FLOW.map((step, i) => (
+              <li key={step.id} className="overflow-hidden rounded-lg bg-surface">
+                <Illustration id={step.id} aspect="4:3" fallback={step.fallback} alt="" sizes="(min-width: 768px) 360px, 100vw" />
+                <div className="p-6">
+                  <p className="text-sm font-bold text-brand-strong tabular-nums">{i + 1}단계</p>
+                  <h3 className="mt-1 text-h3 font-bold tracking-tight text-ink">{step.title}</h3>
+                  <p className="mt-2 text-ink-muted">{step.body}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+
       {/* 정보 원칙 — 출처·갱신일 실물 */}
-      <section aria-labelledby="home-trust" data-testid="home-trust" className={cx(container, "pb-14 md:pb-20")}>
+      <section aria-labelledby="home-trust" data-testid="home-trust" className={cx(container, section)}>
         <div className="grid gap-8 rounded-xl bg-canvas-soft p-6 md:grid-cols-12 md:items-center md:p-10">
           <div className="md:col-span-5">
             <Emoji3D name="book" size={56} />
