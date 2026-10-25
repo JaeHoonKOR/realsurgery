@@ -1,0 +1,2 @@
+[gen-images] 모델 gemini-nano-banana-2.1 · 41장 · 예상 비용 약 $1.75
+[gen-images] GEMINI_API_KEY 가 없습니다.
