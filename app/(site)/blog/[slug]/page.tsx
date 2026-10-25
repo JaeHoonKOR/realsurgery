@@ -14,7 +14,7 @@ import { parseProcedureMarkdown } from "@/lib/procedure/markdown";
 import { decodeSlug, staticSlugParams } from "@/lib/procedure/params";
 import { clinicCountByProcedure } from "@/lib/procedure/prices";
 import { ROUTES, postPath } from "@/lib/routes";
-import { jsonLdString } from "@/lib/seo";
+import { jsonLdString, withShareDefaults } from "@/lib/seo";
 import { SITE } from "@/lib/site";
 import { container, cx, section } from "@/lib/ui";
 
@@ -43,17 +43,14 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
     title: post.title,
     description: post.summary,
     alternates: { canonical: "./" },
-    openGraph: {
+    ...withShareDefaults({
       type: "article",
-      locale: "ko_KR",
-      siteName: SITE.name,
       url: "./",
       title: post.title,
       description: post.summary,
       publishedTime: post.published_at,
       modifiedTime: post.updated_at,
-    },
-    twitter: { card: "summary", title: post.title, description: post.summary },
+    }),
   };
 }
 

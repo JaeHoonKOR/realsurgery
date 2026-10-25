@@ -6,7 +6,7 @@ import { isPathBuilt } from "@/lib/built-routes";
 import { consentInitScript } from "@/lib/consent";
 import { readPublicVar, siteUrl, withBasePath } from "@/lib/env.public";
 import { ROUTES } from "@/lib/routes";
-import { jsonLdString, siteJsonLd } from "@/lib/seo";
+import { jsonLdString, siteJsonLd, withShareDefaults } from "@/lib/seo";
 import { SITE } from "@/lib/site";
 
 const DEFAULT_TITLE = `${SITE.name} — 성형 시술 가격·회복기간 비교`;
@@ -38,14 +38,7 @@ export const metadata: Metadata = {
   title: { default: DEFAULT_TITLE, template: `%s | ${SITE.name}` },
   description: DEFAULT_DESCRIPTION,
   applicationName: SITE.name,
-  openGraph: {
-    type: "website",
-    locale: "ko_KR",
-    siteName: SITE.name,
-    title: DEFAULT_TITLE,
-    description: DEFAULT_DESCRIPTION,
-  },
-  twitter: { card: "summary", title: DEFAULT_TITLE, description: DEFAULT_DESCRIPTION },
+  ...withShareDefaults({ title: DEFAULT_TITLE, description: DEFAULT_DESCRIPTION }),
   formatDetection: { telephone: false },
   ...(GOOGLE_VERIFICATION || NAVER_VERIFICATION
     ? {

@@ -20,6 +20,8 @@ export type HeroShowcase = {
   scaleMin: number;
   scaleMax: number;
   rows: { clinic: string; low: number | null; high: number | null }[];
+  /** 비교 병원이 모두 제휴 전 예시 데이터인지 */
+  demo: boolean;
   facts: { term: string; value: string }[];
   updated: string;
   sourceCount: number;
@@ -72,7 +74,10 @@ export function HeroPriceCard({ items }: { items: HeroShowcase[] }) {
           </div>
         </div>
 
-        <p className="mt-6 text-sm font-semibold text-ink-subtle">병원 공개 가격</p>
+        <div className="mt-6 flex items-center justify-between gap-3">
+          <p className="text-sm font-semibold text-ink-subtle">병원 공개 가격</p>
+          {item.demo && <span className={cx(chip.base, chip.outline, "h-7 text-xs")}>예시 병원 데이터</span>}
+        </div>
         <p className="mt-1 text-h1 font-bold tracking-tighter text-ink tabular-nums" aria-live="polite">
           {formatPriceRange(item.priceLow, item.priceHigh)}
         </p>

@@ -69,7 +69,11 @@ for (const file of htmlFiles) {
   }
 }
 
-const rasterNotModern = files.filter((f) => /\.(png|jpe?g|gif)$/i.test(f) && !f.includes(`${path.sep}_next${path.sep}`));
+// 공유 미리보기 이미지(og:image·twitter:image)는 카카오톡·페이스북 호환을 위해 PNG 를 허용한다(<img> 로 쓰지 않음).
+const SHARE_IMAGE = /(?:^|[\\/])(?:opengraph|twitter)-image(?:-[\w]+)?\.png$/i;
+const rasterNotModern = files.filter(
+  (f) => /\.(png|jpe?g|gif)$/i.test(f) && !f.includes(`${path.sep}_next${path.sep}`) && !SHARE_IMAGE.test(f),
+);
 for (const f of rasterNotModern) problems.push(`${path.relative(OUT_DIR, f)}: PNG/JPG/GIF 에셋 — WebP/AVIF로 변환 필요`);
 
 if (problems.length) {

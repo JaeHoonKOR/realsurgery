@@ -61,6 +61,7 @@ function toShowcase(p: Procedure, shortName: string, categoryName: string, clini
     })
     .sort((a, b) => (a.low ?? Infinity) - (b.low ?? Infinity))
     .slice(0, 4);
+  const demo = clinics.filter((c) => c.procedures.some((x) => x.procedure_id === p.id)).every((c) => c.is_demo);
   const href = procedurePath(p.slug);
   return {
     id: p.id,
@@ -73,6 +74,7 @@ function toShowcase(p: Procedure, shortName: string, categoryName: string, clini
     scaleMin: p.price_low ?? 0,
     scaleMax: p.price_high ?? p.price_low ?? 0,
     rows,
+    demo,
     facts: [
       { term: "소요시간", value: formatDuration(p.duration_min) },
       { term: "회복기간", value: formatRecovery(p.recovery_days) },
@@ -133,7 +135,7 @@ export default function HomePage() {
               <div className="mt-8 max-w-form">
                 <HeaderSearch items={searchItems} size="lg" testId="home-search" placeholder="어떤 시술이 궁금하세요?" />
                 <div className="mt-4 flex flex-wrap items-center gap-2" data-testid="home-quick">
-                  <span className="mr-1 text-sm text-ink-subtle">많이 찾는 시술</span>
+                  <span className="mr-1 text-sm text-ink-subtle">대표 시술</span>
                   {popular
                     .filter((p) => isPathBuilt(procedurePath(p.slug)))
                     .slice(0, QUICK_COUNT)
@@ -208,12 +210,12 @@ export default function HomePage() {
         <div className={container}>
           <SectionHeading
             id="home-popular"
-            title="이번 주 많이 본 시술"
-            description="조회수 기준 상위 6개 시술의 가격대와 회복기간입니다."
+            title="대표 시술 한눈에 보기"
+            description="부위별 대표 시술의 공개 가격대와 회복기간입니다. 자세한 내용은 시술 가이드에서 확인하세요."
             more={isPathBuilt(ROUTES.procedures) ? { href: ROUTES.procedures, label: `시술 ${procedureCount}개 전체` } : undefined}
           />
           <ol className="-mx-5 mt-8 flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-px-5 px-5 pb-2 sm:mx-0 sm:grid sm:grid-cols-2 sm:gap-4 sm:overflow-visible sm:px-0 sm:pb-0 lg:grid-cols-3">
-            {popular.slice(0, 6).map((p, i) => {
+            {popular.slice(0, 6).map((p) => {
               const cat = categoryById.get(p.category_id);
               const href = procedurePath(p.slug);
               const body = (
@@ -222,13 +224,10 @@ export default function HomePage() {
                     <span className="flex size-14 items-center justify-center rounded-md bg-canvas">
                       <Emoji3D name={categoryEmoji(p.category_id)} size={40} />
                     </span>
-                    <span className="text-sm font-bold text-ink-faint tabular-nums" aria-label={`${i + 1}위`}>
-                      {i + 1}
-                    </span>
+                    {cat && <span className={cx(chip.base, chip.neutral, "h-6 px-2 text-xs")}>{cat.name}</span>}
                   </div>
                   <div className="mt-4 flex items-center gap-2">
                     <h3 className="text-h3 font-bold tracking-tight text-ink">{p.name}</h3>
-                    {cat && <span className={cx(chip.base, chip.neutral, "h-6 px-2 text-xs")}>{cat.name}</span>}
                   </div>
                   <p className="mt-1 line-clamp-2 text-sm text-ink-muted">{p.extras?.tagline ?? p.summary}</p>
                   <p className="mt-5 text-lg font-bold text-ink tabular-nums">

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { withShareDefaults } from "@/lib/seo";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { BadgeCheck, ChevronRight, MapPin, MessageCircle, Phone } from "lucide-react";
@@ -78,8 +79,7 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
     title,
     description,
     alternates: { canonical: encodeURI(clinicPath(clinic.slug)) },
-    openGraph: { title: `${title} | ${SITE.name}`, description, url: encodeURI(clinicPath(clinic.slug)) },
-    twitter: { title: `${title} | ${SITE.name}`, description },
+    ...withShareDefaults({ title: `${title} | ${SITE.name}`, description, url: encodeURI(clinicPath(clinic.slug)) }),
   };
 }
 

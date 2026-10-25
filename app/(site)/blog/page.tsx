@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { withShareDefaults } from "@/lib/seo";
 import { PostCard } from "@/components/blog/PostCard";
 import { Breadcrumb } from "@/components/common/Breadcrumb";
 import { ConsultCta } from "@/components/common/ConsultCta";
@@ -17,7 +18,7 @@ export const metadata: Metadata = {
   title: TITLE,
   description: DESCRIPTION,
   alternates: { canonical: "./" },
-  openGraph: { type: "website", locale: "ko_KR", url: "./", title: TITLE, description: DESCRIPTION },
+  ...withShareDefaults({ url: "./", title: TITLE, description: DESCRIPTION }),
 };
 
 export default function BlogPage() {

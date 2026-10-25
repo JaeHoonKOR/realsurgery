@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { withShareDefaults } from "@/lib/seo";
 import { Breadcrumb } from "@/components/common/Breadcrumb";
 import { ConsultCta } from "@/components/common/ConsultCta";
 import { ClinicExplorer } from "@/components/clinic/ClinicExplorer";
@@ -23,8 +24,7 @@ export const metadata: Metadata = {
   title: TITLE,
   description: DESCRIPTION,
   alternates: { canonical: ROUTES.clinics },
-  openGraph: { title: TITLE, description: DESCRIPTION, url: ROUTES.clinics },
-  twitter: { title: TITLE, description: DESCRIPTION },
+  ...withShareDefaults({ title: TITLE, description: DESCRIPTION, url: ROUTES.clinics }),
 };
 
 export default function ClinicsPage() {
@@ -126,6 +126,7 @@ export default function ClinicsPage() {
           )}
 
           <div className="mt-8">
+            <h2 className="sr-only">병원 목록</h2>
             <ClinicExplorer clinics={cards} procedures={procedureOptions} regions={regions} />
           </div>
         </div>

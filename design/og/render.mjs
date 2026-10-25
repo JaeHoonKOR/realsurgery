@@ -1,0 +1,10 @@
+import { createRequire } from "node:module";
+const require = createRequire("/home/claude/realsurgery/package.json");
+const { chromium } = require("@playwright/test");
+const b = await chromium.launch({ executablePath: "/tmp/chromium", args: ["--no-sandbox", "--allow-file-access-from-files"] });
+const p = await b.newPage({ viewport: { width: 1200, height: 630 } });
+await p.goto("file://" + process.argv[2]);
+await p.evaluate(async () => { await document.fonts.load('800 68px "Pretendard Variable"', "시술 가격회복기간한번에비교"); await document.fonts.ready; });
+await p.waitForTimeout(500);
+await p.screenshot({ path: process.argv[3] });
+await b.close();

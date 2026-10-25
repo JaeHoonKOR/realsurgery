@@ -2,6 +2,7 @@
  * 병원 화면(P-04 목록·비교, P-05 상세) 계산 — 지역 묶음, 가격 요약, 필터, 비슷한 병원, JSON-LD.
  * 순수 함수만 둔다(파일 I/O 없음). 클라이언트 컴포넌트에서도 import 할 수 있다(타입만 lib/content 에서 가져온다).
  */
+import { hasBatchim } from "@/lib/procedure/josa";
 import type { Clinic, ClinicHours, ClinicProcedure, Procedure } from "@/lib/content";
 import { openingHoursSpecification } from "./hours";
 
@@ -247,7 +248,8 @@ export function clinicDescription(
   const names = procedureNames.slice(0, 3).join("·");
   const more = procedureNames.length > 3 ? ` 등 ${procedureNames.length}개` : "";
   const price = span.low != null || span.high != null ? `(${formatRange(span.low, span.high)})` : "";
-  const head = `${clinic.name}(${clinic.region})이 공개한 ${names}${more} 시술 가격${price}과 요일별 진료 시간, 위치를 정리했습니다.`;
+  const subject = hasBatchim(clinic.name) ? "이" : "가";
+  const head = `${clinic.name}(${clinic.region})${subject} 공개한 ${names}${more} 시술 가격${price}과 요일별 진료 시간, 위치를 정리했습니다.`;
   const tails = [
     " 같은 시술을 하는 다른 병원과 가격을 비교하고 상담 전에 확인하세요.",
     " 다른 병원과 같은 기준으로 비교해 보세요.",
