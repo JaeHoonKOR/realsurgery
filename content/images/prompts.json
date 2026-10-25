@@ -1,0 +1,160 @@
+{
+  "$comment": "AI 생성 이미지 목록 — scripts/gen-images.mjs 가 읽는다. 원칙: 실존 인물·얼굴 사진·전후 비교·시술 결과 암시 금지(의료법 56조), 글자·로고 금지. 모든 이미지는 '예시 이미지'이며 실제 병원·시술 사진이 아니다.",
+  "styles": {
+    "sculpture": "Minimal editorial 3D render. A smooth matte white plaster sculpture, gallery-like still life. Soft diffused studio light from the upper left, very light cool-gray to pale blue seamless background (#F2F4F6 to #E8F3FF), subtle soft shadow, generous negative space, calm premium medical-tech brand aesthetic similar to Toss. Accent details in clean blue (#3182F6) only where specified. No text, no letters, no logos, no watermark, no human skin, no realistic person.",
+    "clay": "Soft 3D clay-style illustration, rounded friendly shapes, matte pastel materials, white and light blue palette with a single clean blue accent (#3182F6) and small warm coral highlights, soft studio lighting, very light cool-gray seamless background, centered composition with generous negative space, playful but premium fintech-app illustration style. No text, no letters, no logos, no watermark, no people.",
+    "interior": "Photorealistic architectural interior photograph of a modern Korean aesthetic clinic, shot on a full-frame camera with a 24mm lens at eye level, bright natural daylight, clean white and light wood surfaces, calm and trustworthy atmosphere, magazine quality. Completely empty: no people. No readable text, no signage, no logos, no brand names, no screens with text, no medical procedure in progress."
+  },
+  "images": [
+    {
+      "id": "proc-double-eyelid",
+      "style": "sculpture",
+      "aspect": "4:3",
+      "prompt": "Close-up of a serene white plaster sculpture of a closed eye and brow, a single delicate thin blue line gently tracing the eyelid crease. Abstract and sculptural, not a real face."
+    },
+    {
+      "id": "proc-epicanthoplasty",
+      "style": "sculpture",
+      "aspect": "4:3",
+      "prompt": "Close-up of a white plaster sculpture of an open almond-shaped eye seen from the front, the inner corner of the eye softly highlighted with a small thin blue arc. Abstract, sculptural, not a real face."
+    },
+    {
+      "id": "proc-ptosis-correction",
+      "style": "sculpture",
+      "aspect": "4:3",
+      "prompt": "White plaster sculpture of a calm eye, with a thin translucent blue ribbon floating just above the upper eyelid suggesting gentle lift. Abstract, sculptural, not a real face."
+    },
+    {
+      "id": "proc-lower-fat-repositioning",
+      "style": "sculpture",
+      "aspect": "4:3",
+      "prompt": "White plaster sculpture of an eye and the smooth curved under-eye area, a soft blue gradient glow along the under-eye contour line. Abstract, sculptural, not a real face."
+    },
+    {
+      "id": "proc-rhinoplasty",
+      "style": "sculpture",
+      "aspect": "4:3",
+      "prompt": "Side profile of a classical white plaster sculpture bust focusing on the nose and brow line, a thin blue line drawn along the nasal bridge like a designer's guide. Gallery still life, not a real person."
+    },
+    {
+      "id": "proc-square-jaw-reduction",
+      "style": "sculpture",
+      "aspect": "4:3",
+      "prompt": "Three-quarter view of a white plaster sculpture head focusing on the jawline, a thin blue curved guide line following the jaw angle, a small white architect's curve ruler resting beside it. Gallery still life, not a real person."
+    },
+    {
+      "id": "proc-zygoma-reduction",
+      "style": "sculpture",
+      "aspect": "4:3",
+      "prompt": "Front three-quarter view of a white plaster sculpture face focusing on the cheekbone, a soft blue contour line along the cheekbone arch. Gallery still life, not a real person."
+    },
+    {
+      "id": "proc-thread-lift",
+      "style": "clay",
+      "aspect": "4:3",
+      "prompt": "Several fine golden and blue threads gently lifting a soft draped white fabric upward into a smooth curve, held by tiny floating rounded anchors. Elegant, minimal."
+    },
+    {
+      "id": "proc-laser-toning",
+      "style": "clay",
+      "aspect": "4:3",
+      "prompt": "A sleek rounded white handheld laser device emitting a soft cool-blue beam onto a smooth pale surface, tiny glowing light particles, clean and calm."
+    },
+    {
+      "id": "proc-breast-augmentation",
+      "style": "clay",
+      "aspect": "4:3",
+      "prompt": "Two smooth translucent soft-gel teardrop shapes resting on a white pedestal, gentle light refraction, a small blue measuring tape curled beside them. Abstract product still life, tasteful, no body."
+    },
+    {
+      "id": "flow-compare",
+      "style": "clay",
+      "aspect": "1:1",
+      "prompt": "A rounded white smartphone floating at a slight angle, its screen showing three horizontal blue bars of different lengths like a price comparison chart (no text), a small magnifying glass beside it."
+    },
+    {
+      "id": "flow-request",
+      "style": "clay",
+      "aspect": "1:1",
+      "prompt": "A rounded white clipboard with a simple checklist of three blue check marks (no text), a blue pen, and a small paper plane taking off from it."
+    },
+    {
+      "id": "flow-connect",
+      "style": "clay",
+      "aspect": "1:1",
+      "prompt": "A friendly rounded white telephone handset and a speech bubble with three dots, connected by a soft blue curved line to a tiny rounded clinic building with a cross-free simple roof."
+    },
+    {
+      "id": "recovery-kit",
+      "style": "clay",
+      "aspect": "16:9",
+      "prompt": "Recovery care still life arranged neatly: a light blue gel ice pack, a soft white sleep eye mask, a small round wall clock, a glass of water, and a soft white pillow, flat lay with gentle shadows."
+    },
+    {
+      "id": "consult-desk",
+      "style": "interior",
+      "aspect": "16:9",
+      "prompt": "A bright consultation room with a round white table, two light wood chairs, a closed laptop and a tablet lying face down, a small green plant, large window with soft daylight."
+    },
+    {
+      "id": "clinic-danhaneul",
+      "style": "interior",
+      "aspect": "16:9",
+      "prompt": "Reception and waiting lounge with a curved white reception desk, light oak wall panels, soft beige lounge chairs, indirect cove lighting."
+    },
+    {
+      "id": "clinic-hagyeol",
+      "style": "interior",
+      "aspect": "16:9",
+      "prompt": "Calm consultation room with a white desk, two gray upholstered chairs, a wall-mounted light box without images, sheer curtains, minimalist decor."
+    },
+    {
+      "id": "clinic-saesolgyeol",
+      "style": "interior",
+      "aspect": "16:9",
+      "prompt": "Skin care treatment room with a white treatment bed, a sleek white device cart, soft warm lighting, a small green plant, very clean."
+    },
+    {
+      "id": "clinic-onkyeoldam",
+      "style": "interior",
+      "aspect": "16:9",
+      "prompt": "Elegant waiting lounge with a long light-stone reception counter, round mirrors on a pale wall, low walnut coffee table and cream sofas."
+    },
+    {
+      "id": "clinic-roabit",
+      "style": "interior",
+      "aspect": "16:9",
+      "prompt": "Bright corridor of a small clinic with arched white doorways, terrazzo floor, pale blue accent wall, daylight from a skylight."
+    },
+    {
+      "id": "clinic-hwidamgyeol",
+      "style": "interior",
+      "aspect": "16:9",
+      "prompt": "Spacious reception hall with floor-to-ceiling windows overlooking a city at daytime, white marble reception desk, gray lounge chairs."
+    },
+    {
+      "id": "clinic-haereumgyeol",
+      "style": "interior",
+      "aspect": "16:9",
+      "prompt": "Waiting area with a large window showing a calm sea in the distance, light wood floor, white curved sofa, soft morning light."
+    },
+    {
+      "id": "post-consult-questions",
+      "style": "clay",
+      "aspect": "16:9",
+      "prompt": "A rounded white notebook with seven small blue question-mark shaped bubbles floating above it, a blue pen, and a small hand mirror."
+    },
+    {
+      "id": "post-lower-eye-compare",
+      "style": "sculpture",
+      "aspect": "16:9",
+      "prompt": "Two identical small white plaster eye sculptures side by side on a pale pedestal, the left with a soft blue line under the eye, the right with a thin blue line along the lower lash line, comparison still life. Not a real face."
+    },
+    {
+      "id": "post-reading-quotes",
+      "style": "clay",
+      "aspect": "16:9",
+      "prompt": "A rounded white quotation document with abstract gray lines (no readable text), a blue magnifying glass examining it, small coin stacks and a calculator beside it."
+    }
+  ]
+}

@@ -18,3 +18,6 @@ reports/seo/inbox/*.csv
 
 # 에이전트 작업 트리
 .claude/worktrees/
+
+# AI 이미지 후보(검토 전)
+.gen-candidates/
