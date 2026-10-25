@@ -37,6 +37,7 @@ const VALUES: ConsultValues = {
   contact_time: "evening",
   memo: "  ",
   consent_privacy: true,
+  consent_sensitive: true,
   consent_3rd: true,
 };
 
@@ -56,6 +57,7 @@ describe("buildLeadPayload — leads 컬럼 + 유입·동의", () => {
       contact_time: "evening",
       memo: null,
       consent_privacy: true,
+      consent_sensitive: true,
       consent_3rd: true,
       consent_marketing: false,
       consent_version: CONSENT_VERSION,
@@ -72,8 +74,14 @@ describe("buildLeadPayload — leads 컬럼 + 유입·동의", () => {
     expect(p.clinic_id).toBeNull();
     expect(p.memo).toBe("메모");
   });
-  it("검증 전 값으로는 만들지 않는다", () => {
-    expect(() => buildLeadPayload({ ...VALUES, consent_3rd: false }, ATTR, { consent_ads: false, page_url: "" })).toThrow();
+  it("검증 전 값(필수 동의 누락)으로는 만들지 않는다", () => {
+    expect(() => buildLeadPayload({ ...VALUES, consent_sensitive: false }, ATTR, { consent_ads: false, page_url: "" })).toThrow();
+    expect(() => buildLeadPayload({ ...VALUES, consent_privacy: false }, ATTR, { consent_ads: false, page_url: "" })).toThrow();
+  });
+  it("병원 제3자 제공(선택)에 동의하지 않으면 consent_3rd=false 로 보낸다", () => {
+    const p = buildLeadPayload({ ...VALUES, consent_3rd: false }, ATTR, { consent_ads: false, page_url: "" });
+    expect(p.consent_3rd).toBe(false);
+    expect(p.consent_sensitive).toBe(true);
   });
 });
 
@@ -95,7 +103,13 @@ describe("submitLead — mock 모드(키 없음)", () => {
     expect(r).toEqual({ ok: true, lead_id: "11111111-2222-4333-8444-555555555555", mode: "mock" });
     const saved = readMockLeads(storage);
     expect(saved).toHaveLength(1);
-    expect(saved[0]).toMatchObject({ name_masked: "김*은", phone_masked: "010-****-5678", status: "new", utm_source: "naver" });
+    expect(saved[0]).toMatchObject({
+      name_masked: "김*은",
+      phone_masked: "010-****-5678",
+      status: "new",
+      utm_source: "naver",
+      consent_3rd: true,
+    });
     const raw = storage.getItem(MOCK_LEADS_KEY) ?? "";
     expect(raw).not.toContain("김지은");
     expect(raw).not.toContain("01012345678");
@@ -169,14 +183,36 @@ describe("submitLead — Edge Function 호출", () => {
 });
 
 describe("동의 문구", () => {
-  it("필수 2 + 선택 1, 관심 시술 민감정보 안내, 보유 기간", () => {
+  it("필수 2(개인정보·민감정보) + 선택 2(제3자 제공·마케팅), 항목마다 보유 기간·거부 시 불이익", () => {
     expect(CONSENT_DETAILS.map((c) => [c.key, c.required])).toEqual([
       ["consent_privacy", true],
-      ["consent_3rd", true],
+      ["consent_sensitive", true],
+      ["consent_3rd", false],
       ["consent_marketing", false],
     ]);
-    expect(consentDetail("consent_privacy").notice).toContain("민감정보");
-    for (const c of CONSENT_DETAILS) expect(c.rows.some((r) => r.label === "보유 기간")).toBe(true);
+    for (const c of CONSENT_DETAILS) {
+      expect(c.rows.some((r) => r.label === "보유 기간")).toBe(true);
+      expect(c.refusal).toMatch(/동의/);
+    }
     expect(() => consentDetail("x" as never)).toThrow();
+  });
+  it("민감정보 동의: 개인정보 보호법 제23조 별도 동의, 처리 항목에 관심 시술, 거부 시 접수 불가 안내", () => {
+    const s = consentDetail("consent_sensitive");
+    expect(s.title).toContain("민감정보");
+    expect(s.notice).toContain("제23조");
+    expect(s.rows.find((r) => r.label === "처리 항목")?.value).toContain("관심 시술");
+    expect(s.rows.map((r) => r.label)).toEqual(["처리 항목", "처리 목적", "보유 기간"]);
+    expect(s.refusal).toContain("접수할 수 없습니다");
+    // 일반 개인정보 동의 항목에는 관심 시술을 넣지 않는다(구분 동의)
+    expect(consentDetail("consent_privacy").rows[0]?.value).not.toContain("관심 시술");
+    expect(consentDetail("consent_privacy").notice).toContain("민감정보");
+  });
+  it("제3자 제공은 선택: 제휴 병원 없음, 병원 연결을 원할 때만, 거부해도 상담 신청 가능", () => {
+    const t = consentDetail("consent_3rd");
+    expect(t.required).toBe(false);
+    expect(t.notice).toContain("제휴 병원이 없어");
+    expect(t.notice).toContain("병원 연결을 원할 때만");
+    expect(t.rows.find((r) => r.label === "제공받는 자")?.value).toContain("개별로 안내");
+    expect(t.refusal).toContain("동의하지 않아도 상담 신청");
   });
 });

@@ -2,17 +2,17 @@ import type { Metadata } from "next";
 import { DoneView } from "@/components/consult/DoneView";
 import type { RelatedProcedure } from "@/components/consult/types";
 import { isPathBuilt } from "@/lib/built-routes";
+import { consultDoneMetadata, consultMode } from "@/lib/consult/mode";
 import { loadContent, type Procedure } from "@/lib/content";
 import { formatPriceRange, formatRecovery } from "@/lib/format";
 import { procedurePath } from "@/lib/routes";
 
-// P-07 예약 완료 (screen-spec 4절). 전환 확정 페이지 — 검색 노출 금지(6절 robots: /consult/done 차단).
+// P-07 상담 신청 완료 (screen-spec 4절). 전환 확정 페이지 — 검색 노출 금지(6절 robots: /consult/done 차단).
+// 시연 모드(Supabase 키 없음)에서는 접수가 서버로 가지 않으므로 연락을 약속하지 않는다(lib/consult/mode.ts).
 
-export const metadata: Metadata = {
-  title: "상담 신청 완료",
-  description: "리얼성형 시술 상담 가이드 신청이 접수됐습니다. 영업일 기준 1일 안에 연락드립니다.",
-  robots: { index: false, follow: false },
-};
+const MODE = consultMode();
+
+export const metadata: Metadata = consultDoneMetadata(MODE);
 
 const RELATED_COUNT = 2;
 
@@ -55,7 +55,7 @@ export default function ConsultDonePage() {
 
   return (
     <div data-consult-page="" className="mx-auto w-full max-w-form px-5 pt-10 pb-16 md:px-0 md:pt-16 md:pb-24">
-      <DoneView related={related} fallback={fallback} kakaoChannelUrl={kakaoChannelUrl()} />
+      <DoneView related={related} fallback={fallback} kakaoChannelUrl={kakaoChannelUrl()} mode={MODE} />
     </div>
   );
 }

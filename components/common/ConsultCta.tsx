@@ -1,6 +1,7 @@
 import { Emoji3D } from "@/components/ui/Emoji3D";
 import { isPathBuilt } from "@/lib/built-routes";
 import { ROUTES, consultPath } from "@/lib/routes";
+import { CONSULT_CTA } from "@/lib/site";
 import type { CtaLocation } from "@/lib/track";
 import { btn, cx } from "@/lib/ui";
 import { TrackedLink } from "./TrackedLink";
@@ -15,16 +16,22 @@ type Props = {
   benefit?: string;
 };
 
+/** 기본 제목·혜택 문구 — 버튼에는 "무료"를 쓰지 않고, 비용 안내는 설명 문장에서 한다(lib/site.ts CONSULT_CTA) */
+export const CONSULT_CTA_DEFAULTS = {
+  title: "내 상황에 맞는 상담 가이드를 받아 보세요",
+  benefit: "신청 비용은 들지 않습니다. 시술별 가격 범위와 회복 일정, 상담 때 확인할 점을 정리해 드려요.",
+} as const;
+
 /**
- * 상담 예약 CTA 블록 (screen-spec 3절: 제목, 1줄 혜택, 버튼 / 콘텐츠 페이지 본문 중간·하단 2회, location 으로 구분)
+ * 상담 신청 CTA 블록 (screen-spec 3절: 제목, 1줄 혜택, 버튼 / 콘텐츠 페이지 본문 중간·하단 2회, location 으로 구분)
  * 상담 폼(P-06)이 아직 없으면 렌더링하지 않는다(깨진 CTA 금지).
  */
 export function ConsultCta({
   location,
   procedureId,
   clinicId,
-  title = "내 상황에 맞는 상담 가이드를 받아 보세요",
-  benefit = "상담 신청은 무료이며, 영업일 기준 1일 안에 연락드립니다.",
+  title = CONSULT_CTA_DEFAULTS.title,
+  benefit = CONSULT_CTA_DEFAULTS.benefit,
 }: Props) {
   if (!isPathBuilt(ROUTES.consult)) return null;
   const titleId = `consult-cta-${location}-title`;
@@ -47,7 +54,7 @@ export function ConsultCta({
         params={{ location, procedure_id: procedureId }}
         className={cx(btn.primary, btn.md, "w-full md:w-auto")}
       >
-        무료 상담 예약
+        {CONSULT_CTA.long}
       </TrackedLink>
     </section>
   );

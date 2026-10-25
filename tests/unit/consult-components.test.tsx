@@ -16,6 +16,7 @@ vi.mock("next/link", () => ({
 
 import { ConsultForm } from "@/components/consult/ConsultForm";
 import { DoneView } from "@/components/consult/DoneView";
+import { TrustNotes } from "@/components/consult/TrustNotes";
 import type { ProcedureOption } from "@/components/consult/types";
 import { DUPLICATE_STORAGE_KEY } from "@/lib/consult/duplicate";
 import { LEAD_SESSION_KEY, LEAD_TRACKED_KEY, resetLeadConversionMemory } from "@/lib/consult/lead";
@@ -177,7 +178,7 @@ describe("P-06 상담 폼", () => {
     type($<HTMLInputElement>("#consult-phone"), "01012345678");
     click(radio("contact_time", "anytime"));
     click($('[data-testid="consent_privacy"]'));
-    click($('[data-testid="consent_3rd"]'));
+    click($('[data-testid="consent_sensitive"]'));
     localStorage.setItem(DUPLICATE_STORAGE_KEY, JSON.stringify({}));
     const { recordSubmission } = await import("@/lib/consult/duplicate");
     recordSubmission("010-1234-5678");
@@ -186,6 +187,104 @@ describe("P-06 상담 폼", () => {
     expect(alert?.getAttribute("role")).toBe("alert");
     expect(alert?.textContent).toContain("중복 접수를 막았으니");
     expect(router.push).not.toHaveBeenCalled();
+  });
+
+  /** 1단계를 통과해 2단계(연락처)에 연락처까지 채운 상태 */
+  async function toStep2Filled(mode?: "live" | "demo") {
+    await render(<ConsultForm procedures={PROCEDURES} clinics={CLINICS} mode={mode} />);
+    click(radio("timing", "within_1m"));
+    click(submitBtn());
+    type($<HTMLInputElement>("#consult-name"), "박서연");
+    type($<HTMLInputElement>("#consult-phone"), "01055556666");
+    click(radio("contact_time", "morning"));
+  }
+
+  it("동의 4종: 필수 2(개인정보·민감정보) + 선택 2(제3자 제공·마케팅), 항목마다 거부 시 불이익, 전체 동의는 4개 모두", async () => {
+    await toStep2Filled();
+    const keys = ["consent_privacy", "consent_sensitive", "consent_3rd", "consent_marketing"];
+    const boxes = keys.map((k) => $<HTMLInputElement>(`[data-testid="${k}"]`));
+    expect(boxes.map((b) => b?.required)).toEqual([true, true, false, false]);
+    const labels = boxes.map((b) => b?.closest("label")?.textContent ?? "");
+    expect(labels[0]).toContain("[필수]");
+    expect(labels[1]).toBe("[필수]민감정보(관심 시술) 처리 동의");
+    expect(labels[2]).toContain("[선택]");
+    expect(labels[3]).toContain("[선택]");
+    for (const k of keys) expect($(`#${k}-detail`)?.textContent).toContain("거부 시 불이익");
+    // 민감정보 내용 보기: 항목·목적·보유 기간·거부 시 불이익을 펼친다
+    const toggle = $<HTMLButtonElement>('[aria-controls="consent_sensitive-detail"]');
+    expect($("#consent_sensitive-detail")?.hidden).toBe(true);
+    click(toggle);
+    expect(toggle?.getAttribute("aria-expanded")).toBe("true");
+    const detail = $("#consent_sensitive-detail")?.textContent ?? "";
+    for (const t of ["처리 항목", "관심 시술", "처리 목적", "보유 기간", "거부 시 불이익", "제23조"]) expect(detail).toContain(t);
+
+    click($('[data-testid="consent-all"]'));
+    expect(boxes.every((b) => b?.checked)).toBe(true);
+    click($('[data-testid="consent-all"]'));
+    expect(boxes.some((b) => b?.checked)).toBe(false);
+  });
+
+  it("민감정보 동의가 빠지면 그 항목에 오류·포커스, 제3자 제공 없이도 제출된다(선택)", async () => {
+    await toStep2Filled();
+    click($('[data-testid="consent_privacy"]'));
+    click(submitBtn());
+    const sensitive = $<HTMLInputElement>('[data-testid="consent_sensitive"]');
+    expect($("#consent_sensitive-error")?.textContent).toContain("민감정보(관심 시술) 처리 동의가 빠져 있으니");
+    expect(sensitive?.getAttribute("aria-invalid")).toBe("true");
+    expect(document.activeElement).toBe(sensitive);
+    expect($("#consent_3rd-error")).toBeNull();
+
+    click(sensitive);
+    expect($("#consent_sensitive-error")).toBeNull();
+    expect($<HTMLInputElement>('[data-testid="consent_3rd"]')?.checked).toBe(false);
+    vi.useFakeTimers();
+    click(submitBtn());
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(800);
+    });
+    expect(router.push).toHaveBeenCalledWith("/consult/done/");
+    const mock = JSON.parse(localStorage.getItem("rs_mock_leads") ?? "[]") as { consent_3rd: boolean }[];
+    expect(mock.at(-1)?.consent_3rd).toBe(false);
+  });
+
+  it("제출 버튼은 '상담 신청하기', 폼 이름은 '시술 상담 신청'", async () => {
+    await toStep2Filled();
+    expect(submitBtn()?.textContent).toBe("상담 신청하기");
+    expect($("form")?.getAttribute("aria-label")).toBe("시술 상담 신청");
+  });
+
+  it("시연 모드: 1·2단계 모두 제출 영역 바로 위에 시연 안내, 실서비스 모드에는 없음", async () => {
+    const notice = () => $('[data-testid="consult-demo-notice"]');
+    await render(<ConsultForm procedures={PROCEDURES} clinics={CLINICS} mode="demo" />);
+    expect(notice()?.textContent).toBe("포트폴리오 시연용 화면입니다. 입력한 정보는 서버로 전송되지 않고 이 브라우저에만 저장됩니다.");
+    expect(notice()?.getAttribute("role")).toBe("note");
+    expect(notice()?.nextElementSibling?.getAttribute("data-testid")).toBe("consult-actions");
+    click(radio("timing", "within_1m"));
+    click(submitBtn());
+    expect($('[data-testid="consult-step2"]')).not.toBeNull();
+    expect(notice()?.nextElementSibling?.getAttribute("data-testid")).toBe("consult-actions");
+
+    act(() => root.unmount());
+    root = createRoot(container);
+    await render(<ConsultForm procedures={PROCEDURES} clinics={CLINICS} mode="live" />);
+    expect(notice()).toBeNull();
+    act(() => root.unmount());
+    root = createRoot(container);
+    await render(<ConsultForm procedures={PROCEDURES} clinics={CLINICS} />);
+    expect(notice()).toBeNull(); // 기본은 live
+  });
+});
+
+describe("상담 폼 신뢰 안내", () => {
+  it("실서비스: 영업일 1일 내 연락 / 시연: 연락·서버 저장을 약속하지 않는다, 버튼·제목에 '무료' 없음", async () => {
+    await render(<TrustNotes mode="live" />);
+    expect(container.textContent).toContain("영업일 기준 1일 안에 연락드려요");
+    expect(container.textContent).toContain("신청 비용은 들지 않아요");
+    expect(container.textContent).not.toContain("무료");
+    await render(<TrustNotes mode="demo" />);
+    expect(container.textContent).not.toContain("영업일 기준 1일 안에 연락드려요");
+    expect(container.textContent).toContain("시연 화면에서는 연락드리지 않아요");
+    expect(container.textContent).toContain("서버에 저장하지 않아요");
   });
 });
 
@@ -225,5 +324,31 @@ describe("P-07 완료 화면", () => {
     await render(view());
     expect(events("generate_lead")).toHaveLength(1);
     expect(JSON.parse(sessionStorage.getItem(LEAD_TRACKED_KEY) ?? "[]")).toEqual([SESSION.lead_id]);
+  });
+
+  it("실서비스: 영업일 1일 내 연락 약속 + 전화 안내, 시연 안내 없음", async () => {
+    sessionStorage.setItem(LEAD_SESSION_KEY, JSON.stringify(SESSION));
+    await render(<DoneView related={{}} fallback={[]} mode="live" />);
+    expect($("h1")?.textContent).toBe("상담 신청이 접수됐습니다");
+    expect($('[data-testid="consult-done-lead"]')?.textContent).toContain("영업일 기준 1일 안에 연락드립니다.");
+    expect($('[data-testid="consult-done-checklist"]')?.textContent).toContain("모르는 번호도 받아 주세요");
+    expect($('[data-testid="consult-done-demo-notice"]')).toBeNull();
+  });
+
+  it("시연 모드: 연락을 약속하지 않고 시연 안내를 띄운다(접수번호·전환 이벤트는 그대로)", async () => {
+    sessionStorage.setItem(LEAD_SESSION_KEY, JSON.stringify(SESSION));
+    await render(<DoneView related={{}} fallback={[]} mode="demo" />);
+    expect($("h1")?.textContent).toBe("상담 신청이 접수됐습니다");
+    const page = container.textContent ?? "";
+    expect(page).not.toContain("영업일 기준 1일 안에 연락드립니다");
+    expect(page).not.toContain("모르는 번호도 받아 주세요");
+    expect(page).not.toContain("전화 상담 때 접수번호를");
+    expect($('[data-testid="consult-done-lead"]')?.textContent).toContain("시연 화면이라 실제로 연락드리지 않습니다.");
+    expect($('[data-testid="consult-done-demo-notice"]')?.textContent).toBe(
+      "포트폴리오 시연용 화면입니다. 입력한 정보는 서버로 전송되지 않고 이 브라우저에만 저장됩니다.",
+    );
+    expect($('[data-testid="consult-done-checklist"] h2')?.textContent).toBe("상담 전에 준비해 두면 좋아요");
+    expect($('[data-testid="consult-done-number"]')?.textContent).toBe("RS-1026-7F3A");
+    expect(events("generate_lead")).toHaveLength(1);
   });
 });

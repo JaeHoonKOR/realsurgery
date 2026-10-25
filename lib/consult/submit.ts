@@ -30,7 +30,10 @@ export type LeadPayload = Attribution & {
   contact_time: ContactTimeValue;
   memo: string | null;
   consent_privacy: true;
-  consent_3rd: true;
+  /** 민감정보(관심 시술) 처리 — 필수 */
+  consent_sensitive: true;
+  /** 병원 연결을 위한 제3자 제공 — 선택(false 면 병원에 넘기지 않는다) */
+  consent_3rd: boolean;
   consent_marketing: boolean;
   consent_version: string;
   /** 쿠키 배너 "광고 성과 측정" 동의 — 함수는 true 일 때만 메타 CAPI 를 보낸다 */
@@ -61,7 +64,7 @@ export function buildLeadPayload(
   attribution: Attribution,
   extra: { consent_ads: boolean; page_url: string },
 ): LeadPayload {
-  if (!v.region || !v.timing || !v.contact_time || !v.consent_privacy || !v.consent_3rd) {
+  if (!v.region || !v.timing || !v.contact_time || !v.consent_privacy || !v.consent_sensitive) {
     throw new Error("검증되지 않은 값으로 payload 를 만들 수 없습니다(validateAll 먼저).");
   }
   const memo = v.memo.trim();
@@ -76,7 +79,8 @@ export function buildLeadPayload(
     contact_time: v.contact_time,
     memo: memo ? memo : null,
     consent_privacy: true,
-    consent_3rd: true,
+    consent_sensitive: true,
+    consent_3rd: v.consent_3rd,
     consent_marketing: v.consent_marketing,
     consent_version: CONSENT_VERSION,
     consent_ads: extra.consent_ads,
@@ -124,6 +128,7 @@ export type MockLeadSummary = {
   contact_time: string;
   name_masked: string;
   phone_masked: string;
+  consent_3rd: boolean;
   consent_marketing: boolean;
   utm_source: string | null;
   utm_medium: string | null;
@@ -162,6 +167,7 @@ async function submitMock(payload: LeadPayload, o: Required<Pick<SubmitOptions, 
       contact_time: payload.contact_time,
       name_masked: maskName(payload.name),
       phone_masked: maskPhone(payload.phone),
+      consent_3rd: payload.consent_3rd,
       consent_marketing: payload.consent_marketing,
       utm_source: payload.utm_source,
       utm_medium: payload.utm_medium,

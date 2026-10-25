@@ -29,8 +29,13 @@ export type ConsultValues = {
   phone: string;
   contact_time: ContactTimeValue | "";
   memo: string;
+  /** [필수] 개인정보 수집·이용 */
   consent_privacy: boolean;
+  /** [필수] 민감정보(관심 시술) 처리 — 개인정보 보호법 제23조 별도 동의 */
+  consent_sensitive: boolean;
+  /** [선택] 병원 연결을 위한 제3자 제공 — 제휴 병원이 없으므로 선택 */
   consent_3rd: boolean;
+  /** [선택] 마케팅 정보 수신 */
   consent_marketing: boolean;
 };
 
@@ -44,7 +49,7 @@ export const STEP2_FIELDS = [
   "contact_time",
   "memo",
   "consent_privacy",
-  "consent_3rd",
+  "consent_sensitive",
 ] as const satisfies readonly FieldName[];
 
 export function emptyValues(prefill: { procedure_id?: string | null; clinic_id?: string | null } = {}): ConsultValues {
@@ -58,6 +63,7 @@ export function emptyValues(prefill: { procedure_id?: string | null; clinic_id?:
     contact_time: "",
     memo: "",
     consent_privacy: false,
+    consent_sensitive: false,
     consent_3rd: false,
     consent_marketing: false,
   };
@@ -78,7 +84,7 @@ export const MESSAGES = {
   contactTime: "연락 가능 시간이 선택되지 않았으니 편한 시간대를 골라 주세요.",
   memoLong: `메모가 ${MEMO_MAX}자를 넘었으니 ${MEMO_MAX}자 이내로 줄여 주세요.`,
   consentPrivacy: "개인정보 수집·이용 동의가 빠져 있으니 내용을 확인하고 동의해 주세요.",
-  consent3rd: "상담 연결을 위한 제3자 제공 동의가 빠져 있으니 내용을 확인하고 동의해 주세요.",
+  consentSensitive: "민감정보(관심 시술) 처리 동의가 빠져 있으니 내용을 확인하고 동의해 주세요.",
 } as const;
 
 const NAME_CHARS = /^[가-힣ㄱ-ㅎㅏ-ㅣA-Za-z][가-힣ㄱ-ㅎㅏ-ㅣA-Za-z .·-]*$/;
@@ -123,7 +129,8 @@ export function validateStep2(v: ConsultValues): FieldErrors {
   if (!isOptionValue(CONTACT_TIME_OPTIONS, v.contact_time)) e.contact_time = MESSAGES.contactTime;
   if ([...v.memo].length > MEMO_MAX) e.memo = MESSAGES.memoLong;
   if (!v.consent_privacy) e.consent_privacy = MESSAGES.consentPrivacy;
-  if (!v.consent_3rd) e.consent_3rd = MESSAGES.consent3rd;
+  if (!v.consent_sensitive) e.consent_sensitive = MESSAGES.consentSensitive;
+  // 제3자 제공(consent_3rd)·마케팅은 선택 — 검사하지 않는다
   return e;
 }
 
@@ -141,7 +148,9 @@ export function firstErrorField(e: FieldErrors): FieldName | null {
   return order.find((f) => e[f]) ?? null;
 }
 
-/** 필수 동의 2개 + 선택 1개 → 전체 동의 상태 */
-export function allConsented(v: Pick<ConsultValues, "consent_privacy" | "consent_3rd" | "consent_marketing">): boolean {
-  return v.consent_privacy && v.consent_3rd && v.consent_marketing;
+export type ConsentValues = Pick<ConsultValues, "consent_privacy" | "consent_sensitive" | "consent_3rd" | "consent_marketing">;
+
+/** 필수 동의 2개 + 선택 2개 → 전체 동의 상태 */
+export function allConsented(v: ConsentValues): boolean {
+  return v.consent_privacy && v.consent_sensitive && v.consent_3rd && v.consent_marketing;
 }

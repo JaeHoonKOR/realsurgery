@@ -2,16 +2,19 @@ import Link from "next/link";
 import { isPathBuilt } from "@/lib/built-routes";
 import { getSearchItems } from "@/lib/content";
 import { GNB, ROUTES, consultPath, procedurePath } from "@/lib/routes";
+import { CONSULT_CTA } from "@/lib/site";
 import { btn, cx } from "@/lib/ui";
 import { HeaderSearch } from "./HeaderSearch";
 import { Logo } from "./Logo";
 import { TrackedLink } from "./TrackedLink";
+import "@/styles/cta.css";
 
 /**
  * 공통 헤더 (screen-spec 3절): 로고, GNB(시술 가이드·병원 찾기·가격 비교·칼럼), 검색창, CTA.
  * "스크롤 시 축소 고정": 상단 바(로고·CTA)는 sticky 로 고정되고, 모바일 2번째 줄(검색·GNB)은 스크롤과 함께 사라진다.
  * 레이아웃 높이를 바꾸지 않으므로 CLS 가 생기지 않는다(JS 없음).
  * 아직 만들지 않은 화면으로 가는 링크는 노출하지 않는다(lib/built-routes.ts).
+ * 헤더 CTA(.site-header-cta)는 모바일 하단 고정 바에 상담 버튼이 있는 화면에서 모바일일 때 숨긴다(styles/cta.css).
  */
 export function SiteHeader() {
   const nav = GNB.filter((item) => isPathBuilt(item.href));
@@ -63,7 +66,7 @@ export function SiteHeader() {
                 data-testid="header-cta"
                 className={cx(btn.primary, "site-header-cta h-11 rounded-md px-4 text-sm")}
               >
-                무료 상담 예약
+                {CONSULT_CTA.short}
               </TrackedLink>
             )}
           </div>

@@ -22,7 +22,7 @@ vi.mock("@/lib/built-routes", async (importOriginal) => {
 import { BottomBar } from "@/components/common/BottomBar";
 import { Breadcrumb, breadcrumbJsonLd } from "@/components/common/Breadcrumb";
 import { ConsentBanner } from "@/components/common/ConsentBanner";
-import { ConsultCta } from "@/components/common/ConsultCta";
+import { CONSULT_CTA_DEFAULTS, ConsultCta } from "@/components/common/ConsultCta";
 import { HeaderSearch } from "@/components/common/HeaderSearch";
 import { SiteFooter } from "@/components/common/SiteFooter";
 import { SkeletonList, SkeletonText } from "@/components/common/Skeleton";
@@ -109,12 +109,17 @@ function withoutConsultPage() {
   vi.mocked(isPathBuilt).mockImplementationOnce((href: string) => !href.startsWith("/consult/"));
 }
 
-describe("ConsultCta (3절 상담 예약 CTA 블록)", () => {
+describe("ConsultCta (3절 상담 신청 CTA 블록)", () => {
   it("제목·혜택·버튼, location·procedure_id 를 이벤트와 링크에 싣는다", () => {
     render(<ConsultCta location="mid" procedureId="double-eyelid" title="이 시술 상담 가능한 병원 보기" />);
     expect($("h2")?.textContent).toBe("이 시술 상담 가능한 병원 보기");
-    expect($("p")?.textContent).toContain("영업일 기준 1일");
+    // 기본 혜택 문구: 비용 안내는 설명 문장에서, 연락 시점은 약속하지 않는다(시연 배포에서도 참)
+    expect($("p")?.textContent).toBe(CONSULT_CTA_DEFAULTS.benefit);
+    expect($("p")?.textContent).toContain("비용은 들지 않습니다");
+    expect($("p")?.textContent).not.toContain("무료");
     const a = $<HTMLAnchorElement>("a")!;
+    // 버튼 이름 통일: "상담 신청하기"(예약·무료 금지)
+    expect(a.textContent).toBe("상담 신청하기");
     expect(a.getAttribute("href")).toBe("/consult/?procedure_id=double-eyelid");
     click(a);
     expect(events()).toEqual([{ event: "click_cta", location: "mid", procedure_id: "double-eyelid" }]);
@@ -134,7 +139,9 @@ describe("BottomBar (3절 모바일 하단 고정 바)", () => {
   it("제휴 병원: 전화·카톡·상담 3개, 버튼마다 별도 이벤트", () => {
     render(<BottomBar page="clinic" procedureId="double-eyelid" clinic={partner} />);
     const links = $$("[data-testid=bottom-bar] a");
-    expect(links.map((a) => a.textContent)).toEqual(["전화", "카카오톡 상담", "무료 상담 예약"]);
+    expect(links.map((a) => a.textContent)).toEqual(["전화", "카카오톡 상담", "상담 신청"]);
+    // 상담 버튼 표식 → styles/cta.css 가 모바일에서 헤더 CTA 를 숨긴다(중복 노출 방지)
+    expect(links.map((a) => a.hasAttribute("data-bottom-bar-cta"))).toEqual([false, false, true]);
     expect(links[0]!.getAttribute("href")).toBe("tel:020000000");
     expect(links[1]!.getAttribute("target")).toBe("_blank");
     expect(links[2]!.getAttribute("href")).toBe("/consult/?procedure_id=double-eyelid&clinic_id=danhaneul");
@@ -148,7 +155,7 @@ describe("BottomBar (3절 모바일 하단 고정 바)", () => {
 
   it("비제휴 병원·시술 페이지: 전화·카톡 없이 상담만(8절 폴백)", () => {
     render(<BottomBar page="procedure" procedureId="x" clinic={{ ...partner, is_partner: false }} />);
-    expect($$("a").map((a) => a.textContent)).toEqual(["무료 상담 예약"]);
+    expect($$("a").map((a) => a.textContent)).toEqual(["상담 신청"]);
   });
 
   it("보여 줄 버튼이 하나도 없으면 그리지 않는다", () => {
@@ -263,10 +270,15 @@ describe("Skeleton·Breadcrumb·SiteFooter", () => {
     });
   });
 
-  it("푸터: 면책 문구·운영 시간·사업자 정보, minimal 은 링크 없음", () => {
+  it("푸터: 면책 문구·운영 시간·사업자 정보(등록 전 = 시연 사이트 안내), minimal 은 링크 없음", () => {
     render(<SiteFooter />);
     expect($("[data-testid=medical-disclaimer]")?.textContent).toBe("본 정보는 의료 조언이 아니며 진단·치료는 의료진 상담 필요");
     expect($("[data-testid=footer-info]")?.textContent).toContain("평일 10:00–18:00");
+    // 가짜 사업자 번호·연락처 대신 정직한 안내
+    expect($("[data-testid=footer-business-pending]")?.textContent).toBe(
+      "포트폴리오용 시연 사이트입니다. 사업자 등록 전으로 실제 영업을 하지 않습니다.",
+    );
+    expect($("[data-testid=footer-info]")?.textContent).not.toContain("게시합니다");
     expect($$("a").map((a) => a.textContent)).toEqual(["이용약관", "개인정보처리방침"]);
     act(() => root.render(<SiteFooter variant="minimal" />));
     expect($$("a")).toHaveLength(0);

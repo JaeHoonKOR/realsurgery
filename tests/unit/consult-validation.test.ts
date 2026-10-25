@@ -32,7 +32,7 @@ const valid = (): ConsultValues => ({
   phone: "010-1234-5678",
   contact_time: "afternoon",
   consent_privacy: true,
-  consent_3rd: true,
+  consent_sensitive: true,
 });
 
 describe("1단계 검증(관심 시술)", () => {
@@ -61,9 +61,18 @@ describe("2단계 검증(연락처·동의)", () => {
     expect(validateStep2(valid())).toEqual({});
     expect(hasErrors(validateAll(valid(), IDS))).toBe(false);
   });
-  it("필수 동의 2개가 없으면 각각 오류, 마케팅(선택)은 없어도 통과", () => {
-    const e = validateStep2({ ...valid(), consent_privacy: false, consent_3rd: false, consent_marketing: false });
-    expect(e).toEqual({ consent_privacy: MESSAGES.consentPrivacy, consent_3rd: MESSAGES.consent3rd });
+  it("필수 동의 2개(개인정보·민감정보)가 없으면 각각 오류, 제3자 제공·마케팅(선택)은 없어도 통과", () => {
+    const e = validateStep2({ ...valid(), consent_privacy: false, consent_sensitive: false, consent_3rd: false, consent_marketing: false });
+    expect(e).toEqual({ consent_privacy: MESSAGES.consentPrivacy, consent_sensitive: MESSAGES.consentSensitive });
+    expect(MESSAGES.consentSensitive).toMatch(/니 .+ 주세요\.$/);
+  });
+  it("민감정보 동의는 개인정보 동의와 별개 — 하나만 있으면 나머지 하나만 오류", () => {
+    expect(validateStep2({ ...valid(), consent_sensitive: false })).toEqual({ consent_sensitive: MESSAGES.consentSensitive });
+    expect(validateStep2({ ...valid(), consent_privacy: false })).toEqual({ consent_privacy: MESSAGES.consentPrivacy });
+  });
+  it("병원 제3자 제공은 선택(제휴 병원 없음) — 동의하지 않아도 전체 검증 통과", () => {
+    expect(validateAll({ ...valid(), consent_3rd: false }, IDS)).toEqual({});
+    expect(validateAll({ ...valid(), consent_3rd: true }, IDS)).toEqual({});
   });
   it("메모 500자 초과는 오류(500자는 통과)", () => {
     expect(validateStep2({ ...valid(), memo: "가".repeat(500) }).memo).toBeUndefined();
@@ -112,12 +121,14 @@ describe("휴대폰 검증 문구", () => {
 describe("보조 함수", () => {
   it("첫 오류 필드는 화면 순서(1단계 → 2단계)", () => {
     expect(firstErrorField({ phone: "x", region: "y" })).toBe("region");
-    expect(firstErrorField({ consent_3rd: "x", name: "y" })).toBe("name");
+    expect(firstErrorField({ consent_sensitive: "x", name: "y" })).toBe("name");
+    expect(firstErrorField({ consent_sensitive: "x", consent_privacy: "y" })).toBe("consent_privacy");
     expect(firstErrorField({})).toBeNull();
   });
-  it("전체 동의는 선택 항목까지 켜져야 true", () => {
-    expect(allConsented({ consent_privacy: true, consent_3rd: true, consent_marketing: false })).toBe(false);
-    expect(allConsented({ consent_privacy: true, consent_3rd: true, consent_marketing: true })).toBe(true);
+  it("전체 동의는 선택 항목까지 네 개 모두 켜져야 true", () => {
+    const all = { consent_privacy: true, consent_sensitive: true, consent_3rd: true, consent_marketing: true };
+    expect(allConsented(all)).toBe(true);
+    for (const key of Object.keys(all) as (keyof typeof all)[]) expect(allConsented({ ...all, [key]: false })).toBe(false);
   });
   it("emptyValues 선입력", () => {
     expect(emptyValues({ procedure_id: "rhinoplasty", clinic_id: "hagyeol" })).toMatchObject({

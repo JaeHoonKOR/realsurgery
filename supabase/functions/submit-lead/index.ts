@@ -61,6 +61,8 @@ export type LeadInput = {
   timing: (typeof TIMINGS)[number];
   contact_time: (typeof CONTACT_TIMES)[number];
   memo: string | null;
+  /** [선택] 병원 연결을 위한 제3자 제공 — false 면 병원에 넘기지 않는다(제휴 병원 없음) */
+  consent_3rd: boolean;
   consent_marketing: boolean;
   consent_version: string;
   consent_ads: boolean;
@@ -93,7 +95,14 @@ export function validateLead(body: unknown): Validation {
   const memo = typeof b.memo === "string" ? b.memo.trim() : "";
   if ([...memo].length > 500) fields.memo = "메모가 500자를 넘었으니 500자 이내로 줄여 주세요.";
   if (b.consent_privacy !== true) fields.consent_privacy = "개인정보 수집·이용 동의가 빠져 있으니 내용을 확인하고 동의해 주세요.";
-  if (b.consent_3rd !== true) fields.consent_3rd = "상담 연결을 위한 제3자 제공 동의가 빠져 있으니 내용을 확인하고 동의해 주세요.";
+  // 민감정보(관심 시술) 처리 — 개인정보 보호법 제23조 별도 필수 동의
+  if (b.consent_sensitive !== true) {
+    fields.consent_sensitive = "민감정보(관심 시술) 처리 동의가 빠져 있으니 내용을 확인하고 동의해 주세요.";
+  }
+  // 병원 제3자 제공은 선택 — 값이 오면 true/false 여야 한다
+  if (b.consent_3rd != null && typeof b.consent_3rd !== "boolean") {
+    fields.consent_3rd = "제3자 제공 동의 값을 확인하지 못했으니 페이지를 새로고침한 뒤 다시 신청해 주세요.";
+  }
   for (const key of ["procedure_id", "clinic_id"] as const) {
     if (b[key] != null && (typeof b[key] !== "string" || !ID.test(b[key] as string))) {
       fields[key] = "선택한 항목을 확인하지 못했으니 처음부터 다시 선택해 주세요.";
@@ -112,6 +121,7 @@ export function validateLead(body: unknown): Validation {
     timing: b.timing as LeadInput["timing"],
     contact_time: b.contact_time as LeadInput["contact_time"],
     memo: memo || null,
+    consent_3rd: b.consent_3rd === true,
     consent_marketing: b.consent_marketing === true,
     consent_version: version as string,
     consent_ads: b.consent_ads === true,
@@ -244,7 +254,7 @@ export function createHandler(deps: Deps) {
         phone: await encryptPhone(lead.phone, secret),
         phone_hash: hash,
         consent_privacy: true,
-        consent_3rd: true,
+        consent_sensitive: true,
       };
       const insRes = await deps.fetch(`${supabaseUrl}/rest/v1/leads`, {
         method: "POST",
@@ -271,7 +281,7 @@ export function createHandler(deps: Deps) {
   };
 }
 
-/** 운영자 알림 메일 — 번호는 넣지 않는다(개인정보처리방침 제5조: 해외 이전 최소화). 관리자 화면에서 복호화해 본다. */
+/** 운영자 알림 메일 — 번호는 넣지 않는다(개인정보처리방침 「개인정보 처리 위탁」: 해외 이전 최소화). 관리자 화면에서 복호화해 본다. */
 async function notify(lead: LeadInput, leadId: string, deps: Deps): Promise<void> {
   const key = deps.env("RESEND_API_KEY");
   const to = deps.env("LEAD_NOTIFY_EMAIL");
@@ -282,6 +292,7 @@ async function notify(lead: LeadInput, leadId: string, deps: Deps): Promise<void
     `관심 시술: ${lead.procedure_id ?? "미정"}${lead.clinic_id ? ` / 병원 ${lead.clinic_id}` : ""}`,
     `희망 지역·시기: ${LABEL[lead.region]} / ${LABEL[lead.timing]}`,
     `연락 가능 시간: ${LABEL[lead.contact_time]}`,
+    `병원 연결(제3자 제공) 동의: ${lead.consent_3rd ? "예" : "아니오 — 병원에 넘기지 않음"}`,
     `유입: ${[lead.utm_source, lead.utm_medium, lead.utm_campaign].filter(Boolean).join(" / ") || "직접·자연 유입"}`,
   ];
   const res = await deps.fetch("https://api.resend.com/emails", {

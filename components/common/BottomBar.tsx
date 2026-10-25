@@ -2,6 +2,7 @@ import { MessageCircle, Phone } from "lucide-react";
 import { isPathBuilt } from "@/lib/built-routes";
 import type { Clinic } from "@/lib/content";
 import { ROUTES, consultPath } from "@/lib/routes";
+import { CONSULT_CTA } from "@/lib/site";
 import { TrackedLink } from "./TrackedLink";
 
 type Props = {
@@ -12,10 +13,11 @@ type Props = {
 };
 
 /**
- * 모바일 하단 고정 바 (screen-spec 3절): 전화 · 카카오톡 상담 · 무료 상담 예약, 버튼마다 별도 이벤트.
+ * 모바일 하단 고정 바 (screen-spec 3절): 전화 · 카카오톡 상담 · 상담 신청, 버튼마다 별도 이벤트.
  * - 전화·카톡은 제휴 병원(is_partner)이고 값이 있을 때만(8절 폴백).
  * - 바가 있으면 모바일 body 아래에 같은 높이의 여백이 생겨 마지막 콘텐츠(푸터)를 가리지 않는다. 안전 영역 패딩 포함.
  * - md 이상에서는 숨긴다(모바일 전용).
+ * - 상담 버튼에 data-bottom-bar-cta 를 단다 → styles/cta.css 가 모바일에서 헤더 CTA 를 숨겨 같은 버튼이 두 번 보이지 않게 한다.
  */
 export function BottomBar({ page, procedureId, clinic }: Props) {
   const showConsult = isPathBuilt(ROUTES.consult);
@@ -59,10 +61,11 @@ export function BottomBar({ page, procedureId, clinic }: Props) {
               href={consultPath({ procedure_id: procedureId, clinic_id: clinic?.id })}
               event="click_cta"
               params={{ location: "bottom_bar", procedure_id: procedureId }}
+              data-bottom-bar-cta=""
               // 전화·카톡이 있으면 세 버튼을 같은 폭으로("카카오톡 상담"이 375px 에서 잘리지 않게), 없으면 혼자 전체 폭
               className="flex h-14 basis-0 grow items-center justify-center rounded-md bg-brand-strong px-2 text-center text-lg font-semibold text-surface"
             >
-              무료 상담 예약
+              {CONSULT_CTA.short}
             </TrackedLink>
           )}
         </div>
