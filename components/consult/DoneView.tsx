@@ -26,7 +26,7 @@ const CHECKLIST: { emoji: EmojiName; title: string; body: string }[] = [
   {
     emoji: "phone",
     title: "모르는 번호도 받아 주세요",
-    body: "운영팀은 02로 시작하는 대표번호로 연락드려요. 못 받으시면 문자로 다시 안내합니다.",
+    body: "운영팀 대표번호로 전화드려요. 받지 못하시면 문자로 다시 안내합니다.",
   },
   {
     emoji: "memo",

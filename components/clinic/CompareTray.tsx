@@ -25,6 +25,7 @@ export function CompareTray({ selected, onRemove, onClear, onOpen }: Props) {
       role="region"
       aria-label="병원 비교함"
       data-testid="compare-tray"
+      data-compare-tray=""
       className="fixed inset-x-0 bottom-0 z-(--z-bottom-bar) md:bottom-6"
     >
       <div className="mx-auto max-w-content md:px-10">

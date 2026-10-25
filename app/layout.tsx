@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { ConsentBanner } from "@/components/common/ConsentBanner";
+import { AttributionCapture } from "@/components/consult/AttributionCapture";
 import { isPathBuilt } from "@/lib/built-routes";
 import { consentInitScript } from "@/lib/consent";
 import { readPublicVar, siteUrl, withBasePath } from "@/lib/env.public";
@@ -82,6 +83,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         )}
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(siteJsonLd()) }} />
         {children}
+        <AttributionCapture />
         <ConsentBanner privacyHref={isPathBuilt(ROUTES.privacy) ? ROUTES.privacy : undefined} />
       </body>
     </html>

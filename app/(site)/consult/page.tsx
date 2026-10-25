@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { AttributionCapture } from "@/components/consult/AttributionCapture";
 import { ConsultForm } from "@/components/consult/ConsultForm";
 import { TrustNotes } from "@/components/consult/TrustNotes";
 import type { ClinicOption, ProcedureOption } from "@/components/consult/types";
@@ -45,7 +44,6 @@ export default function ConsultPage() {
 
   return (
     <div data-consult-page="" className="mx-auto w-full max-w-form px-5 pt-8 pb-16 md:px-0 md:pt-14 md:pb-24">
-      <AttributionCapture />
       <header>
         <Emoji3D name="clipboard" size={64} priority />
         <h1 className="mt-4 text-h1 font-bold tracking-tighter text-ink">{TITLE}</h1>

@@ -73,6 +73,20 @@
   }
 }
 
+/* 하단에 고정 버튼이 따로 있는 화면(병원 비교함·상담 폼)은 모바일 동의 배너를 위쪽에 띄워 버튼을 가리지 않게 한다 */
+@media (width < 48rem) {
+  body:has([data-compare-tray]) [data-consent-banner],
+  body:has([data-consult-page]) [data-consent-banner] {
+    top: calc(var(--spacing) * 3);
+    bottom: auto;
+  }
+}
+
+/* 상담 화면에서는 헤더의 "무료 상담 예약" 버튼이 중복이므로 숨긴다 */
+body:has([data-consult-page]) .site-header-cta {
+  display: none;
+}
+
 /* 헤더: 스크롤을 시작하면 그림자로 떠 있는 상태를 표시(스크롤 연동 애니메이션 지원 브라우저만, 레이아웃 이동 없음) */
 @supports (animation-timeline: scroll()) {
   .site-header {

@@ -61,7 +61,7 @@ export function SiteHeader() {
                 event="click_cta"
                 params={{ location: "header" }}
                 data-testid="header-cta"
-                className={cx(btn.primary, "h-10 rounded-sm px-4 text-sm")}
+                className={cx(btn.primary, "site-header-cta h-11 rounded-md px-4 text-sm")}
               >
                 무료 상담 예약
               </TrackedLink>
