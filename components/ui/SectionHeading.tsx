@@ -22,7 +22,7 @@ export function SectionHeading({ id, title, description, more }: Props) {
       {more && (
         <Link
           href={more.href}
-          className="inline-flex h-11 shrink-0 items-center gap-0.5 text-sm font-semibold text-ink-subtle hover:text-ink"
+          className="inline-flex h-11 shrink-0 items-center gap-0.5 text-sm font-semibold text-ink-muted hover:text-ink"
         >
           {more.label}
           <ChevronRight aria-hidden="true" className="size-4" />
