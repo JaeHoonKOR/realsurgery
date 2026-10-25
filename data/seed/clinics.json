@@ -82,5 +82,123 @@
       { "procedure_id": "double-eyelid", "price_low": 600000, "price_high": 1800000, "price_note": null, "duration_min": 60, "price_updated_at": "2026-10-05" },
       { "procedure_id": "lower-fat-repositioning", "price_low": 1200000, "price_high": 2600000, "price_note": null, "duration_min": 60, "price_updated_at": "2026-10-05" }
     ]
+  },
+  {
+    "id": "onkyeoldam",
+    "name": "온결담성형외과",
+    "slug": "온결담성형외과",
+    "region": "서울 강남구",
+    "address": "서울특별시 강남구 압구정동",
+    "lat": 37.5268,
+    "lng": 127.0302,
+    "phone": null,
+    "kakao_url": null,
+    "hours": [
+      { "label": "월–금", "days": ["Mo", "Tu", "We", "Th", "Fr"], "open": "10:00", "close": "19:00" },
+      { "label": "토", "days": ["Sa"], "open": "10:00", "close": "16:00" }
+    ],
+    "description": "눈·코 성형과 사각턱 수술을 진료하는 성형외과입니다. 상담은 예약제로 진행합니다. 일요일·공휴일은 휴진합니다.",
+    "specialties": ["성형외과"],
+    "is_premium": false,
+    "is_partner": false,
+    "is_demo": true,
+    "ad_review_no": null,
+    "procedures": [
+      { "procedure_id": "double-eyelid", "price_low": 800000, "price_high": 2400000, "price_note": null, "duration_min": 60, "price_updated_at": "2026-10-14" },
+      { "procedure_id": "epicanthoplasty", "price_low": 900000, "price_high": 2000000, "price_note": null, "duration_min": 40, "price_updated_at": "2026-10-14" },
+      { "procedure_id": "ptosis-correction", "price_low": 1200000, "price_high": 3500000, "price_note": null, "duration_min": 90, "price_updated_at": "2026-10-14" },
+      { "procedure_id": "lower-fat-repositioning", "price_low": 1500000, "price_high": 3000000, "price_note": null, "duration_min": 60, "price_updated_at": "2026-10-14" },
+      { "procedure_id": "rhinoplasty", "price_low": 1800000, "price_high": 5800000, "price_note": null, "duration_min": 120, "price_updated_at": "2026-10-14" },
+      { "procedure_id": "square-jaw-reduction", "price_low": 4200000, "price_high": 7000000, "price_note": null, "duration_min": 150, "price_updated_at": "2026-10-14" }
+    ]
+  },
+  {
+    "id": "roabit",
+    "name": "로아빛의원",
+    "slug": "로아빛의원",
+    "region": "서울 마포구",
+    "address": "서울특별시 마포구 서교동",
+    "lat": 37.5553,
+    "lng": 126.9213,
+    "phone": null,
+    "kakao_url": null,
+    "hours": [
+      { "label": "월·화·목·금", "days": ["Mo", "Tu", "Th", "Fr"], "open": "11:00", "close": "20:00" },
+      { "label": "수", "days": ["We"], "open": "11:00", "close": "17:00" },
+      { "label": "토", "days": ["Sa"], "open": "10:00", "close": "15:00" }
+    ],
+    "description": "레이저 피부 시술과 실리프팅, 눈 성형을 진료하는 의원입니다. 수요일은 오후 5시에 진료를 마칩니다. 일요일·공휴일은 휴진합니다.",
+    "specialties": ["성형외과", "피부과"],
+    "is_premium": false,
+    "is_partner": false,
+    "is_demo": true,
+    "ad_review_no": null,
+    "procedures": [
+      { "procedure_id": "laser-toning", "price_low": 30000, "price_high": 90000, "price_note": "1회 기준", "duration_min": 20, "price_updated_at": "2026-10-08" },
+      { "procedure_id": "thread-lift", "price_low": 500000, "price_high": 2200000, "price_note": null, "duration_min": 40, "price_updated_at": "2026-10-08" },
+      { "procedure_id": "double-eyelid", "price_low": 550000, "price_high": 1600000, "price_note": null, "duration_min": 60, "price_updated_at": "2026-10-08" },
+      { "procedure_id": "epicanthoplasty", "price_low": 700000, "price_high": 1500000, "price_note": null, "duration_min": 40, "price_updated_at": "2026-10-08" },
+      { "procedure_id": "ptosis-correction", "price_low": 700000, "price_high": 2400000, "price_note": null, "duration_min": 90, "price_updated_at": "2026-10-08" },
+      { "procedure_id": "lower-fat-repositioning", "price_low": 1100000, "price_high": 2400000, "price_note": null, "duration_min": 60, "price_updated_at": "2026-10-08" }
+    ]
+  },
+  {
+    "id": "hwidamgyeol",
+    "name": "휘담결성형외과",
+    "slug": "휘담결성형외과",
+    "region": "서울 송파구",
+    "address": "서울특별시 송파구 잠실동",
+    "lat": 37.5106,
+    "lng": 127.0855,
+    "phone": null,
+    "kakao_url": null,
+    "hours": [
+      { "label": "월–금", "days": ["Mo", "Tu", "We", "Th", "Fr"], "open": "09:30", "close": "18:30" },
+      { "label": "토", "days": ["Sa"], "open": "09:30", "close": "13:30" }
+    ],
+    "description": "얼굴 윤곽 수술과 가슴 성형, 코 성형, 피부 시술을 진료하는 성형외과입니다. 수술 전 검사와 마취 상담을 마친 뒤 수술 일정을 정합니다. 일요일·공휴일은 휴진합니다.",
+    "specialties": ["성형외과"],
+    "is_premium": false,
+    "is_partner": false,
+    "is_demo": true,
+    "ad_review_no": null,
+    "procedures": [
+      { "procedure_id": "rhinoplasty", "price_low": 1200000, "price_high": 4800000, "price_note": null, "duration_min": 120, "price_updated_at": "2026-09-22" },
+      { "procedure_id": "square-jaw-reduction", "price_low": 3800000, "price_high": 6500000, "price_note": null, "duration_min": 150, "price_updated_at": "2026-09-22" },
+      { "procedure_id": "zygoma-reduction", "price_low": 4200000, "price_high": 7000000, "price_note": null, "duration_min": 120, "price_updated_at": "2026-09-22" },
+      { "procedure_id": "thread-lift", "price_low": 900000, "price_high": 3500000, "price_note": null, "duration_min": 40, "price_updated_at": "2026-09-22" },
+      { "procedure_id": "breast-augmentation", "price_low": 7000000, "price_high": 12000000, "price_note": null, "duration_min": 120, "price_updated_at": "2026-09-22" },
+      { "procedure_id": "laser-toning", "price_low": 40000, "price_high": 130000, "price_note": "1회 기준", "duration_min": 20, "price_updated_at": "2026-09-22" }
+    ]
+  },
+  {
+    "id": "haereumgyeol",
+    "name": "해름결성형외과",
+    "slug": "해름결성형외과",
+    "region": "부산 해운대구",
+    "address": "부산광역시 해운대구 우동",
+    "lat": 35.1628,
+    "lng": 129.1602,
+    "phone": null,
+    "kakao_url": null,
+    "hours": [
+      { "label": "월·화·수·금", "days": ["Mo", "Tu", "We", "Fr"], "open": "10:00", "close": "19:00" },
+      { "label": "목", "days": ["Th"], "open": "10:00", "close": "20:30" },
+      { "label": "토", "days": ["Sa"], "open": "10:00", "close": "15:00" }
+    ],
+    "description": "눈 성형, 얼굴 윤곽 수술, 가슴 성형과 피부 시술을 진료하는 성형외과입니다. 목요일은 오후 8시 30분까지 진료합니다. 일요일·공휴일은 휴진합니다.",
+    "specialties": ["성형외과"],
+    "is_premium": false,
+    "is_partner": false,
+    "is_demo": true,
+    "ad_review_no": null,
+    "procedures": [
+      { "procedure_id": "epicanthoplasty", "price_low": 750000, "price_high": 1700000, "price_note": null, "duration_min": 40, "price_updated_at": "2026-10-17" },
+      { "procedure_id": "ptosis-correction", "price_low": 900000, "price_high": 2800000, "price_note": null, "duration_min": 90, "price_updated_at": "2026-10-17" },
+      { "procedure_id": "square-jaw-reduction", "price_low": 3500000, "price_high": 6000000, "price_note": null, "duration_min": 150, "price_updated_at": "2026-10-17" },
+      { "procedure_id": "zygoma-reduction", "price_low": 4000000, "price_high": 6500000, "price_note": null, "duration_min": 120, "price_updated_at": "2026-10-17" },
+      { "procedure_id": "laser-toning", "price_low": 50000, "price_high": 150000, "price_note": "1회 기준", "duration_min": 20, "price_updated_at": "2026-10-17" },
+      { "procedure_id": "breast-augmentation", "price_low": 6000000, "price_high": 10000000, "price_note": null, "duration_min": 120, "price_updated_at": "2026-10-17" }
+    ]
   }
 ]

@@ -29,9 +29,9 @@ afterEach(() => {
 describe("data/seed — 실서비스형 더미 데이터 (QUALITY 3절)", () => {
   const t = seedTables();
 
-  it("시술 10 · 병원 3 · 칼럼 3, 시술마다 FAQ 5개", () => {
+  it("시술 10 · 병원 7 · 칼럼 3, 시술마다 FAQ 5개", () => {
     expect(t.procedures).toHaveLength(10);
-    expect(t.clinics).toHaveLength(3);
+    expect(t.clinics).toHaveLength(7);
     expect(t.posts).toHaveLength(3);
     for (const p of t.procedures) {
       expect(t.procedure_faqs.filter((f) => f.procedure_id === p.id), String(p.id)).toHaveLength(5);

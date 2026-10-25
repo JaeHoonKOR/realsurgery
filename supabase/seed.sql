@@ -84,7 +84,11 @@ on conflict ("id") do update set "procedure_id" = excluded."procedure_id", "ques
 insert into public.clinics ("id", "name", "slug", "region", "address", "lat", "lng", "phone", "kakao_url", "hours", "description", "specialties", "is_premium", "is_partner", "is_demo", "ad_review_no") values
   ('danhaneul', '단하늘성형외과', '단하늘성형외과', '서울 강남구', '서울특별시 강남구 신사동', 37.5216, 127.0204, null, null, '[{"label":"월·화·목·금","days":["Mo","Tu","Th","Fr"],"open":"10:00","close":"19:00"},{"label":"수","days":["We"],"open":"10:00","close":"21:00"},{"label":"토","days":["Sa"],"open":"10:00","close":"15:00"}]'::jsonb, '눈 성형과 코 성형을 중심으로 진료하는 성형외과입니다. 수요일은 오후 9시까지 진료합니다. 일요일·공휴일은 휴진합니다.', array['성형외과']::text[], false, false, true, null),
   ('hagyeol', '하결성형외과', '하결성형외과', '서울 서초구', '서울특별시 서초구 서초동', 37.4877, 127.0174, null, null, '[{"label":"월–금","days":["Mo","Tu","We","Th","Fr"],"open":"09:30","close":"18:30"},{"label":"토","days":["Sa"],"open":"09:30","close":"14:00"}]'::jsonb, '얼굴 윤곽 수술과 가슴 성형을 주로 진료하는 성형외과입니다. 수술 전 CT 촬영과 마취 상담을 같은 날 진행합니다. 일요일·공휴일은 휴진합니다.', array['성형외과']::text[], false, false, true, null),
-  ('saesolgyeol', '새솔결의원', '새솔결의원', '경기 성남시 분당구', '경기도 성남시 분당구 정자동', 37.3595, 127.1086, null, null, '[{"label":"월–금","days":["Mo","Tu","We","Th","Fr"],"open":"10:00","close":"20:00"},{"label":"토","days":["Sa"],"open":"10:00","close":"16:00"}]'::jsonb, '피부 시술과 리프팅, 눈 성형을 진료하는 의원입니다. 평일은 오후 8시까지 진료합니다. 일요일·공휴일은 휴진합니다.', array['성형외과', '피부과']::text[], false, false, true, null)
+  ('saesolgyeol', '새솔결의원', '새솔결의원', '경기 성남시 분당구', '경기도 성남시 분당구 정자동', 37.3595, 127.1086, null, null, '[{"label":"월–금","days":["Mo","Tu","We","Th","Fr"],"open":"10:00","close":"20:00"},{"label":"토","days":["Sa"],"open":"10:00","close":"16:00"}]'::jsonb, '피부 시술과 리프팅, 눈 성형을 진료하는 의원입니다. 평일은 오후 8시까지 진료합니다. 일요일·공휴일은 휴진합니다.', array['성형외과', '피부과']::text[], false, false, true, null),
+  ('onkyeoldam', '온결담성형외과', '온결담성형외과', '서울 강남구', '서울특별시 강남구 압구정동', 37.5268, 127.0302, null, null, '[{"label":"월–금","days":["Mo","Tu","We","Th","Fr"],"open":"10:00","close":"19:00"},{"label":"토","days":["Sa"],"open":"10:00","close":"16:00"}]'::jsonb, '눈·코 성형과 사각턱 수술을 진료하는 성형외과입니다. 상담은 예약제로 진행합니다. 일요일·공휴일은 휴진합니다.', array['성형외과']::text[], false, false, true, null),
+  ('roabit', '로아빛의원', '로아빛의원', '서울 마포구', '서울특별시 마포구 서교동', 37.5553, 126.9213, null, null, '[{"label":"월·화·목·금","days":["Mo","Tu","Th","Fr"],"open":"11:00","close":"20:00"},{"label":"수","days":["We"],"open":"11:00","close":"17:00"},{"label":"토","days":["Sa"],"open":"10:00","close":"15:00"}]'::jsonb, '레이저 피부 시술과 실리프팅, 눈 성형을 진료하는 의원입니다. 수요일은 오후 5시에 진료를 마칩니다. 일요일·공휴일은 휴진합니다.', array['성형외과', '피부과']::text[], false, false, true, null),
+  ('hwidamgyeol', '휘담결성형외과', '휘담결성형외과', '서울 송파구', '서울특별시 송파구 잠실동', 37.5106, 127.0855, null, null, '[{"label":"월–금","days":["Mo","Tu","We","Th","Fr"],"open":"09:30","close":"18:30"},{"label":"토","days":["Sa"],"open":"09:30","close":"13:30"}]'::jsonb, '얼굴 윤곽 수술과 가슴 성형, 코 성형, 피부 시술을 진료하는 성형외과입니다. 수술 전 검사와 마취 상담을 마친 뒤 수술 일정을 정합니다. 일요일·공휴일은 휴진합니다.', array['성형외과']::text[], false, false, true, null),
+  ('haereumgyeol', '해름결성형외과', '해름결성형외과', '부산 해운대구', '부산광역시 해운대구 우동', 35.1628, 129.1602, null, null, '[{"label":"월·화·수·금","days":["Mo","Tu","We","Fr"],"open":"10:00","close":"19:00"},{"label":"목","days":["Th"],"open":"10:00","close":"20:30"},{"label":"토","days":["Sa"],"open":"10:00","close":"15:00"}]'::jsonb, '눈 성형, 얼굴 윤곽 수술, 가슴 성형과 피부 시술을 진료하는 성형외과입니다. 목요일은 오후 8시 30분까지 진료합니다. 일요일·공휴일은 휴진합니다.', array['성형외과']::text[], false, false, true, null)
 on conflict ("id") do update set "name" = excluded."name", "slug" = excluded."slug", "region" = excluded."region", "address" = excluded."address", "lat" = excluded."lat", "lng" = excluded."lng", "phone" = excluded."phone", "kakao_url" = excluded."kakao_url", "hours" = excluded."hours", "description" = excluded."description", "specialties" = excluded."specialties", "is_premium" = excluded."is_premium", "is_partner" = excluded."is_partner", "is_demo" = excluded."is_demo", "ad_review_no" = excluded."ad_review_no";
 
 insert into public.clinic_procedures ("clinic_id", "procedure_id", "price_low", "price_high", "price_note", "duration_min", "price_updated_at") values
@@ -101,7 +105,31 @@ insert into public.clinic_procedures ("clinic_id", "procedure_id", "price_low", 
   ('saesolgyeol', 'laser-toning', 40000, 120000, '1회 기준', 20, '2026-10-05'::date),
   ('saesolgyeol', 'thread-lift', 600000, 2500000, null, 40, '2026-10-05'::date),
   ('saesolgyeol', 'double-eyelid', 600000, 1800000, null, 60, '2026-10-05'::date),
-  ('saesolgyeol', 'lower-fat-repositioning', 1200000, 2600000, null, 60, '2026-10-05'::date)
+  ('saesolgyeol', 'lower-fat-repositioning', 1200000, 2600000, null, 60, '2026-10-05'::date),
+  ('onkyeoldam', 'double-eyelid', 800000, 2400000, null, 60, '2026-10-14'::date),
+  ('onkyeoldam', 'epicanthoplasty', 900000, 2000000, null, 40, '2026-10-14'::date),
+  ('onkyeoldam', 'ptosis-correction', 1200000, 3500000, null, 90, '2026-10-14'::date),
+  ('onkyeoldam', 'lower-fat-repositioning', 1500000, 3000000, null, 60, '2026-10-14'::date),
+  ('onkyeoldam', 'rhinoplasty', 1800000, 5800000, null, 120, '2026-10-14'::date),
+  ('onkyeoldam', 'square-jaw-reduction', 4200000, 7000000, null, 150, '2026-10-14'::date),
+  ('roabit', 'laser-toning', 30000, 90000, '1회 기준', 20, '2026-10-08'::date),
+  ('roabit', 'thread-lift', 500000, 2200000, null, 40, '2026-10-08'::date),
+  ('roabit', 'double-eyelid', 550000, 1600000, null, 60, '2026-10-08'::date),
+  ('roabit', 'epicanthoplasty', 700000, 1500000, null, 40, '2026-10-08'::date),
+  ('roabit', 'ptosis-correction', 700000, 2400000, null, 90, '2026-10-08'::date),
+  ('roabit', 'lower-fat-repositioning', 1100000, 2400000, null, 60, '2026-10-08'::date),
+  ('hwidamgyeol', 'rhinoplasty', 1200000, 4800000, null, 120, '2026-09-22'::date),
+  ('hwidamgyeol', 'square-jaw-reduction', 3800000, 6500000, null, 150, '2026-09-22'::date),
+  ('hwidamgyeol', 'zygoma-reduction', 4200000, 7000000, null, 120, '2026-09-22'::date),
+  ('hwidamgyeol', 'thread-lift', 900000, 3500000, null, 40, '2026-09-22'::date),
+  ('hwidamgyeol', 'breast-augmentation', 7000000, 12000000, null, 120, '2026-09-22'::date),
+  ('hwidamgyeol', 'laser-toning', 40000, 130000, '1회 기준', 20, '2026-09-22'::date),
+  ('haereumgyeol', 'epicanthoplasty', 750000, 1700000, null, 40, '2026-10-17'::date),
+  ('haereumgyeol', 'ptosis-correction', 900000, 2800000, null, 90, '2026-10-17'::date),
+  ('haereumgyeol', 'square-jaw-reduction', 3500000, 6000000, null, 150, '2026-10-17'::date),
+  ('haereumgyeol', 'zygoma-reduction', 4000000, 6500000, null, 120, '2026-10-17'::date),
+  ('haereumgyeol', 'laser-toning', 50000, 150000, '1회 기준', 20, '2026-10-17'::date),
+  ('haereumgyeol', 'breast-augmentation', 6000000, 10000000, null, 120, '2026-10-17'::date)
 on conflict ("clinic_id", "procedure_id") do update set "price_low" = excluded."price_low", "price_high" = excluded."price_high", "price_note" = excluded."price_note", "duration_min" = excluded."duration_min", "price_updated_at" = excluded."price_updated_at";
 
 insert into public.posts ("id", "slug", "title", "summary", "content_mdx", "author_id", "published_at", "updated_at") values
