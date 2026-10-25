@@ -1,5 +1,5 @@
 name: Generate images (Gemini)
-# 비용이 드는 작업(1장 약 $0.05). 실행 조건: feat/** 브랜치에서 content/images/request.json 이 바뀐 push, 또는 수동 실행.
+# 비용이 드는 작업(1장 $0.034~0.05). 요청 형식 content/images/request.json: { "batch": 1, "max": 50, "run": 1 } 또는 { "ids": "a,b", ... }. 실행 조건: feat/** 브랜치에서 content/images/request.json 이 바뀐 push, 또는 수동 실행.
 # 결과(후보 이미지 + 실행 로그)는 검토용 브랜치 gen-images 에 커밋한다. 배포(main)와 무관.
 # 필요: 저장소 Settings → Secrets and variables → Actions → GEMINI_API_KEY
 on:
@@ -27,13 +27,12 @@ jobs:
         run: |
           set -o pipefail
           REQ=content/images/request.json
-          IDS=$(node -p "require('./$REQ').ids")
-          VARIANTS=$(node -p "require('./$REQ').variants")
+          SEL=$(node -p "const r=require('./$REQ'); r.ids ? '--ids '+r.ids : '--batch '+r.batch")
           MAX=$(node -p "require('./$REQ').max")
           RUN=$(node -p "require('./$REQ').run")
           echo "RUN=$RUN" >> "$GITHUB_ENV"
           mkdir -p .gen-candidates
-          node scripts/gen-images.mjs --ids "$IDS" --variants "$VARIANTS" --max "$MAX" --out-dir .gen-candidates 2>&1 | tee .gen-candidates/log.txt
+          node scripts/gen-images.mjs $SEL --max "$MAX" --out-dir .gen-candidates 2>&1 | tee .gen-candidates/log.txt
       - name: Commit candidates and log to gen-images branch
         if: always()
         run: |
