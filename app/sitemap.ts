@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { isPathBuilt } from "@/lib/built-routes";
 import { loadContent } from "@/lib/content";
 import { ROUTES, clinicPath, postPath, procedurePath } from "@/lib/routes";
+import { consultMode } from "@/lib/consult/mode";
 import { absoluteUrl } from "@/lib/seo";
 
 // 정적 export: 빌드 시 sitemap.xml 파일로 생성된다. 실제로 만들어진 화면만 넣는다(lib/built-routes).
@@ -24,7 +25,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
   }
   add(ROUTES.blog, latest, 0.6);
   for (const p of posts) add(postPath(p.slug), p.updated_at, 0.6);
-  add(ROUTES.consult, latest, 0.5);
+  // 시연 모드(전송 없음)에서는 상담 폼이 noindex 이므로 sitemap 에서도 뺀다
+  if (consultMode() === "live") add(ROUTES.consult, latest, 0.5);
   add(ROUTES.terms, latest, 0.2);
   add(ROUTES.privacy, latest, 0.2);
   return entries;

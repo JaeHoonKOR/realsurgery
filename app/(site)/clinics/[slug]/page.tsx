@@ -303,7 +303,7 @@ export default async function ClinicPage({ params }: { params: Promise<Params> }
           location="mid"
           clinicId={clinic.id}
           title={`${clinic.name} 시술, 상담 가이드로 정리해 드립니다`}
-          benefit="관심 시술과 희망 시기만 남기면 영업일 기준 1일 안에 연락드립니다. 상담 신청은 무료입니다."
+          benefit="관심 시술과 희망 시기만 남기면 됩니다. 신청 비용은 들지 않습니다."
         />
       </section>
       )}

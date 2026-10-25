@@ -35,14 +35,14 @@ const FLOW = [
   {
     id: "flow-request",
     fallback: "clipboard",
-    title: "1분 상담 신청",
-    body: "관심 시술과 희망 지역·시기, 연락처만 남기면 됩니다. 비용은 들지 않습니다.",
+    title: "상담 신청",
+    body: "관심 시술과 희망 지역·시기, 연락처만 남기면 됩니다. 신청 비용은 들지 않습니다.",
   },
   {
     id: "flow-connect",
     fallback: "phone",
-    title: "영업일 1일 내 연락",
-    body: "상담 때 확인할 질문과 견적 체크리스트를 정리해 연락드립니다.",
+    title: "상담 가이드 받기",
+    body: "상담 때 확인할 질문과 견적 체크리스트, 회복 일정을 정리해 드립니다.",
   },
 ] as const;
 
@@ -338,7 +338,7 @@ export default function HomePage() {
           <SectionHeading
             id="home-flow"
             title="상담까지 이렇게 진행돼요"
-            description="비교는 바로, 상담 신청은 1분이면 끝납니다. 신청 후 연락은 운영팀이 드립니다."
+            description="비교는 바로 하고, 상담 신청은 연락처만 남기면 끝납니다."
           />
           <ol className="mt-8 grid gap-4 md:grid-cols-3">
             {FLOW.map((step, i) => (
@@ -409,7 +409,7 @@ export default function HomePage() {
         <ConsultCta
           location="footer"
           title={hasProcedurePage ? "궁금한 시술, 상담 가이드로 정리해 드립니다" : undefined}
-          benefit="시술·지역·희망 시기만 남기면 영업일 기준 1일 안에 연락드립니다. 상담 신청은 무료입니다."
+          benefit="시술·지역·희망 시기만 남기면 됩니다. 신청 비용은 들지 않습니다."
         />
       </div>
     </>

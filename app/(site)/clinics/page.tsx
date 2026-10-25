@@ -192,7 +192,7 @@ export default function ClinicsPage() {
           <ConsultCta
             location="bottom"
             title="어느 병원이 맞을지 모르겠다면"
-            benefit="시술·지역·희망 시기만 남기면 상담 가이드를 정리해 영업일 기준 1일 안에 연락드립니다."
+            benefit="시술·지역·희망 시기만 남기면 상담 가이드를 정리해 드립니다. 신청 비용은 들지 않습니다."
           />
         </div>
       )}
