@@ -3,7 +3,7 @@
 import { ChevronLeft, LoaderCircle, RotateCw, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useLayoutEffect, useRef, useState, type FormEvent, type RefObject } from "react";
-import { Emoji3D, categoryEmoji, type EmojiName } from "@/components/ui/Emoji3D";
+import { Icon3D, categoryIcon, type IconName } from "@/components/ui/Icon3D";
 import { readAttribution } from "@/lib/consult/attribution";
 import { checkDuplicate, duplicateMessage, recordSubmission } from "@/lib/consult/duplicate";
 import { CONSULT_DONE_PATH, saveLeadSession } from "@/lib/consult/lead";
@@ -58,10 +58,10 @@ type Props = {
 
 type SubmitError = { kind: "duplicate" | "invalid" | "server" | "network"; message: string };
 
-const TIMING_EMOJI: Record<(typeof TIMING_OPTIONS)[number]["value"], EmojiName> = {
-  within_1m: "stopwatch",
-  within_3m: "calendar",
-  undecided: "chat",
+const TIMING_ICON: Record<(typeof TIMING_OPTIONS)[number]["value"], IconName> = {
+  within_1m: "ic-timing-soon",
+  within_3m: "ic-timing-later",
+  undecided: "ic-undecided",
 };
 
 /**
@@ -319,7 +319,7 @@ export function ConsultForm({ procedures, clinics, privacyHref, mode = "live" }:
               <p className="mt-1 text-sm text-ink-subtle">병원 상세에서 고른 병원입니다. 빼면 희망 지역 기준으로 안내해 드려요.</p>
               <div className="mt-4 flex items-center gap-3 rounded-md bg-canvas py-2 pr-2 pl-3">
                 <span className="flex size-11 shrink-0 items-center justify-center rounded-sm bg-surface">
-                  <Emoji3D name="hospital" size={32} />
+                  <Icon3D name="ic-clinic" size={32} />
                 </span>
                 <span className="min-w-0 flex-1">
                   <span className="block truncate font-bold text-ink">{clinic.name}</span>
@@ -362,7 +362,7 @@ export function ConsultForm({ procedures, clinics, privacyHref, mode = "live" }:
           <ChoiceGroup
             name="timing"
             legend="희망 시기"
-            options={TIMING_OPTIONS.map((o) => ({ ...o, icon: <Emoji3D name={TIMING_EMOJI[o.value]} size={32} /> }))}
+            options={TIMING_OPTIONS.map((o) => ({ ...o, icon: <Icon3D name={TIMING_ICON[o.value]} size={32} /> }))}
             value={values.timing}
             onChange={(v) => update({ timing: v as ConsultValues["timing"] })}
             error={errors.timing}
@@ -375,7 +375,7 @@ export function ConsultForm({ procedures, clinics, privacyHref, mode = "live" }:
         <div key="step2" data-testid="consult-step2" className="mt-8 grid gap-10 transition duration-300 starting:translate-y-2 starting:opacity-0">
           <section aria-label="신청 내용" className="flex items-center gap-3 rounded-lg bg-canvas p-4">
             <span className="flex size-12 shrink-0 items-center justify-center rounded-md bg-surface">
-              <Emoji3D name={procedure ? categoryEmoji(procedure.category_id) : "bulb"} size={32} />
+              <Icon3D name={procedure ? categoryIcon(procedure.category_id) : "ic-undecided"} size={32} />
             </span>
             <div className="min-w-0 flex-1">
               <p className="truncate font-bold text-ink">{procedure?.name ?? "관심 시술 상담"}</p>
@@ -531,7 +531,7 @@ export function ConsultForm({ procedures, clinics, privacyHref, mode = "live" }:
           data-testid="consult-submit-error"
           className="mt-8 flex gap-3 rounded-md bg-danger-weak p-4 focus:outline-none"
         >
-          <Emoji3D name="warning" size={24} className="mt-0.5" />
+          <Icon3D name="ic-caution" size={24} className="mt-0.5" />
           <div className="min-w-0 flex-1">
             <p className="font-semibold text-danger">{submitError.kind === "duplicate" ? "이미 접수된 신청이 있어요" : "신청을 보내지 못했어요"}</p>
             <p className="mt-0.5 text-sm text-ink-muted">{submitError.message}</p>

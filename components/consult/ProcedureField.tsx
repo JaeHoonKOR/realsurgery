@@ -2,7 +2,7 @@
 
 import { Check, ChevronDown, Search, X } from "lucide-react";
 import { useEffect, useId, useMemo, useRef, useState, type RefObject } from "react";
-import { Emoji3D, categoryEmoji } from "@/components/ui/Emoji3D";
+import { Icon3D, categoryIcon } from "@/components/ui/Icon3D";
 import { PROCEDURE_UNDECIDED } from "@/lib/consult/validation";
 import { normalizeQuery } from "@/lib/search";
 import { chip, cx } from "@/lib/ui";
@@ -108,7 +108,7 @@ export function ProcedureField({ procedures, value, onChange, error, triggerRef,
         )}
       >
         <span className="flex size-14 shrink-0 items-center justify-center rounded-sm bg-canvas">
-          {ready && (selected ? <Emoji3D name={categoryEmoji(selected.category_id)} size={40} /> : <Emoji3D name={undecided ? "bulb" : "search"} size={32} />)}
+          {ready && (selected ? <Icon3D name={categoryIcon(selected.category_id)} size={40} /> : <Icon3D name={undecided ? "ic-undecided" : "ic-search"} size={32} />)}
         </span>
         {/* 접근 가능한 이름 = "관심 시술:" + 보이는 글자 전부(label-content-name-mismatch 방지) */}
         <span className="sr-only">관심 시술: </span>
@@ -227,7 +227,7 @@ export function ProcedureField({ procedures, value, onChange, error, triggerRef,
                       )}
                     >
                       <span className="flex size-11 shrink-0 items-center justify-center rounded-sm bg-canvas">
-                        <Emoji3D name={categoryEmoji(p.category_id)} size={32} />
+                        <Icon3D name={categoryIcon(p.category_id)} size={32} />
                       </span>
                       <span className="min-w-0 flex-1">
                         <span className={cx("block font-bold", current ? "text-brand-ink" : "text-ink")}>{p.name}</span>
@@ -256,7 +256,7 @@ export function ProcedureField({ procedures, value, onChange, error, triggerRef,
               )}
             >
               <span className="flex size-11 shrink-0 items-center justify-center rounded-sm bg-canvas">
-                <Emoji3D name="bulb" size={32} />
+                <Icon3D name="ic-undecided" size={32} />
               </span>
               <span className="min-w-0 flex-1">
                 <span className={cx("block font-bold", undecided ? "text-brand-ink" : "text-ink")}>아직 정하지 못했어요</span>

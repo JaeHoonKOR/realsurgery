@@ -1,6 +1,6 @@
 import { ChevronRight } from "lucide-react";
 import { TrackedLink } from "@/components/common/TrackedLink";
-import { Emoji3D, categoryEmoji } from "@/components/ui/Emoji3D";
+import { Icon3D, categoryIcon } from "@/components/ui/Icon3D";
 import { PriceBar } from "@/components/ui/PriceBar";
 import { isPathBuilt } from "@/lib/built-routes";
 import { procedureScale } from "@/lib/clinic/view";
@@ -44,7 +44,7 @@ export function ClinicPriceList({ clinicName, rows, sharedUpdate }: Props) {
             <li key={offer.procedure_id} data-procedure={procedure.id} className="py-6 md:grid md:grid-cols-12 md:items-center md:gap-8">
               <div className="flex items-start gap-4 md:col-span-4">
                 <span className="flex size-12 shrink-0 items-center justify-center rounded-md bg-canvas">
-                  <Emoji3D name={categoryEmoji(procedure.category_id)} size={32} />
+                  <Icon3D name={categoryIcon(procedure.category_id)} size={32} />
                 </span>
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-x-2 gap-y-1">

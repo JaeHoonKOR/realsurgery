@@ -1,6 +1,6 @@
 import { MapPin } from "lucide-react";
 import { TrackedLink } from "@/components/common/TrackedLink";
-import { Emoji3D } from "@/components/ui/Emoji3D";
+import { Icon3D } from "@/components/ui/Icon3D";
 import { PriceBar } from "@/components/ui/PriceBar";
 import { isPathBuilt } from "@/lib/built-routes";
 import type { Procedure } from "@/lib/content";
@@ -107,7 +107,7 @@ export function PriceComparison({ procedure: p, comparison }: Props) {
         </>
       ) : (
         <div data-testid="price-empty" className="mt-6 flex flex-col items-start gap-4 rounded-xl bg-canvas-soft p-6 md:flex-row md:items-center md:p-8">
-          <Emoji3D name="hospital" size={48} />
+          <Icon3D name="ic-clinic" size={48} />
           <div>
             <p className="font-bold text-ink">아직 병원 공개 가격을 모으지 못했습니다</p>
             <p className="mt-1 text-ink-muted">

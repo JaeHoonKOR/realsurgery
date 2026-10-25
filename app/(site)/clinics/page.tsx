@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import { withShareDefaults } from "@/lib/seo";
+import { Info } from "lucide-react";
 import { Breadcrumb } from "@/components/common/Breadcrumb";
 import { ConsultCta } from "@/components/common/ConsultCta";
 import { ClinicExplorer } from "@/components/clinic/ClinicExplorer";
-import { Emoji3D } from "@/components/ui/Emoji3D";
+import { Icon3D } from "@/components/ui/Icon3D";
 import { PriceBar } from "@/components/ui/PriceBar";
 import { isPathBuilt } from "@/lib/built-routes";
 import { weekSummary } from "@/lib/clinic/hours";
@@ -120,7 +121,7 @@ export default function ClinicsPage() {
           </div>
           {allDemo && (
             <p data-testid="clinics-demo-notice" className="mt-5 inline-flex items-center gap-2 rounded-sm bg-surface px-3 py-2 text-sm text-ink-muted">
-              <Emoji3D name="memo" size={24} />
+              <Info aria-hidden="true" className="size-4 shrink-0 text-ink-subtle" />
               지금 보이는 병원은 모두 제휴 전 예시 데이터입니다. 실제 병원 정보가 아닙니다.
             </p>
           )}
@@ -138,7 +139,7 @@ export default function ClinicsPage() {
         </h2>
         <div className="mt-8 grid gap-4 md:grid-cols-12">
           <div className="flex flex-col rounded-lg bg-canvas p-6 md:col-span-7 md:p-8">
-            <Emoji3D name="chart" size={48} />
+            <Icon3D name="ic-scale" size={48} />
             <h3 className="mt-5 text-h3 font-bold tracking-tight text-ink">같은 눈금 위에서 비교합니다</h3>
             <p className="mt-2 text-ink-muted">
               막대의 양 끝은 그 시술의 전체 공개 가격 범위입니다. 병원마다 따로 그리지 않고 같은 눈금에 올려, 숫자를 읽기
@@ -174,12 +175,12 @@ export default function ClinicsPage() {
           </div>
           <div className="grid gap-4 md:col-span-5">
             <div className="rounded-lg bg-canvas p-6 md:p-8">
-              <Emoji3D name="calendar" size={40} />
+              <Icon3D name="ic-calendar" size={40} />
               <h3 className="mt-4 text-lg font-bold text-ink">갱신일을 함께 적습니다</h3>
               <p className="mt-1 text-ink-muted">가격은 병원이 공개한 값을 그대로 옮기고, 병원마다 마지막 갱신일을 표시합니다.</p>
             </div>
             <div className="rounded-lg bg-canvas p-6 md:p-8">
-              <Emoji3D name="shield" size={40} />
+              <Icon3D name="ic-fair" size={40} />
               <h3 className="mt-4 text-lg font-bold text-ink">평점으로 줄 세우지 않습니다</h3>
               <p className="mt-1 text-ink-muted">후기·평점 순위는 쓰지 않습니다. 광고(프리미엄) 병원은 표시를 붙여 구분합니다.</p>
             </div>

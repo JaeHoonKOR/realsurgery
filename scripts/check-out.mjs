@@ -1,6 +1,6 @@
 // 빌드 산출물(out/) 정적 검사 (docs/QUALITY.md 1절 "이미지"·"링크")
 // - 내부 링크·에셋(href/src)이 out/ 안의 실제 파일로 해석되는지 (깨진 내부 링크 0)
-// - <img>: alt·width·height 필수, 래스터는 WebP/AVIF만
+// - <img>: alt·width·height 필수, 래스터는 WebP/AVIF만. srcset 후보 URL 도 out/ 안의 실제 파일인지
 // - GA/Pixel 하드코딩 금지 (gtag( / fbq( / gtag.js / fbevents.js)
 // - GitHub Pages용 .nojekyll 존재
 import fs from "node:fs";
@@ -58,6 +58,18 @@ for (const file of htmlFiles) {
     }
     const inOut = basePath ? pathname.slice(basePath.length) || "/" : pathname;
     if (!existsInOut(inOut)) problems.push(`${rel}: 깨진 내부 링크 ${raw}`);
+  }
+
+  // 반응형 srcset(img·preload link) 후보 URL 도 실제 파일이어야 한다(lib/image-loader.ts → -640·-1024·원본 변형)
+  for (const m of html.matchAll(/\s(?:srcset|imagesrcset)="([^"]+)"/gi)) {
+    for (const candidate of m[1].replace(/&amp;/g, "&").split(",")) {
+      const url = candidate.trim().split(/\s+/)[0];
+      if (!url || /^(https?:|data:)/i.test(url) || url.startsWith("//")) continue;
+      const pathname = url.split(/[?#]/)[0];
+      const inOut = basePath && pathname.startsWith(`${basePath}/`) ? pathname.slice(basePath.length) : pathname;
+      if (!existsInOut(inOut)) problems.push(`${rel}: srcset 의 깨진 이미지 ${url}`);
+      if (!/\.(webp|avif|svg)$/i.test(pathname)) problems.push(`${rel}: srcset 에 WebP/AVIF/SVG 아닌 이미지 ${url}`);
+    }
   }
 
   for (const m of html.matchAll(/<img\b[^>]*>/g)) {

@@ -2,18 +2,19 @@ import type { Metadata } from "next";
 import { withShareDefaults } from "@/lib/seo";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { BadgeCheck, ChevronRight, MapPin, MessageCircle, Phone } from "lucide-react";
+import { BadgeCheck, ChevronRight, Info, MapPin, MessageCircle, Phone } from "lucide-react";
 import { BottomBar } from "@/components/common/BottomBar";
 import { Breadcrumb } from "@/components/common/Breadcrumb";
 import { ConsultCta } from "@/components/common/ConsultCta";
 import { TrackedLink } from "@/components/common/TrackedLink";
+import { ClinicPhoto } from "@/components/clinic/ClinicPhoto";
 import { ClinicPriceList } from "@/components/clinic/ClinicPriceList";
 import { ClinicViewTracker } from "@/components/clinic/ClinicViewTracker";
 import { HoursTable } from "@/components/clinic/HoursTable";
 import { LocationCard } from "@/components/clinic/LocationCard";
 import { OpenStatus } from "@/components/clinic/OpenStatus";
 import { SectionNav } from "@/components/clinic/SectionNav";
-import { Emoji3D } from "@/components/ui/Emoji3D";
+import { Icon3D } from "@/components/ui/Icon3D";
 import { isPathBuilt } from "@/lib/built-routes";
 import { weekSummary } from "@/lib/clinic/hours";
 import { slugParams } from "@/lib/clinic/static-params";
@@ -31,6 +32,7 @@ import {
 import { loadContent, type Clinic, type Procedure } from "@/lib/content";
 import { siteUrl } from "@/lib/env.public";
 import { formatDate, formatManwon, formatPriceRange } from "@/lib/format";
+import { clinicImageId, hasAsset } from "@/lib/gen-assets";
 import { ROUTES, clinicPath } from "@/lib/routes";
 import { SITE } from "@/lib/site";
 import { btn, chip, container, cx, section } from "@/lib/ui";
@@ -118,6 +120,29 @@ export default async function ClinicPage({ params }: { params: Promise<Params> }
   );
 
   const categoryNames = [...new Set(rows.map((r) => r.category?.name).filter(Boolean))] as string[];
+  // 병원 예시 사진이 있으면 헤더 오른쪽(모바일은 제목 아래 전폭)에 두고 큰 병원 아이콘 타일은 뺀다(asset-plan 5절)
+  const photo = hasAsset(clinicImageId(clinic.id));
+  const summary = (
+    <dl
+      data-testid="clinic-summary"
+      className={cx("grid grid-cols-3 divide-x divide-line rounded-lg bg-surface py-4 md:py-5", photo ? "mt-3" : "md:col-span-5")}
+    >
+      <div className="px-4 md:px-5">
+        <dt className="text-xs text-ink-subtle">공개 시술</dt>
+        <dd className="mt-1 text-lg font-bold text-ink tabular-nums">{rows.length}개</dd>
+      </div>
+      <div className="px-4 md:px-5">
+        <dt className="text-xs text-ink-subtle">시작 가격</dt>
+        <dd className="mt-1 text-lg font-bold text-ink tabular-nums">
+          {span.low != null ? `${formatManwon(span.low)}원` : "상담 후"}
+        </dd>
+      </div>
+      <div className="px-4 md:px-5">
+        <dt className="text-xs text-ink-subtle">가격 갱신</dt>
+        <dd className="mt-1 text-lg font-bold text-ink tabular-nums">{latest ? formatMonthDay(latest) : "—"}</dd>
+      </div>
+    </dl>
+  );
 
   return (
     <>
@@ -135,12 +160,14 @@ export default async function ClinicPage({ params }: { params: Promise<Params> }
             ]}
           />
 
-          <div className="mt-6 grid gap-8 md:mt-8 md:grid-cols-12 md:items-end md:gap-10">
+          <div className={cx("mt-6 grid gap-8 md:mt-8 md:grid-cols-12 md:gap-10", photo ? "md:items-center" : "md:items-end")}>
             <div className="md:col-span-7">
-              <span className="flex size-20 items-center justify-center rounded-lg bg-surface">
-                <Emoji3D name="hospital" size={56} priority />
-              </span>
-              <div className="mt-6 flex flex-wrap items-center gap-2">
+              {!photo && (
+                <span className="flex size-20 items-center justify-center rounded-lg bg-surface">
+                  <Icon3D name="ic-clinic" size={56} priority />
+                </span>
+              )}
+              <div className={cx("flex flex-wrap items-center gap-2", !photo && "mt-6")}>
                 {clinic.is_premium && (
                   <span data-testid="clinic-premium" className={cx(chip.base, chip.brand, "h-7 text-xs")}>
                     <BadgeCheck aria-hidden="true" className="size-4" />
@@ -176,26 +203,20 @@ export default async function ClinicPage({ params }: { params: Promise<Params> }
               )}
             </div>
 
-            {/* 한눈 요약 — 공개 시술 수 · 시작 가격 · 가격 갱신일 */}
-            <dl
-              data-testid="clinic-summary"
-              className="grid grid-cols-3 divide-x divide-line rounded-lg bg-surface py-4 md:col-span-5 md:py-5"
-            >
-              <div className="px-4 md:px-5">
-                <dt className="text-xs text-ink-subtle">공개 시술</dt>
-                <dd className="mt-1 text-lg font-bold text-ink tabular-nums">{rows.length}개</dd>
+            {/* 한눈 요약 — 공개 시술 수 · 시작 가격 · 가격 갱신일 (사진이 있으면 사진 아래) */}
+            {photo ? (
+              <div className="md:col-span-5">
+                <ClinicPhoto
+                  clinicId={clinic.id}
+                  className="rounded-lg md:aspect-4/3"
+                  sizes="(min-width: 768px) 460px, 100vw"
+                  priority
+                />
+                {summary}
               </div>
-              <div className="px-4 md:px-5">
-                <dt className="text-xs text-ink-subtle">시작 가격</dt>
-                <dd className="mt-1 text-lg font-bold text-ink tabular-nums">
-                  {span.low != null ? `${formatManwon(span.low)}원` : "상담 후"}
-                </dd>
-              </div>
-              <div className="px-4 md:px-5">
-                <dt className="text-xs text-ink-subtle">가격 갱신</dt>
-                <dd className="mt-1 text-lg font-bold text-ink tabular-nums">{latest ? formatMonthDay(latest) : "—"}</dd>
-              </div>
-            </dl>
+            ) : (
+              summary
+            )}
           </div>
 
           {clinic.is_demo && (
@@ -204,7 +225,7 @@ export default async function ClinicPage({ params }: { params: Promise<Params> }
               data-testid="clinic-demo-notice"
               className="mt-8 flex items-start gap-3 rounded-md bg-surface px-4 py-3.5 md:items-center"
             >
-              <Emoji3D name="memo" size={24} className="mt-0.5 md:mt-0" />
+              <Info aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-ink-subtle md:mt-0" />
               <p className="text-sm text-ink-muted">
                 <strong className="font-semibold text-ink">제휴 전 예시 데이터입니다. 실제 병원 정보가 아닙니다.</strong>{" "}
                 화면 구성을 보여 드리기 위한 가상의 병원이며, 가격은 같은 시술의 공개 가격대를 참고해 만들었습니다.
@@ -255,7 +276,7 @@ export default async function ClinicPage({ params }: { params: Promise<Params> }
           </div>
           <div className="rounded-lg bg-surface md:col-span-6 md:border md:border-line md:p-5">
             <h3 className="flex items-center gap-2 px-1 pb-3 text-lg font-bold text-ink md:px-3">
-              <Emoji3D name="calendar" size={24} />
+              <Icon3D name="ic-calendar" size={24} />
               요일별 진료 시간
             </h3>
             <HoursTable hours={clinic.hours} />
@@ -369,21 +390,35 @@ export default async function ClinicPage({ params }: { params: Promise<Params> }
               const lowestName = lowest ? procById.get(lowest.procedure_id)?.name : null;
               const sharedNames = shared.map((id) => procById.get(id)?.name).filter(Boolean) as string[];
               const href = clinicPath(other.slug);
+              const otherPhoto = hasAsset(clinicImageId(other.id));
+              const demoChip = other.is_demo && <span className={cx(chip.base, chip.outline, "h-7 bg-surface text-xs")}>예시 데이터</span>;
               return (
                 <li key={other.id}>
                   <TrackedLink
                     href={href}
                     event="select_clinic"
                     params={{ clinic_id: other.id, from: "clinic" }}
-                    className="flex h-full flex-col rounded-lg bg-canvas p-6 transition-colors hover:bg-line"
+                    className={cx(
+                      "flex h-full flex-col rounded-lg bg-canvas p-6 transition-colors hover:bg-line",
+                      otherPhoto && "overflow-hidden",
+                    )}
                   >
-                    <div className="flex items-center justify-between gap-3">
-                      <span className="flex size-12 items-center justify-center rounded-md bg-surface">
-                        <Emoji3D name="hospital" size={32} />
-                      </span>
-                      {other.is_demo && <span className={cx(chip.base, chip.outline, "h-7 bg-surface text-xs")}>예시 데이터</span>}
-                    </div>
-                    <h3 className="mt-4 text-h3 font-bold tracking-tight text-ink">{other.name}</h3>
+                    {otherPhoto ? (
+                      <>
+                        <ClinicPhoto clinicId={other.id} className="-mx-6 -mt-6 mb-5" />
+                        {demoChip && <div className="flex">{demoChip}</div>}
+                      </>
+                    ) : (
+                      <div className="flex items-center justify-between gap-3">
+                        <span className="flex size-12 items-center justify-center rounded-md bg-surface">
+                          <Icon3D name="ic-clinic" size={32} />
+                        </span>
+                        {demoChip}
+                      </div>
+                    )}
+                    <h3 className={cx("text-h3 font-bold tracking-tight text-ink", otherPhoto ? demoChip && "mt-3" : "mt-4")}>
+                      {other.name}
+                    </h3>
                     <p className="mt-1 text-sm text-ink-muted">
                       {other.region}
                       {distance != null && <span> · 여기서 {formatDistance(distance)}</span>}

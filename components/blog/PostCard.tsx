@@ -21,7 +21,7 @@ export function PostCard({ post, headingLevel = "h3" }: { post: Post; headingLev
         aspect="16:9"
         fallback={cover.fallback}
         alt=""
-        sizes="(min-width: 1024px) 360px, (min-width: 640px) 50vw, 100vw"
+        sizes="(min-width: 1024px) 352px, (min-width: 640px) 50vw, 100vw"
       />
       <div className="flex flex-1 flex-col p-6">
         <Heading className="text-h3 font-bold tracking-tight text-ink group-hover:underline">{post.title}</Heading>

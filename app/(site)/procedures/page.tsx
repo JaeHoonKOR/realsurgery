@@ -4,7 +4,7 @@ import { Breadcrumb } from "@/components/common/Breadcrumb";
 import { ConsultCta } from "@/components/common/ConsultCta";
 import { CategoryChips } from "@/components/procedure/CategoryChips";
 import { ProcedureCard } from "@/components/procedure/ProcedureCard";
-import { Emoji3D, categoryEmoji } from "@/components/ui/Emoji3D";
+import { Icon3D, categoryIcon } from "@/components/ui/Icon3D";
 import { isPathBuilt } from "@/lib/built-routes";
 import { loadContent } from "@/lib/content";
 import { siteUrl } from "@/lib/env.public";
@@ -86,7 +86,7 @@ export default function ProceduresPage() {
           slug: g.category.slug,
           name: g.category.name,
           count: g.procedures.length,
-          emoji: categoryEmoji(g.category.id),
+          icon: categoryIcon(g.category.id),
         }))}
       />
 
@@ -102,7 +102,7 @@ export default function ProceduresPage() {
             >
               <div className="flex items-center gap-4 lg:col-span-4 lg:flex-col lg:items-start lg:pt-2">
                 <span className="flex size-14 shrink-0 items-center justify-center rounded-lg bg-surface lg:size-16">
-                  <Emoji3D name={categoryEmoji(category.id)} size={40} />
+                  <Icon3D name={categoryIcon(category.id)} size={40} />
                 </span>
                 <div>
                   <h2 id={`category-${category.id}`} className="text-h2 font-bold tracking-tight text-ink">

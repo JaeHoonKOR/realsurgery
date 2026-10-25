@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { X } from "lucide-react";
 import { useEffect, useRef } from "react";
-import { Emoji3D, categoryEmoji } from "@/components/ui/Emoji3D";
+import { Icon3D, categoryIcon } from "@/components/ui/Icon3D";
 import { PriceBar } from "@/components/ui/PriceBar";
 import { compareRows, lowestStart } from "@/lib/clinic/compare";
 import type { ClinicCardData, ProcedureOption } from "@/lib/clinic/types";
@@ -101,7 +101,7 @@ export function ComparePanel({ open, clinics, procedures, onClose }: Props) {
                     <th key={c.id} scope="col" className="sticky top-0 border-b border-line bg-surface px-5 py-4 align-bottom">
                       <span className="flex items-center gap-2.5">
                         <span className="flex size-9 shrink-0 items-center justify-center rounded-sm bg-canvas">
-                          <Emoji3D name="hospital" size={24} />
+                          <Icon3D name="ic-clinic" size={24} />
                         </span>
                         <span className="min-w-0">
                           {c.href ? (
@@ -128,7 +128,7 @@ export function ComparePanel({ open, clinics, procedures, onClose }: Props) {
                     <tr key={p.id} data-procedure={p.id} className="max-md:block max-md:border-b max-md:border-line max-md:px-5 max-md:py-5">
                       <th scope="row" className="border-line bg-surface align-top max-md:block md:sticky md:left-0 md:z-(--z-raised) md:border-b md:px-8 md:py-4">
                         <span className="flex items-center gap-2.5 md:items-start">
-                          <Emoji3D name={categoryEmoji(p.category_id)} size={24} className="md:mt-0.5" />
+                          <Icon3D name={categoryIcon(p.category_id)} size={24} className="md:mt-0.5" />
                           <span className="flex min-w-0 flex-1 flex-wrap items-baseline justify-between gap-x-3 md:block">
                             <span className="block font-bold text-ink">{p.name}</span>
                             <span className="block text-xs font-medium text-ink-subtle tabular-nums">

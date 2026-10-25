@@ -1,11 +1,11 @@
 "use client";
 
-import { ChevronRight, Copy, Check as CheckIcon } from "lucide-react";
+import { ChevronRight, Copy, Check as CheckIcon, MessageCircle } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { TrackedLink } from "@/components/common/TrackedLink";
-import { Emoji3D, categoryEmoji, type EmojiName } from "@/components/ui/Emoji3D";
+import { Icon3D, categoryIcon, type IconName } from "@/components/ui/Icon3D";
 import { claimLeadConversion, formatKstDateTime, formatLeadNumber, readLeadSession, type LeadSession } from "@/lib/consult/lead";
 import { consultCopy, type ConsultMode } from "@/lib/consult/mode";
 import { ROUTES } from "@/lib/routes";
@@ -25,28 +25,28 @@ type Props = {
   mode?: ConsultMode;
 };
 
-type ChecklistItem = { emoji: EmojiName; title: string; body: string };
+type ChecklistItem = { icon: IconName; title: string; body: string };
 
 /** 실제 접수(live)일 때만 — 운영팀이 전화한다는 안내 */
 const CALL_ITEM: ChecklistItem = {
-  emoji: "phone",
+  icon: "ic-callback",
   title: "모르는 번호도 받아 주세요",
   body: "운영팀 대표번호로 전화드려요. 받지 못하시면 문자로 다시 안내합니다.",
 };
 
 const CHECKLIST: ChecklistItem[] = [
   {
-    emoji: "memo",
+    icon: "ic-memo",
     title: "궁금한 점을 미리 적어 두세요",
     body: "원하는 모양, 회복 기간 동안의 일정, 예산 범위를 정리해 두면 상담이 빨라져요.",
   },
   {
-    emoji: "stethoscope",
+    icon: "ic-meds",
     title: "복용 중인 약과 병력을 확인하세요",
     body: "혈액 순환에 영향을 주는 약이나 이전 시술 이력은 상담 때 꼭 알려 주세요.",
   },
   {
-    emoji: "money",
+    icon: "ic-quote",
     title: "견적의 포함 항목을 비교하세요",
     body: "마취·검사·사후 관리 비용이 포함됐는지에 따라 같은 가격도 실제 부담이 달라져요.",
   },
@@ -108,7 +108,7 @@ export function DoneView({ related, fallback, kakaoChannelUrl, mode = "live" }: 
   return (
     <div data-testid="consult-done" className="transition duration-500 starting:translate-y-2 starting:opacity-0">
       <header>
-        <Emoji3D name="party" size={80} priority />
+        <Icon3D name="ic-done" size={96} priority />
         <h1 className="mt-5 text-h1 font-bold tracking-tighter text-ink">상담 신청이 접수됐습니다</h1>
         <p data-testid="consult-done-lead" className="mt-3 text-lg text-ink-muted">
           {text.doneLead}
@@ -158,7 +158,7 @@ export function DoneView({ related, fallback, kakaoChannelUrl, mode = "live" }: 
           params={{}}
           className={cx(btn.secondary, btn.md, "mt-4 w-full")}
         >
-          <Emoji3D name="chat" size={24} />
+          <MessageCircle aria-hidden="true" className="size-5" />
           카카오톡 채널 추가하고 알림 받기
         </TrackedLink>
       )}
@@ -171,7 +171,7 @@ export function DoneView({ related, fallback, kakaoChannelUrl, mode = "live" }: 
           {checklist.map((c, i) => (
             <li key={c.title} className="flex gap-4">
               <span className="relative flex size-12 shrink-0 items-center justify-center rounded-md bg-canvas">
-                <Emoji3D name={c.emoji} size={32} />
+                <Icon3D name={c.icon} size={32} />
                 <span className="sr-only">{i + 1}.</span>
               </span>
               <div className="min-w-0 pt-0.5">
@@ -193,7 +193,7 @@ export function DoneView({ related, fallback, kakaoChannelUrl, mode = "live" }: 
               const body = (
                 <>
                   <span className="flex size-12 shrink-0 items-center justify-center rounded-md bg-surface">
-                    <Emoji3D name={categoryEmoji(p.category_id)} size={32} />
+                    <Icon3D name={categoryIcon(p.category_id)} size={32} />
                   </span>
                   <span className="min-w-0 flex-1">
                     <span className="flex items-center gap-1.5">
