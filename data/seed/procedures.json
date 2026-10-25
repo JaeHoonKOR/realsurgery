@@ -15,9 +15,9 @@
     "updated_at": "2026-10-24",
     "view_count": 4820,
     "sources": [
-      { "title": "대한성형외과학회", "url": "https://www.plasticsurgery.or.kr/" },
-      { "title": "서울아산병원 검사·시술·수술 정보", "url": "https://www.amc.seoul.kr/asan/healthinfo/management/managementSubmain.do" },
-      { "title": "건강보험심사평가원 비급여 진료비 정보", "url": "https://www.hira.or.kr/" }
+      { "title": "서울아산병원 — 쌍꺼풀 수술(Double-eyelid surgery)", "url": "https://www.amc.seoul.kr/asan/healthinfo/management/managementDetail.do?managementId=156" },
+      { "title": "서울아산병원 성형외과 — 눈성형(쌍꺼풀 수술)", "url": "https://www.amc.seoul.kr/asan/depts/ps/K/content.do?menuId=1361" },
+      { "title": "Arch Aesthetic Plast Surg — Comprehensive Review of Asian Cosmetic Upper Eyelid Oculoplastic Surgery (2014)", "url": "https://e-aaps.org/journal/view.php?number=120&viewtype=pubreader" }
     ],
     "faqs": [
       {
@@ -58,9 +58,9 @@
     "updated_at": "2026-10-24",
     "view_count": 2150,
     "sources": [
-      { "title": "대한성형외과학회", "url": "https://www.plasticsurgery.or.kr/" },
-      { "title": "대한성형외과의사회", "url": "https://www.prskorea.co.kr/" },
-      { "title": "서울아산병원 검사·시술·수술 정보", "url": "https://www.amc.seoul.kr/asan/healthinfo/management/managementSubmain.do" }
+      { "title": "Arch Aesthetic Plast Surg — Comprehensive Review of Asian Cosmetic Upper Eyelid Oculoplastic Surgery (2014)", "url": "https://e-aaps.org/journal/view.php?number=120&viewtype=pubreader" },
+      { "title": "Arch Aesthetic Plast Surg — Medial Epicanthoplasty Using a Modified Skin Redraping Method (2014)", "url": "https://e-aaps.org/journal/view.php?number=140" },
+      { "title": "J Korean Soc Aesthetic Plast Surg — Medial Epicanthoplasty Using Direct Excision and Redraping Technique (2011)", "url": "https://e-aaps.org/journal/view.php?number=228" }
     ],
     "faqs": [
       {
@@ -101,9 +101,9 @@
     "updated_at": "2026-10-23",
     "view_count": 3360,
     "sources": [
-      { "title": "대한성형외과학회", "url": "https://www.plasticsurgery.or.kr/" },
-      { "title": "서울대학교병원 의학정보", "url": "https://www.snuh.org/health/nMedInfo/nList.do" },
-      { "title": "국가건강정보포털 (질병관리청)", "url": "https://health.kdca.go.kr/" }
+      { "title": "서울아산병원 — 안검하수 교정 수술(Correction of Blepharoptosis)", "url": "https://www.amc.seoul.kr/asan/healthinfo/management/managementDetail.do?managementId=154" },
+      { "title": "국가건강정보포털(질병관리청) — 눈꺼풀처짐(안검하수)", "url": "https://health.kdca.go.kr/healthinfo/biz/health/gnrlzHealthInfo/gnrlzHealthInfo/gnrlzHealthInfoView.do?cntnts_sn=5845" },
+      { "title": "세브란스병원 건강정보 — 안검하수(Blepharoptosis)", "url": "https://health.severance.healthcare/health/encyclopedia/disease/disease.do?mode=view&articleNo=118486&title=%EC%95%88%EA%B2%80%ED%95%98%EC%88%98+%5BBlepharoptosis%5D" }
     ],
     "faqs": [
       {
@@ -144,9 +144,9 @@
     "updated_at": "2026-10-22",
     "view_count": 2980,
     "sources": [
-      { "title": "대한성형외과학회", "url": "https://www.plasticsurgery.or.kr/" },
-      { "title": "서울아산병원 검사·시술·수술 정보", "url": "https://www.amc.seoul.kr/asan/healthinfo/management/managementSubmain.do" },
-      { "title": "국가건강정보포털 (질병관리청)", "url": "https://health.kdca.go.kr/" }
+      { "title": "서울아산병원 — 안검성형술(Blepharoplasty)", "url": "https://www.amc.seoul.kr/asan/healthinfo/management/managementDetail.do?managementId=155" },
+      { "title": "서울아산병원 성형외과 — 눈성형(하안검 성형술)", "url": "https://www.amc.seoul.kr/asan/depts/ps/K/content.do?menuId=1361" },
+      { "title": "J Pers Med — Surgical and Non-Surgical Approach for Tear Trough Correction: Fat Repositioning Versus Hyaluronic Acid Fillers (2024)", "url": "https://www.mdpi.com/2075-4426/14/11/1096" }
     ],
     "faqs": [
       {
@@ -187,9 +187,9 @@
     "updated_at": "2026-10-21",
     "view_count": 3710,
     "sources": [
-      { "title": "대한성형외과학회", "url": "https://www.plasticsurgery.or.kr/" },
-      { "title": "대한성형외과의사회", "url": "https://www.prskorea.co.kr/" },
-      { "title": "식품의약품안전처", "url": "https://www.mfds.go.kr/" }
+      { "title": "서울아산병원 — 코성형술(Rhinoplasty)", "url": "https://www.amc.seoul.kr/asan/healthinfo/management/managementDetail.do?managementId=234" },
+      { "title": "서울아산병원 — 코높임술(Augmentation rhinoplasty)", "url": "https://www.amc.seoul.kr/asan/healthinfo/management/managementDetail.do?managementId=235" },
+      { "title": "Clin Exp Otorhinolaryngol — Radiologic Findings of Complicated Alloplastic Implants in the Nasal Dorsum (2021)", "url": "https://synapse.koreamed.org/articles/1157865" }
     ],
     "faqs": [
       {
@@ -230,9 +230,9 @@
     "updated_at": "2026-10-20",
     "view_count": 1640,
     "sources": [
-      { "title": "대한성형외과학회", "url": "https://www.plasticsurgery.or.kr/" },
-      { "title": "서울아산병원 검사·시술·수술 정보", "url": "https://www.amc.seoul.kr/asan/healthinfo/management/managementSubmain.do" },
-      { "title": "서울대학교병원 의학정보", "url": "https://www.snuh.org/health/nMedInfo/nList.do" }
+      { "title": "서울아산병원 — 턱뼈각축소술(Mandibular angle reduction)", "url": "https://www.amc.seoul.kr/asan/healthinfo/management/managementDetail.do?managementId=237" },
+      { "title": "서울아산병원 질환백과 — 사각턱(Prominent mandible angle)", "url": "https://www.amc.seoul.kr/asan/healthinfo/disease/diseaseDetail.do?contentId=33927" },
+      { "title": "J Korean Assoc Oral Maxillofac Surg — Inferior Alveolar Nerve Cutting; Legal Liability versus Desired Patient Outcomes (2017)", "url": "https://synapse.koreamed.org/articles/1092004" }
     ],
     "faqs": [
       {
@@ -273,9 +273,9 @@
     "updated_at": "2026-10-20",
     "view_count": 1380,
     "sources": [
-      { "title": "대한성형외과학회", "url": "https://www.plasticsurgery.or.kr/" },
-      { "title": "대한성형외과의사회", "url": "https://www.prskorea.co.kr/" },
-      { "title": "서울아산병원 검사·시술·수술 정보", "url": "https://www.amc.seoul.kr/asan/healthinfo/management/managementSubmain.do" }
+      { "title": "서울아산병원 성형외과 — 얼굴뼈수술(광대뼈 축소술)", "url": "https://ps.amc.seoul.kr/asan/depts/ps/K/content.do?menuId=1359" },
+      { "title": "Arch Aesthetic Plast Surg — Concept of Reduction Malarplasty (2013)", "url": "https://e-aaps.org/journal/view.php?number=158" },
+      { "title": "J Korean Soc Aesthetic Plast Surg — Reduction Malarplasty (2010)", "url": "https://e-aaps.org/journal/view.php?number=262" }
     ],
     "faqs": [
       {
@@ -316,9 +316,9 @@
     "updated_at": "2026-10-19",
     "view_count": 1920,
     "sources": [
-      { "title": "대한성형외과의사회", "url": "https://www.prskorea.co.kr/" },
-      { "title": "식품의약품안전처", "url": "https://www.mfds.go.kr/" },
-      { "title": "국가건강정보포털 (질병관리청)", "url": "https://health.kdca.go.kr/" }
+      { "title": "Clin Cosmet Investig Dermatol — Thread Lifting Materials: A Review (2024)", "url": "https://www.dovepress.com/thread-lifting-materials-a-review-of-its-difference-in-terms-of-techni-peer-reviewed-fulltext-article-CCID" },
+      { "title": "Life — Pre- and Post-Procedural Considerations and Thread Types for Thread Lifting (2025)", "url": "https://www.mdpi.com/2075-1729/15/1/85" },
+      { "title": "Arch Aesthetic Plast Surg — Early Complications from Absorbable Anchoring Suture Following Thread-Lift (2017)", "url": "https://e-aaps.org/journal/view.php?number=52" }
     ],
     "faqs": [
       {
@@ -359,9 +359,9 @@
     "updated_at": "2026-10-18",
     "view_count": 1210,
     "sources": [
-      { "title": "국가건강정보포털 (질병관리청)", "url": "https://health.kdca.go.kr/" },
-      { "title": "서울대학교병원 의학정보", "url": "https://www.snuh.org/health/nMedInfo/nList.do" },
-      { "title": "건강보험심사평가원 비급여 진료비 정보", "url": "https://www.hira.or.kr/" }
+      { "title": "Medicina — The Low-Fluence Q-Switched Nd:YAG Laser Treatment for Melasma: A Systematic Review (2022)", "url": "https://www.mdpi.com/1648-9144/58/7/936" },
+      { "title": "식품의약품안전처 — 의료용레이저 안전사용 안내서", "url": "https://www.mfds.go.kr/brd/m_465/view.do?seq=27162" },
+      { "title": "서울아산병원 — 기미 치료와 예방", "url": "https://news.amc.seoul.kr/news/con/detail.do?cntId=7749" }
     ],
     "faqs": [
       {
@@ -402,9 +402,9 @@
     "updated_at": "2026-10-17",
     "view_count": 1050,
     "sources": [
-      { "title": "식품의약품안전처", "url": "https://www.mfds.go.kr/" },
-      { "title": "대한성형외과학회", "url": "https://www.plasticsurgery.or.kr/" },
-      { "title": "서울아산병원 검사·시술·수술 정보", "url": "https://www.amc.seoul.kr/asan/healthinfo/management/managementSubmain.do" }
+      { "title": "서울아산병원 — 유방확대술(Breast augmentation)", "url": "https://www.amc.seoul.kr/asan/healthinfo/management/managementDetail.do?managementId=232" },
+      { "title": "식품의약품안전처 — 인공유방 안전사용을 위한 안내서", "url": "https://www.mfds.go.kr/brd/m_465/view.do?seq=27163" },
+      { "title": "U.S. FDA — Risks and Complications of Breast Implants", "url": "https://www.fda.gov/medical-devices/breast-implants/risks-and-complications-breast-implants" }
     ],
     "faqs": [
       {
