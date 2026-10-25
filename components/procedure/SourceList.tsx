@@ -31,7 +31,7 @@ export function SourceList({ sources, updatedAt, authorName }: { sources: Source
               href={s.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex min-h-16 items-center justify-between gap-4 px-5 py-3 transition-colors hover:bg-canvas-soft"
+              className="flex min-h-14 items-center justify-between gap-4 px-5 py-3 md:min-h-16 transition-colors hover:bg-canvas-soft"
             >
               <span className="min-w-0">
                 <span className="block font-semibold text-ink">{s.title}</span>

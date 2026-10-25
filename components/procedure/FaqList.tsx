@@ -24,18 +24,18 @@ export function FaqList({ procedureId, items }: Props) {
     <div data-testid="faq-list" className="divide-y divide-line rounded-xl border border-line">
       {items.map((faq) => (
         <details key={faq.id} className="group" data-testid="faq-item" onToggle={onToggle(faq)}>
-          <summary className="flex min-h-14 cursor-pointer list-none items-start gap-3 px-5 py-4 text-left md:px-6 md:py-5 [&::-webkit-details-marker]:hidden">
-            <span aria-hidden="true" className="mt-px shrink-0 text-lg font-bold text-brand-strong">
+          <summary className="flex min-h-14 cursor-pointer list-none items-start gap-3 px-5 py-3.5 text-left md:px-6 md:py-5 [&::-webkit-details-marker]:hidden">
+            <span aria-hidden="true" className="shrink-0 font-bold text-brand-strong md:mt-px md:text-lg">
               Q
             </span>
-            <span className="flex-1 text-lg font-semibold tracking-tight text-ink">{faq.question}</span>
+            <span className="flex-1 font-semibold tracking-tight text-ink md:text-lg">{faq.question}</span>
             <ChevronDown
               aria-hidden="true"
               className="mt-1 size-5 shrink-0 text-ink-subtle transition-transform group-open:rotate-180"
             />
           </summary>
-          <div className="flex gap-3 px-5 pb-5 md:px-6 md:pb-6">
-            <span aria-hidden="true" className="shrink-0 text-lg font-bold text-ink-faint">
+          <div className="flex gap-3 px-5 pb-4 md:px-6 md:pb-6">
+            <span aria-hidden="true" className="shrink-0 font-bold text-ink-faint md:text-lg">
               A
             </span>
             <p className="text-base text-ink-muted">{faq.answer}</p>

@@ -3,10 +3,12 @@
 import { act, type ReactNode } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { CardRail } from "@/components/procedure/CardRail";
 import { CategoryChips } from "@/components/procedure/CategoryChips";
 import { FaqList } from "@/components/procedure/FaqList";
 import { ProcedureToc } from "@/components/procedure/ProcedureToc";
 import { ProcedureTracker } from "@/components/procedure/ProcedureTracker";
+import { ProseMore } from "@/components/procedure/ProseMore";
 
 (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
@@ -161,5 +163,44 @@ describe("CategoryChips (select_category)", () => {
     expect(links[0]!.getAttribute("aria-current")).toBe("location");
     act(() => links[1]!.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true })));
     expect(events()).toEqual([{ event: "select_category", category: "nose" }]);
+  });
+});
+
+describe("ProseMore (본문 자세히 보기)", () => {
+  it("네이티브 details: 처음엔 접혀 있지만 내용은 HTML 에 있고, 어느 섹션인지 화면낭독기에 알린다", () => {
+    render(<ProseMore html="<p>접힌 설명입니다.</p>" topic="누가 받나요" />);
+    const details = container.querySelector("details")!;
+    expect(details.open).toBe(false);
+    expect(details.querySelector(".prose-rs")!.innerHTML).toBe("<p>접힌 설명입니다.</p>");
+    const summary = details.querySelector("summary")!;
+    expect(summary.textContent).toBe("자세히 보기접기: 누가 받나요");
+    expect(summary.querySelector(".sr-only")!.textContent).toBe(": 누가 받나요");
+    act(() => {
+      details.open = true;
+    });
+    expect(details.open).toBe(true);
+  });
+
+  it("접을 내용이 없으면 그리지 않는다", () => {
+    render(<ProseMore html="" topic="x" />);
+    expect(container.innerHTML).toBe("");
+  });
+});
+
+describe("CardRail", () => {
+  it("카드마다 li 로 감싸고, 모바일 가로 넘김·sm 그리드 클래스를 붙인다", () => {
+    render(
+      <CardRail label="비슷한 시술">
+        <a href="/a/">A</a>
+        <a href="/b/">B</a>
+      </CardRail>,
+    );
+    const ul = container.querySelector("ul")!;
+    expect(ul.getAttribute("aria-label")).toBe("비슷한 시술");
+    expect(ul.className).toContain("overflow-x-auto");
+    expect(ul.className).toContain("sm:grid");
+    const items = [...ul.querySelectorAll(":scope > li")];
+    expect(items.map((li) => li.textContent)).toEqual(["A", "B"]);
+    expect(items.every((li) => li.className.includes("snap-start"))).toBe(true);
   });
 });

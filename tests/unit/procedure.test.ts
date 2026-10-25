@@ -4,7 +4,7 @@ import os from "node:os";
 import path from "node:path";
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import { buildData } from "../../scripts/build-data.mjs";
-import type { Clinic, Content, Procedure } from "@/lib/content";
+import type { Clinic, Content, Post, Procedure } from "@/lib/content";
 import { loadContent } from "@/lib/content";
 import {
   DESCRIPTION_MAX,
@@ -27,11 +27,14 @@ import {
   plainText,
   sectionKind,
   stripHtmlComments,
+  WIDE_TABLE_COLUMNS,
 } from "@/lib/procedure/markdown";
 import { decodeSlug, staticSlugParams } from "@/lib/procedure/params";
+import { linkedProcedureSlugs, postsLinkingTo } from "@/lib/procedure/posts";
 import { clinicCountByProcedure, comparePrices } from "@/lib/procedure/prices";
 import { similarProcedures } from "@/lib/procedure/related";
 import { SCROLL_THRESHOLDS, newThresholds, scrollPercent } from "@/lib/procedure/scroll";
+import { COLLAPSIBLE_KINDS, MORE_MIN_CHARS, sectionView, textLength } from "@/lib/procedure/sections";
 import { RESERVED_IDS, buildToc } from "@/lib/procedure/toc";
 
 let dir = "";
@@ -232,6 +235,32 @@ describe("lib/procedure/markdown — 본문 변환", () => {
     expect(sectionKind("붓기는 언제 빠지나요?")).toBe("recovery");
     expect(sectionKind("시술 과정")).toBe("other");
     expect(escapeHtml(`<a href="x">'&'</a>`)).toBe("&lt;a href=&quot;x&quot;&gt;&#39;&amp;&#39;&lt;/a&gt;");
+  });
+
+  it("본문 블록: 빈 줄을 뺀 최상위 블록마다 종류·HTML, 합치면 bodyHtml 과 같은 내용", () => {
+    const { sections } = parseProcedureMarkdown(MD, { reservedIds: RESERVED_IDS });
+    const [who, cost, recovery] = sections as [(typeof sections)[0], (typeof sections)[0], (typeof sections)[0]];
+    expect(who.blocks.map((b) => b.type)).toEqual(["list", "heading", "paragraph"]);
+    expect(cost.blocks.map((b) => b.type)).toEqual(["table", "other"]);
+    expect(recovery.blocks.map((b) => b.type)).toEqual(["table"]);
+    for (const s of sections) {
+      const squash = (h: string) => h.replace(/\s+/g, "");
+      expect(squash(s.blocks.map((b) => b.html).join("")), s.title).toBe(squash(s.bodyHtml));
+    }
+    // 같은 제목 토큰을 두 번 렌더링해도(본문 전체 + 블록) id 가 -2 로 밀리지 않는다
+    expect(who.blocks[1]!.html).toBe('<h3 id="매몰법과-절개법">매몰법과 절개법</h3>');
+    expect(who.bodyHtml).toContain('<h3 id="매몰법과-절개법">');
+    expect(who.bodyHtml).not.toContain("매몰법과-절개법-2");
+    // 원시 HTML 은 블록에서도 이스케이프
+    expect(cost.blocks[1]!.html).toContain("&lt;script&gt;");
+  });
+
+  it(`열이 ${WIDE_TABLE_COLUMNS}개 이상인 비교표는 is-wide(모바일에서도 표 모양), 그 미만은 그대로`, () => {
+    const wide = parseProcedureMarkdown("## 비교\n\n| 구분 | A | B | C |\n| --- | --- | --- | --- |\n| 가격 | 1 | 2 | 3 |\n");
+    expect(wide.sections[0]!.bodyHtml).toContain('<div class="prose-table is-wide" role="region" aria-label="구분, A, B, C 표" tabindex="0">');
+    const narrow = parseProcedureMarkdown(MD).sections[1]!.bodyHtml;
+    expect(narrow).toContain('<div class="prose-table" role="region"');
+    expect(narrow).not.toContain("is-wide");
   });
 
   it("H2 가 없으면 섹션 없이 도입부만", () => {
@@ -515,5 +544,132 @@ describe("lib/procedure/list — P-02 부위별 목록", () => {
     expect(d.length, d).toBeGreaterThanOrEqual(120);
     expect(d.length, d).toBeLessThanOrEqual(150);
     expect(d.startsWith("눈·코·윤곽·리프팅·피부·가슴")).toBe(true);
+  });
+});
+
+describe("lib/procedure/sections — 본문 접기·중복 표 생략", () => {
+  const LONG = "가".repeat(MORE_MIN_CHARS);
+  const block = (type: "paragraph" | "table" | "list" | "heading" | "other", text: string) => ({
+    type,
+    html: type === "table" ? `<div class="prose-table"><table><tr><td>${text}</td></tr></table></div>` : `<p>${text}</p>`,
+  });
+
+  it("회복 섹션 + 타임라인: 첫 표만 빼고(문단·목록은 남김) 남은 설명은 접는다", () => {
+    const blocks = [block("table", "시기 표"), block("paragraph", `개인차 ${LONG}`), block("table", "두 번째 표")];
+    const view = sectionView({ kind: "recovery", blocks }, { timeline: true });
+    expect(view.droppedTable).toBe(true);
+    expect(view.mainHtml).toBe("");
+    expect(view.moreHtml).toContain("개인차");
+    expect(view.moreHtml).toContain("두 번째 표");
+    expect(view.moreHtml).not.toContain("시기 표");
+  });
+
+  it("회복 섹션인데 타임라인이 없으면 표를 포함해 전부 그대로 보인다", () => {
+    const blocks = [block("table", "시기 표"), block("paragraph", `개인차 ${LONG}`)];
+    expect(sectionView({ kind: "recovery", blocks }, { timeline: false })).toEqual({
+      mainHtml: blocks.map((b) => b.html).join("\n"),
+      moreHtml: "",
+      droppedTable: false,
+    });
+  });
+
+  it("타임라인 뒤 남은 설명이 짧으면 접지 않는다", () => {
+    const view = sectionView({ kind: "recovery", blocks: [block("table", "표"), block("paragraph", "짧은 문장")] }, { timeline: true });
+    expect(view).toEqual({ mainHtml: "<p>짧은 문장</p>", moreHtml: "", droppedTable: true });
+  });
+
+  it("누가 받나·비용·부작용·비교: 첫 표/목록만 펼치고 나머지는 원래 순서대로 접는다", () => {
+    expect([...COLLAPSIBLE_KINDS].sort()).toEqual(["compare", "cost", "risks", "who"]);
+    const blocks = [block("paragraph", `앞 문단 ${LONG}`), block("list", "요점 목록"), block("table", "뒤 표"), block("paragraph", "뒤 문단")];
+    const view = sectionView({ kind: "who", blocks }, { timeline: false });
+    expect(view.mainHtml).toBe("<p>요점 목록</p>");
+    expect(view.moreHtml).toBe([blocks[0], blocks[2], blocks[3]].map((b) => b!.html).join("\n"));
+    expect(view.droppedTable).toBe(false);
+    // 회복 섹션이 아니면 타임라인 여부와 상관없이 표를 빼지 않는다
+    const compare = sectionView({ kind: "compare", blocks: [block("table", "비교표"), block("paragraph", LONG)] }, { timeline: true });
+    expect(compare.mainHtml).toContain("비교표");
+    expect(compare.droppedTable).toBe(false);
+  });
+
+  it("표·목록이 없으면 직답 아래 전부 접고, 접을 내용이 짧으면 접지 않는다", () => {
+    const onlyText = sectionView({ kind: "risks", blocks: [block("paragraph", LONG)] }, { timeline: false });
+    expect(onlyText).toEqual({ mainHtml: "", moreHtml: `<p>${LONG}</p>`, droppedTable: false });
+    const short = sectionView({ kind: "cost", blocks: [block("table", "표"), block("paragraph", "짧음")] }, { timeline: false });
+    expect(short.moreHtml).toBe("");
+    expect(short.mainHtml).toContain("짧음");
+  });
+
+  it("그 밖의 섹션은 건드리지 않는다", () => {
+    const blocks = [block("paragraph", LONG), block("list", "목록")];
+    expect(sectionView({ kind: "other", blocks }, { timeline: true }).moreHtml).toBe("");
+    expect(sectionView({ kind: "other", blocks: [] }, { timeline: false })).toEqual({ mainHtml: "", moreHtml: "", droppedTable: false });
+  });
+
+  it("글자 수는 태그·공백을 빼고 엔티티는 1글자", () => {
+    expect(textLength("<p>가 나 &amp; <strong>다</strong></p>")).toBe(4);
+  });
+
+  it("실제 본문(쌍꺼풀 수술): 회복 표는 빠지고 비교표·비용표·요점 목록은 보이며 나머지는 접힌다", () => {
+    const p = proc("double-eyelid");
+    const { sections } = parseProcedureMarkdown(p.content_mdx!, { reservedIds: RESERVED_IDS });
+    const views = Object.fromEntries(sections.map((s) => [s.kind, sectionView(s, { timeline: s.kind === "recovery" })]));
+    expect(views.recovery!.droppedTable).toBe(true);
+    expect(`${views.recovery!.mainHtml}${views.recovery!.moreHtml}`).not.toContain("<table");
+    expect(views.recovery!.moreHtml).toContain("붓기 정도와 기간은");
+    expect(views.cost!.mainHtml).toContain("<table");
+    expect(views.compare!.mainHtml).toContain("prose-table is-wide");
+    expect(views.who!.mainHtml.startsWith("<ul>")).toBe(true);
+    expect(views.risks!.mainHtml).toContain("좌우 비대칭");
+    for (const kind of ["who", "cost", "risks", "compare"]) expect(views[kind]!.moreHtml, kind).not.toBe("");
+  });
+});
+
+describe("lib/procedure/posts — 관련 칼럼", () => {
+  const post = (id: string, content_mdx: string | null, published_at = "2026-10-01"): Post => ({
+    id,
+    slug: id,
+    title: id,
+    summary: "",
+    content_mdx,
+    author_id: null,
+    published_at,
+    updated_at: published_at,
+  });
+
+  it("링크 형태가 달라도 같은 시술로 본다(한글·퍼센트 인코딩·끝 슬래시·앵커·제목·절대 URL·참조 링크)", () => {
+    const enc = encodeURIComponent("쌍꺼풀-수술");
+    expect(linkedProcedureSlugs(`[a](/procedures/쌍꺼풀-수술/)`)).toEqual(["쌍꺼풀-수술"]);
+    expect(linkedProcedureSlugs(`[a](/procedures/${enc}/)`)).toEqual(["쌍꺼풀-수술"]);
+    expect(linkedProcedureSlugs(`[a](/procedures/${enc})`)).toEqual(["쌍꺼풀-수술"]);
+    expect(linkedProcedureSlugs(`[a](/procedures/쌍꺼풀-수술/#faq "제목")`)).toEqual(["쌍꺼풀-수술"]);
+    expect(linkedProcedureSlugs(`[a](https://x.github.io/realsurgery/procedures/${enc}/?utm_source=naver)`)).toEqual(["쌍꺼풀-수술"]);
+    expect(linkedProcedureSlugs(`[a][ref]\n\n[ref]: /procedures/코-성형/`)).toEqual(["코-성형"]);
+    // 목록·다른 경로·깨진 인코딩
+    expect(linkedProcedureSlugs(`[a](/procedures/) [b](/clinics/x/) [c](/procedures/a/b/)`)).toEqual([]);
+    expect(linkedProcedureSlugs(`[a](/procedures/%E0%A4%A/)`)).toEqual(["%E0%A4%A"]);
+    expect(linkedProcedureSlugs(`[a](/procedures/x/) [b](/procedures/x/) [c](/procedures/y/)`)).toEqual(["x", "y"]);
+    expect(linkedProcedureSlugs(null)).toEqual([]);
+  });
+
+  it("이 시술을 링크한 칼럼만 최신 발행순, 최대 limit 개", () => {
+    const posts = [
+      post("old", "[쌍꺼풀](/procedures/쌍꺼풀-수술/)", "2026-09-01"),
+      post("other", "[코](/procedures/코-성형/)", "2026-10-20"),
+      post("new", `[쌍꺼풀](/procedures/${encodeURIComponent("쌍꺼풀-수술")}/)`, "2026-10-10"),
+      post("empty", null, "2026-10-25"),
+      post("plain", "쌍꺼풀 수술 이야기(링크 없음)", "2026-10-24"),
+    ];
+    const eyelid = makeProcedure();
+    expect(postsLinkingTo(eyelid, posts).map((p) => p.id)).toEqual(["new", "old"]);
+    expect(postsLinkingTo(eyelid, posts, 1).map((p) => p.id)).toEqual(["new"]);
+    expect(postsLinkingTo(makeProcedure({ slug: "레이저-토닝" }), posts)).toEqual([]);
+  });
+
+  it("실제 데이터: 쌍꺼풀 수술은 칼럼 2개, 레이저 토닝은 없음", () => {
+    expect(postsLinkingTo(proc("double-eyelid"), content.posts).map((p) => p.id)).toEqual([
+      "double-eyelid-consult-questions",
+      "reading-surgery-quotes",
+    ]);
+    expect(postsLinkingTo(proc("laser-toning"), content.posts)).toEqual([]);
   });
 });
