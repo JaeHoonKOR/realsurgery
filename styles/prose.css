@@ -189,24 +189,44 @@
   }
 }
 
-/* 모바일: 좁은 화면에서 칸이 세로로 찢어지지 않게 행마다 카드로 쌓는다. 첫 칸(행 제목)이 카드 제목, 나머지는 "열 제목 — 값" 줄 */
+/* 열이 많은 비교표(is-wide): 가로로 넘겨 보는 동안 첫 열(비교 항목)을 왼쪽에 고정한다 */
+.prose-rs .is-wide tbody th,
+.prose-rs .is-wide thead th:first-child {
+  position: sticky;
+  left: 0;
+  z-index: var(--z-raised);
+  box-shadow: inset -1px 0 0 var(--color-line);
+}
+
+.prose-rs .is-wide tbody th {
+  background: var(--color-surface);
+}
+
+/* 모바일: 좁은 화면에서 칸이 세로로 찢어지지 않게 행마다 카드로 쌓는다. 첫 칸(행 제목)이 카드 제목, 나머지는 "열 제목 — 값" 줄.
+   단 열이 많은 비교표(is-wide)는 카드로 쌓으면 열마다 카드가 생겨 화면이 길어지므로 표 그대로 두고 가로 스크롤(첫 열 고정) */
 @media (width < 48rem) {
-  .prose-rs .prose-table {
+  .prose-rs .is-wide th,
+  .prose-rs .is-wide td {
+    min-width: 5.5em;
+    padding: calc(var(--spacing) * 2.5) calc(var(--spacing) * 3);
+  }
+
+  .prose-rs .prose-table:not(.is-wide) {
     overflow: visible;
     border: 0;
     border-radius: 0;
     background: none;
   }
 
-  .prose-rs .prose-table table,
-  .prose-rs .prose-table tbody,
-  .prose-rs .prose-table tr,
-  .prose-rs .prose-table th,
-  .prose-rs .prose-table td {
+  .prose-rs .prose-table:not(.is-wide) table,
+  .prose-rs .prose-table:not(.is-wide) tbody,
+  .prose-rs .prose-table:not(.is-wide) tr,
+  .prose-rs .prose-table:not(.is-wide) th,
+  .prose-rs .prose-table:not(.is-wide) td {
     display: block;
   }
 
-  .prose-rs .prose-table thead {
+  .prose-rs .prose-table:not(.is-wide) thead {
     position: absolute;
     width: 1px;
     height: 1px;
@@ -215,44 +235,44 @@
     white-space: nowrap;
   }
 
-  .prose-rs .prose-table tbody tr {
+  .prose-rs .prose-table:not(.is-wide) tbody tr {
     border-radius: var(--radius-lg);
     background: var(--color-canvas-soft);
-    padding: calc(var(--spacing) * 4);
+    padding: calc(var(--spacing) * 3.5) calc(var(--spacing) * 4);
   }
 
-  .prose-rs .prose-table tbody tr + tr {
+  .prose-rs .prose-table:not(.is-wide) tbody tr + tr {
     margin-top: calc(var(--spacing) * 2);
   }
 
-  .prose-rs .prose-table tbody th {
+  .prose-rs .prose-table:not(.is-wide) tbody th {
     min-width: 0;
     border: 0;
-    padding: 0 0 calc(var(--spacing) * 2);
+    padding: 0 0 calc(var(--spacing) * 1.5);
     font-size: var(--text-base);
   }
 
-  .prose-rs .prose-table td {
+  .prose-rs .prose-table:not(.is-wide) td {
     display: flex;
     gap: calc(var(--spacing) * 3);
     min-width: 0;
     border-top: 1px solid var(--color-line);
-    padding: calc(var(--spacing) * 2) 0;
+    padding: calc(var(--spacing) * 1.5) 0;
     text-align: left;
   }
 
-  .prose-rs .prose-table td:last-child {
+  .prose-rs .prose-table:not(.is-wide) td:last-child {
     padding-bottom: 0;
   }
 
-  .prose-rs .prose-table td::before {
+  .prose-rs .prose-table:not(.is-wide) td::before {
     content: attr(data-label);
     flex: 0 0 34%;
     color: var(--color-ink-muted);
     font-weight: 500;
   }
 
-  .prose-rs .prose-table .is-compact {
+  .prose-rs .prose-table:not(.is-wide) .is-compact {
     white-space: normal;
   }
 }

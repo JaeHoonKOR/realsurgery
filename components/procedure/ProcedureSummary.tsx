@@ -76,8 +76,9 @@ export function ProcedureSummary({ procedure: p, category, author }: Props) {
       <dl data-testid="procedure-facts" className="mt-6 grid grid-cols-2 gap-2 rounded-xl bg-canvas p-2 md:mt-8 md:grid-cols-4 md:gap-3 md:p-3">
         {facts.map((f) => (
           <div key={f.key} data-fact={f.key} className="flex flex-col rounded-lg bg-surface p-4 md:p-5">
-            <dt className="flex flex-col items-start gap-3 text-sm text-ink-muted">
-              <Emoji3D name={FACT_EMOJI[f.key]} size={40} />
+            {/* 모바일은 이모지를 라벨 옆에 작게(4칸이 한 화면을 차지하지 않게), md 부터 위에 크게 */}
+            <dt className="flex items-center gap-2 text-sm text-ink-muted md:flex-col md:items-start md:gap-3">
+              <Emoji3D name={FACT_EMOJI[f.key]} size={24} className="md:size-10" />
               {f.label}
             </dt>
             <dd className="mt-1 text-lg font-bold tracking-tight text-ink tabular-nums md:text-h3">

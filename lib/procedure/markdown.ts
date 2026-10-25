@@ -5,7 +5,9 @@
  * - 모든 제목에 앵커 id 를 붙인다(목차·딥링크용). 한글 그대로 쓰고 문장부호만 뺀다.
  * - 가격 범위 "50만~150만" 의 물결표가 GFM 취소선(~text~)으로 바뀌지 않도록 취소선 문법을 끈다.
  * - 표는 가로 스크롤 래퍼(role=region, 키보드 포커스 가능)로 감싸고, 각 행 첫 칸을 행 제목(th scope=row)으로 만든다.
+ *   열이 WIDE_TABLE_COLUMNS 개 이상인 비교표는 is-wide — 모바일에서도 행 카드로 쌓지 않고 표 그대로(가로 스크롤) 둔다.
  * - 원시 HTML 은 그대로 내보내지 않는다: 주석(<!-- MD-REVIEW --> 등)은 지우고 나머지는 이스케이프한다.
+ * - 본문은 블록(문단·표·목록·제목) 단위 HTML 로도 돌려준다 — 화면이 "자세히 보기" 접기·중복 표 생략을 정한다(lib/procedure/sections).
  */
 import { Marked, type Token, type Tokens } from "marked";
 import { withBasePath } from "@/lib/env.public";
@@ -13,7 +15,15 @@ import { withBasePath } from "@/lib/env.public";
 /** 숫자가 든 이 글자 수 이하의 표 칸(가격 범위·기간)은 한 줄로(is-compact) */
 export const COMPACT_CELL = 16;
 
+/** 이 열 수 이상인 표(시술 3개 비교표 등)는 모바일에서도 표 모양 유지(is-wide) — 카드로 쌓으면 열마다 카드가 생겨 화면이 길어진다 */
+export const WIDE_TABLE_COLUMNS = 4;
+
 export type SectionKind = "who" | "cost" | "recovery" | "risks" | "compare" | "other";
+
+export type BlockType = "paragraph" | "table" | "list" | "heading" | "other";
+
+/** 본문 최상위 블록 1개(빈 줄 제외)의 HTML */
+export type MarkdownBlock = { type: BlockType; html: string };
 
 export type MarkdownSection = {
   id: string;
@@ -24,6 +34,8 @@ export type MarkdownSection = {
   leadHtml: string;
   /** 나머지 본문 HTML */
   bodyHtml: string;
+  /** 나머지 본문을 블록 단위로(bodyHtml 과 같은 내용·같은 순서) */
+  blocks: MarkdownBlock[];
 };
 
 export type ProcedureMarkdown = {
@@ -94,6 +106,16 @@ export function stripHtmlComments(markdown: string): string {
 
 function createMarked(nextId: (text: string) => string): Marked {
   const marked = new Marked({ gfm: true, breaks: false });
+  // 같은 제목 토큰을 여러 번 렌더링해도(본문 전체 + 블록 단위) 같은 id 를 쓴다 — 두 번째 렌더링이 -2 를 붙이지 않게
+  const ids = new WeakMap<Tokens.Heading, string>();
+  const idFor = (token: Tokens.Heading) => {
+    let id = ids.get(token);
+    if (!id) {
+      id = nextId(plainText(token.text));
+      ids.set(token, id);
+    }
+    return id;
+  };
   marked.use({
     tokenizer: {
       // 취소선 끄기: "50만~150만 … 100만~250만" 이 <del> 로 바뀌지 않게(undefined = 이 문법 없음)
@@ -104,7 +126,7 @@ function createMarked(nextId: (text: string) => string): Marked {
     renderer: {
       heading(token: Tokens.Heading) {
         const level = Math.min(Math.max(token.depth, 2), 4);
-        const id = nextId(plainText(token.text));
+        const id = idFor(token);
         return `<h${level} id="${escapeHtml(id)}">${this.parser.parseInline(token.tokens)}</h${level}>\n`;
       },
       table(token: Tokens.Table) {
@@ -134,8 +156,9 @@ function createMarked(nextId: (text: string) => string): Marked {
           })
           .join("");
         const label = `${headers.join(", ")} 표`;
+        const wrapper = headers.length >= WIDE_TABLE_COLUMNS ? "prose-table is-wide" : "prose-table";
         return (
-          `<div class="prose-table" role="region" aria-label="${escapeHtml(label)}" tabindex="0">` +
+          `<div class="${wrapper}" role="region" aria-label="${escapeHtml(label)}" tabindex="0">` +
           `<table role="table"><thead role="rowgroup"><tr role="row">${head}</tr></thead>` +
           `<tbody role="rowgroup">${rows}</tbody></table></div>\n`
         );
@@ -162,6 +185,13 @@ function createMarked(nextId: (text: string) => string): Marked {
   return marked;
 }
 
+const BLOCK_TYPES: Partial<Record<string, BlockType>> = {
+  paragraph: "paragraph",
+  table: "table",
+  list: "list",
+  heading: "heading",
+};
+
 /** 시술 본문 Markdown 을 섹션별 HTML 로 바꾼다. reservedIds = 화면 섹션이 쓰는 id(본문 제목과 겹치지 않게). */
 export function parseProcedureMarkdown(markdown: string, { reservedIds = [] as string[] } = {}): ProcedureMarkdown {
   const nextId = createIdFactory(reservedIds);
@@ -187,7 +217,12 @@ export function parseProcedureMarkdown(markdown: string, { reservedIds = [] as s
     const hasLead = first >= 0 && body[first]?.type === "paragraph";
     const lead = hasLead ? body.slice(first, first + 1) : [];
     const rest = hasLead ? body.slice(first + 1) : body;
-    return { id, title, kind: sectionKind(title), leadHtml: render(lead), bodyHtml: render(rest) };
+    const bodyHtml = render(rest);
+    const blocks = rest
+      .filter((t) => t.type !== "space")
+      .map((t): MarkdownBlock => ({ type: BLOCK_TYPES[t.type] ?? "other", html: render([t]) }))
+      .filter((b) => b.html);
+    return { id, title, kind: sectionKind(title), leadHtml: render(lead), bodyHtml, blocks };
   });
   return { introHtml, sections };
 }
