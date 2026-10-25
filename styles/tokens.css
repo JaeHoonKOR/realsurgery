@@ -65,6 +65,17 @@
   --text-display: clamp(34px, 24px + 2.8vw, 56px);
   --text-display--line-height: 1.22;
 
+  /* 모션 — 사용자 행동·첫 로드의 한 순간에만. prefers-reduced-motion 은 globals.css 에서 끈다 */
+  --animate-bar-grow: bar-grow 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  @keyframes bar-grow {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
+
   --tracking-tight: -0.02em;
   --tracking-tighter: -0.03em;
 

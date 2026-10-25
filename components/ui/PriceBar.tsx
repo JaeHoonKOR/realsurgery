@@ -13,6 +13,8 @@ type Props = {
   showScale?: boolean;
   /** 강조(선택된 병원 등) */
   emphasis?: boolean;
+  /** 막대가 왼쪽에서 자라나는 첫 등장 모션(히어로 등 한 곳에서만) */
+  animate?: boolean;
   /** 스크린리더용 설명 */
   label: string;
   className?: string;
@@ -23,7 +25,7 @@ type Props = {
  * 같은 눈금(시술 전체 공개가 범위) 위에 병원·방식별 범위를 막대로 올려, 숫자를 읽기 전에 위치로 비교하게 한다.
  * 위치값은 CSS 변수(--lo·--w)로 넘긴다(인라인 길이 값 금지 규칙).
  */
-export function PriceBar({ scaleMin, scaleMax, low, high, showScale, emphasis, label, className }: Props) {
+export function PriceBar({ scaleMin, scaleMax, low, high, showScale, emphasis, animate, label, className }: Props) {
   const lo = low ?? high;
   const hi = high ?? low;
   const hasRange = lo != null && hi != null;
@@ -41,6 +43,7 @@ export function PriceBar({ scaleMin, scaleMax, low, high, showScale, emphasis, l
             className={cx(
               "absolute inset-y-0 left-(--lo) w-(--w) rounded-full",
               emphasis ? "bg-brand-strong" : "bg-brand",
+              animate && "origin-left animate-bar-grow",
             )}
           />
         )}

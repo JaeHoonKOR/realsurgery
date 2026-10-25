@@ -3,7 +3,7 @@ import { MapPin } from "lucide-react";
 import { ConsultCta } from "@/components/common/ConsultCta";
 import { HeaderSearch } from "@/components/common/HeaderSearch";
 import { TrackedLink } from "@/components/common/TrackedLink";
-import { HeroPriceCard } from "@/components/home/HeroPriceCard";
+import { HeroPriceCard, type HeroShowcase } from "@/components/home/HeroPriceCard";
 import { Emoji3D, categoryEmoji } from "@/components/ui/Emoji3D";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { isPathBuilt } from "@/lib/built-routes";
@@ -20,6 +20,44 @@ export const metadata: Metadata = {
 
 /** 인기 시술 칩(히어로 검색 아래) — 조회수 상위 */
 const QUICK_COUNT = 4;
+
+/** 히어로 비교 카드 탭: 시술 id → 탭 이름 */
+const SHOWCASE: [string, string][] = [
+  ["double-eyelid", "쌍꺼풀"],
+  ["rhinoplasty", "코 성형"],
+  ["thread-lift", "실리프팅"],
+];
+
+function toShowcase(p: Procedure, shortName: string, categoryName: string, clinics: Clinic[]): HeroShowcase {
+  const rows = clinics
+    .flatMap((c) => {
+      const o = c.procedures.find((x) => x.procedure_id === p.id);
+      return o ? [{ clinic: c.name, low: o.price_low, high: o.price_high }] : [];
+    })
+    .sort((a, b) => (a.low ?? Infinity) - (b.low ?? Infinity))
+    .slice(0, 4);
+  const href = procedurePath(p.slug);
+  return {
+    id: p.id,
+    name: p.name,
+    shortName,
+    category: categoryName,
+    emoji: categoryEmoji(p.category_id),
+    priceLow: p.price_low,
+    priceHigh: p.price_high,
+    scaleMin: p.price_low ?? 0,
+    scaleMax: p.price_high ?? p.price_low ?? 0,
+    rows,
+    facts: [
+      { term: "소요시간", value: formatDuration(p.duration_min) },
+      { term: "회복기간", value: formatRecovery(p.recovery_days) },
+      { term: "마취", value: (p.anesthesia ?? "상담 후 안내").replace(/\s*\(.*\)$/, "") },
+    ],
+    updated: formatDate(p.updated_at),
+    sourceCount: p.sources.length,
+    href: isPathBuilt(href) ? href : null,
+  };
+}
 
 function lowestOffer(clinic: Clinic, procedures: Map<string, Procedure>) {
   const priced = clinic.procedures.filter((o) => o.price_low != null);
@@ -41,7 +79,10 @@ export default function HomePage() {
 
   const heroProcedure = byId.get("double-eyelid") ?? popular[0];
   if (!heroProcedure) throw new Error("시술 데이터가 없습니다 (data/generated/content.json)");
-  const heroClinics = clinics.filter((c) => c.procedures.some((o) => o.procedure_id === heroProcedure.id));
+  const showcase = SHOWCASE.flatMap(([pid, short]) => {
+    const p = byId.get(pid);
+    return p ? [toShowcase(p, short, categoryById.get(p.category_id)?.name ?? "", clinics)] : [];
+  });
   const procedureCount = procedures.length;
   const clinicCount = clinics.length;
 
@@ -87,7 +128,7 @@ export default function HomePage() {
           <div className="relative md:col-span-6">
             <div aria-hidden="true" className="absolute -inset-x-5 -inset-y-6 rounded-xl bg-canvas md:-inset-x-8 md:-inset-y-10" />
             <div className="relative md:px-4">
-              <HeroPriceCard procedure={heroProcedure} category={categoryById.get(heroProcedure.category_id)} clinics={heroClinics} />
+              <HeroPriceCard items={showcase} />
               <Emoji3D name="sparkles" size={56} className="absolute -top-7 -right-1 md:-right-3" />
             </div>
           </div>
@@ -143,7 +184,7 @@ export default function HomePage() {
             description="조회수 기준 상위 6개 시술의 가격대와 회복기간입니다."
             more={isPathBuilt(ROUTES.procedures) ? { href: ROUTES.procedures, label: `시술 ${procedureCount}개 전체` } : undefined}
           />
-          <ol className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <ol className="-mx-5 mt-8 flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-px-5 px-5 pb-2 sm:mx-0 sm:grid sm:grid-cols-2 sm:gap-4 sm:overflow-visible sm:px-0 sm:pb-0 lg:grid-cols-3">
             {popular.slice(0, 6).map((p, i) => {
               const cat = categoryById.get(p.category_id);
               const href = procedurePath(p.slug);
@@ -180,7 +221,7 @@ export default function HomePage() {
               );
               const cardClass = "flex h-full flex-col rounded-lg bg-surface p-6";
               return (
-                <li key={p.id}>
+                <li key={p.id} className="w-72 shrink-0 snap-start sm:w-auto">
                   {isPathBuilt(href) ? (
                     <TrackedLink
                       href={href}
