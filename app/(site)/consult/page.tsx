@@ -4,23 +4,17 @@ import { TrustNotes } from "@/components/consult/TrustNotes";
 import type { ClinicOption, ProcedureOption } from "@/components/consult/types";
 import { Emoji3D } from "@/components/ui/Emoji3D";
 import { isPathBuilt } from "@/lib/built-routes";
+import { CONSULT_TITLE, consultMode, consultPageMetadata } from "@/lib/consult/mode";
 import { loadContent } from "@/lib/content";
 import { formatPriceRange } from "@/lib/format";
 import { ROUTES } from "@/lib/routes";
 
-// P-06 무료 상담 예약 폼 (screen-spec 4절). 제휴 전 MVP 폴백(8절): 제목 "시술 상담 가이드 받기", 수신처 운영자, clinic_id 선택.
+// P-06 상담 신청 폼 (screen-spec 4절). 제휴 전 MVP 폴백(8절): 수신처 운영자, clinic_id 선택.
+// 버튼 이름은 "상담 신청(하기)"로 통일(lib/site.ts CONSULT_CTA). 동작 모드(live/demo)는 빌드 시 Supabase 키 유무로 정한다.
 
-const TITLE = "시술 상담 가이드 받기";
-const DESCRIPTION =
-  "관심 시술과 희망 지역·시기, 연락처만 남기면 리얼성형 운영팀이 시술별 가격 범위와 회복 일정, 상담 때 확인할 점을 정리해 영업일 기준 1일 안에 연락드립니다. 신청은 무료입니다.";
+const MODE = consultMode();
 
-export const metadata: Metadata = {
-  title: TITLE,
-  description: DESCRIPTION,
-  // ?procedure_id 같은 쿼리는 같은 화면 → canonical 은 쿼리 없는 경로
-  alternates: { canonical: "./" },
-  openGraph: { title: TITLE, description: DESCRIPTION, url: "./" },
-};
+export const metadata: Metadata = consultPageMetadata(MODE);
 
 export default function ConsultPage() {
   const { procedures, categories, clinics } = loadContent();
@@ -46,17 +40,17 @@ export default function ConsultPage() {
     <div data-consult-page="" className="mx-auto w-full max-w-form px-5 pt-8 pb-16 md:px-0 md:pt-14 md:pb-24">
       <header>
         <Emoji3D name="clipboard" size={64} priority />
-        <h1 className="mt-4 text-h1 font-bold tracking-tighter text-ink">{TITLE}</h1>
+        <h1 className="mt-4 text-h1 font-bold tracking-tighter text-ink">{CONSULT_TITLE}</h1>
         <p className="mt-3 text-ink-muted">
-          시술과 연락처만 남겨 주세요. 가격 범위와 회복 일정, 상담 때 꼭 물어볼 점을 정리해 연락드립니다.
+          관심 시술과 연락처를 남기면 가격 범위와 회복 일정, 상담 때 꼭 물어볼 점을 정리한 상담 가이드를 받을 수 있어요.
         </p>
       </header>
 
       <div className="mt-10 md:mt-12">
-        <ConsultForm procedures={procedureOptions} clinics={clinicOptions} privacyHref={privacyHref} />
+        <ConsultForm procedures={procedureOptions} clinics={clinicOptions} privacyHref={privacyHref} mode={MODE} />
       </div>
 
-      <TrustNotes className="mt-12 md:mt-14" />
+      <TrustNotes className="mt-12 md:mt-14" mode={MODE} />
     </div>
   );
 }

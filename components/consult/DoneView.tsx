@@ -7,10 +7,11 @@ import { useEffect, useState } from "react";
 import { TrackedLink } from "@/components/common/TrackedLink";
 import { Emoji3D, categoryEmoji, type EmojiName } from "@/components/ui/Emoji3D";
 import { claimLeadConversion, formatKstDateTime, formatLeadNumber, readLeadSession, type LeadSession } from "@/lib/consult/lead";
+import { consultCopy, type ConsultMode } from "@/lib/consult/mode";
 import { ROUTES } from "@/lib/routes";
-import { SITE } from "@/lib/site";
 import { LEAD_VALUE_KRW, track } from "@/lib/track";
 import { btn, chip, cx } from "@/lib/ui";
+import { DemoNotice } from "./DemoNotice";
 import type { RelatedProcedure } from "./types";
 
 type Props = {
@@ -20,14 +21,20 @@ type Props = {
   fallback: RelatedProcedure[];
   /** 카카오톡 채널 URL(환경 변수가 있을 때만) */
   kakaoChannelUrl?: string;
+  /** 빌드 시 정해진 동작 모드(lib/consult/mode.ts). demo 면 연락을 약속하지 않고 시연 안내를 띄운다. 기본 live */
+  mode?: ConsultMode;
 };
 
-const CHECKLIST: { emoji: EmojiName; title: string; body: string }[] = [
-  {
-    emoji: "phone",
-    title: "모르는 번호도 받아 주세요",
-    body: "운영팀 대표번호로 전화드려요. 받지 못하시면 문자로 다시 안내합니다.",
-  },
+type ChecklistItem = { emoji: EmojiName; title: string; body: string };
+
+/** 실제 접수(live)일 때만 — 운영팀이 전화한다는 안내 */
+const CALL_ITEM: ChecklistItem = {
+  emoji: "phone",
+  title: "모르는 번호도 받아 주세요",
+  body: "운영팀 대표번호로 전화드려요. 받지 못하시면 문자로 다시 안내합니다.",
+};
+
+const CHECKLIST: ChecklistItem[] = [
   {
     emoji: "memo",
     title: "궁금한 점을 미리 적어 두세요",
@@ -49,8 +56,11 @@ const CHECKLIST: { emoji: EmojiName; title: string; body: string }[] = [
  * P-07 상담 신청 완료 (screen-spec 4절 P-07).
  * - 세션(rs_lead)이 없으면 메인으로 돌려보낸다(직접 접근 차단).
  * - generate_lead 는 이 화면에서만, lead_id 마다 1회(새로고침해도 다시 보내지 않음).
+ * - 시연 모드: "연락드립니다"·"전화드려요" 대신 연락이 가지 않는다는 사실과 시연 안내를 보여 준다.
  */
-export function DoneView({ related, fallback, kakaoChannelUrl }: Props) {
+export function DoneView({ related, fallback, kakaoChannelUrl, mode = "live" }: Props) {
+  const text = consultCopy(mode);
+  const checklist = text.checklistCallItem ? [CALL_ITEM, ...CHECKLIST] : CHECKLIST;
   const router = useRouter();
   const [lead, setLead] = useState<LeadSession | null>(null);
   const [copied, setCopied] = useState(false);
@@ -100,11 +110,12 @@ export function DoneView({ related, fallback, kakaoChannelUrl }: Props) {
       <header>
         <Emoji3D name="party" size={80} priority />
         <h1 className="mt-5 text-h1 font-bold tracking-tighter text-ink">상담 신청이 접수됐습니다</h1>
-        <p className="mt-3 text-lg text-ink-muted">
-          영업일 기준 1일 안에 연락드립니다.
+        <p data-testid="consult-done-lead" className="mt-3 text-lg text-ink-muted">
+          {text.doneLead}
           <br />
-          <span className="text-base">{SITE.hours}</span>
+          <span className="text-base">{text.doneSub}</span>
         </p>
+        {text.showDemoNotice && <DemoNotice className="mt-6" testId="consult-done-demo-notice" />}
       </header>
 
       <section aria-label="접수 정보" data-testid="consult-done-receipt" className="mt-8 rounded-xl bg-canvas p-5 md:p-6">
@@ -135,7 +146,7 @@ export function DoneView({ related, fallback, kakaoChannelUrl }: Props) {
             <dd className="font-semibold text-ink tabular-nums">{formatKstDateTime(lead.created_at)}</dd>
           </div>
         </dl>
-        <p className="mt-4 text-sm text-ink-muted">전화 상담 때 접수번호를 알려 주시면 더 빠르게 안내해 드려요.</p>
+        <p className="mt-4 text-sm text-ink-muted">{text.receiptNote}</p>
       </section>
 
       {kakaoChannelUrl && (
@@ -154,10 +165,10 @@ export function DoneView({ related, fallback, kakaoChannelUrl }: Props) {
 
       <section aria-labelledby="done-checklist" data-testid="consult-done-checklist" className="mt-12">
         <h2 id="done-checklist" className="text-h3 font-bold tracking-tight text-ink">
-          연락 오기 전에 준비해 두세요
+          {text.checklistTitle}
         </h2>
         <ol className="mt-5 grid gap-5">
-          {CHECKLIST.map((c, i) => (
+          {checklist.map((c, i) => (
             <li key={c.title} className="flex gap-4">
               <span className="relative flex size-12 shrink-0 items-center justify-center rounded-md bg-canvas">
                 <Emoji3D name={c.emoji} size={32} />

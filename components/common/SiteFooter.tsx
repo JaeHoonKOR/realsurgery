@@ -5,7 +5,7 @@ import { SITE } from "@/lib/site";
 import { Logo } from "./Logo";
 
 /**
- * 공통 푸터 (screen-spec 3절): 사업자 정보, 이용약관, 개인정보처리방침, 의료 정보 면책 문구, 운영 시간.
+ * 공통 푸터 (screen-spec 3절): 사업자 정보(등록 전에는 시연 사이트 안내), 이용약관, 개인정보처리방침, 의료 정보 면책 문구, 운영 시간.
  * variant="minimal" = 광고 랜딩(P-12)용 — 링크 없이 정보·면책만(4절 P-12 "GNB·푸터 링크 제거").
  */
 export function SiteFooter({ variant = "full" }: { variant?: "full" | "minimal" }) {
@@ -39,7 +39,9 @@ export function SiteFooter({ variant = "full" }: { variant?: "full" | "minimal" 
                     {biz.address} · {biz.email}
                   </dd>
                 ) : (
-                  <dd className="text-ink-muted">사업자 등록 절차를 마친 뒤 이곳에 게시합니다.</dd>
+                  <dd data-testid="footer-business-pending" className="text-ink-muted">
+                    {SITE.businessPending}
+                  </dd>
                 )}
               </div>
             </dl>

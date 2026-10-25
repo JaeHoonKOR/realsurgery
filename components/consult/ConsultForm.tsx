@@ -16,6 +16,7 @@ import {
   optionLabel,
   regionFromAddress,
 } from "@/lib/consult/options";
+import { CONSULT_TITLE, type ConsultMode } from "@/lib/consult/mode";
 import { caretAfterDigits, formatPhone } from "@/lib/consult/phone";
 import { sourcePage } from "@/lib/consult/source";
 import { buildLeadPayload, submitLead } from "@/lib/consult/submit";
@@ -36,10 +37,12 @@ import {
 } from "@/lib/consult/validation";
 import { readConsent } from "@/lib/consent";
 import { readPublicVar } from "@/lib/env.public";
+import { CONSULT_CTA } from "@/lib/site";
 import { track } from "@/lib/track";
 import { btn, chip, cx, input } from "@/lib/ui";
 import { ChoiceGroup } from "./ChoiceGroup";
 import { ConsentFields } from "./ConsentFields";
+import { DemoNotice } from "./DemoNotice";
 import { FieldError, describedBy } from "./FieldError";
 import { ProcedureField } from "./ProcedureField";
 import { StepIndicator } from "./StepIndicator";
@@ -49,6 +52,8 @@ type Props = {
   procedures: ProcedureOption[];
   clinics: ClinicOption[];
   privacyHref?: string;
+  /** 빌드 시 정해진 동작 모드(lib/consult/mode.ts). demo 면 제출 영역 위에 시연 안내를 띄운다. 기본 live */
+  mode?: ConsultMode;
 };
 
 type SubmitError = { kind: "duplicate" | "invalid" | "server" | "network"; message: string };
@@ -62,9 +67,10 @@ const TIMING_EMOJI: Record<(typeof TIMING_OPTIONS)[number]["value"], EmojiName> 
 /**
  * P-06 상담 신청 2단계 폼 (screen-spec 4절 P-06).
  * 1단계 관심 시술(시술·지역·시기, 쿼리 선입력) → 2단계 연락처(이름·휴대폰·연락 시간·메모) + 동의 → submit-lead → P-07.
+ * 동의: 개인정보 수집·이용[필수] · 민감정보(관심 시술)[필수] · 병원 제3자 제공[선택] · 마케팅[선택].
  * 이벤트: form_start(1단계 첫 입력, 1회) · form_step2(2단계 진입, 1회). generate_lead 는 여기서 보내지 않는다(P-07 전용).
  */
-export function ConsultForm({ procedures, clinics, privacyHref }: Props) {
+export function ConsultForm({ procedures, clinics, privacyHref, mode = "live" }: Props) {
   const router = useRouter();
   const [step, setStep] = useState<1 | 2>(1);
   const [values, setValues] = useState<ConsultValues>(() => emptyValues());
@@ -191,7 +197,8 @@ export function ConsultForm({ procedures, clinics, privacyHref }: Props) {
       contact_time: groupFirst(contactRef),
       memo: memoRef.current,
       consent_privacy: consentRef.current,
-      consent_3rd: document.querySelector<HTMLInputElement>('[data-testid="consent_3rd"]'),
+      consent_sensitive: document.querySelector<HTMLInputElement>('[data-testid="consent_sensitive"]'),
+      consent_3rd: null,
       consent_marketing: null,
       clinic_id: null,
     }[field];
@@ -296,7 +303,7 @@ export function ConsultForm({ procedures, clinics, privacyHref }: Props) {
     <form
       noValidate
       onSubmit={onSubmit}
-      aria-label="시술 상담 가이드 신청"
+      aria-label={CONSULT_TITLE}
       data-testid="consult-form"
       data-step={step}
       // 모바일 하단 고정 버튼(약 84px) 뒤로 포커스된 입력·안내가 숨지 않게 스크롤 여백을 둔다
@@ -504,11 +511,12 @@ export function ConsultForm({ procedures, clinics, privacyHref }: Props) {
           <ConsentFields
             values={{
               consent_privacy: values.consent_privacy,
+              consent_sensitive: values.consent_sensitive,
               consent_3rd: values.consent_3rd,
               consent_marketing: values.consent_marketing,
             }}
             onChange={(patch) => update(patch)}
-            errors={{ consent_privacy: errors.consent_privacy, consent_3rd: errors.consent_3rd }}
+            errors={{ consent_privacy: errors.consent_privacy, consent_sensitive: errors.consent_sensitive }}
             firstRef={consentRef}
             privacyHref={privacyHref}
           />
@@ -541,11 +549,18 @@ export function ConsultForm({ procedures, clinics, privacyHref }: Props) {
         </div>
       )}
 
+      {/* 시연 모드: 제출 영역 바로 위에서 "서버로 전송되지 않음"을 알린다(접수·연락을 약속하지 않는다) */}
+      {mode === "demo" && <DemoNotice className="mt-8" />}
+
       {/* 모바일: 화면 하단에 붙어 따라오다 폼 끝에서 멈춘다(sticky) → 신뢰 안내·푸터를 가리지 않는다. 안전 영역 패딩 포함.
           데스크톱: 폼 끝의 일반 버튼(같은 요소라 중복 없음). */}
       <div
         data-testid="consult-actions"
-        className="sticky bottom-0 z-(--z-bottom-bar) -mx-5 mt-10 bg-surface px-5 pt-3 pb-safe-4 before:pointer-events-none before:absolute before:inset-x-0 before:-top-6 before:h-6 before:bg-linear-to-t before:from-surface before:to-transparent md:static md:mx-0 md:px-0 md:pt-0 md:pb-0 md:before:hidden"
+        className={cx(
+          "sticky bottom-0 z-(--z-bottom-bar) -mx-5 bg-surface px-5 pt-3 pb-safe-4 before:pointer-events-none before:absolute before:inset-x-0 before:-top-6 before:h-6 before:bg-linear-to-t before:from-surface before:to-transparent md:static md:mx-0 md:px-0 md:pt-0 md:pb-0 md:before:hidden",
+          // 시연 안내가 있으면 안내와 버튼을 붙여 둔다(모바일은 위쪽 그라디언트 높이만큼 띄워 안내를 덮지 않게)
+          mode === "demo" ? "mt-6 md:mt-4" : "mt-10",
+        )}
       >
         <div className="flex gap-2">
           {step === 2 && (
@@ -575,7 +590,7 @@ export function ConsultForm({ procedures, clinics, privacyHref }: Props) {
             ) : step === 1 ? (
               "다음"
             ) : (
-              "상담 가이드 받기"
+              CONSULT_CTA.long
             )}
           </button>
         </div>

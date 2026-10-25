@@ -1,9 +1,17 @@
 import type { Metadata } from "next";
 import { Clauses, PolicyDoc, PolicyTable, type PolicySection } from "@/components/consult/PolicyDoc";
-import { POLICY_EFFECTIVE_LABEL, RETENTION_LABEL } from "@/lib/consult/policy";
+import {
+  POLICY_EFFECTIVE_LABEL,
+  RETENTION_LABEL,
+  SENSITIVE_ITEMS,
+  SENSITIVE_PURPOSE,
+  THIRD_PARTY,
+  consentDetail,
+} from "@/lib/consult/policy";
 import { SITE } from "@/lib/site";
 
 // C-01 개인정보처리방침 (screen-spec 4절 C-01, 1절 법적 고려). [human-gate] 게시 전 사람(필요 시 변호사) 검토.
+// 동의 문구(lib/consult/policy.ts)와 같은 값을 쓴다: 민감정보 별도 필수 동의, 병원 제3자 제공은 선택.
 
 const TITLE = "개인정보처리방침";
 const DESCRIPTION =
@@ -25,12 +33,13 @@ export default function PrivacyPage() {
       title: "수집하는 개인정보 항목",
       body: (
         <>
-          <p>리얼성형은 회원가입 없이 운영되며, 시술 상담 가이드를 신청할 때에만 아래 정보를 받습니다.</p>
+          <p>리얼성형은 회원가입 없이 운영되며, 시술 상담을 신청할 때에만 아래 정보를 받습니다.</p>
           <PolicyTable
             caption="수집 항목"
             columns={["구분", "항목", "수집 방법"]}
             rows={[
-              ["필수", "이름, 휴대폰 번호, 관심 시술, 희망 지역, 희망 시기, 연락 가능 시간", "상담 신청서"],
+              ["필수", "이름, 휴대폰 번호, 희망 지역, 희망 시기, 연락 가능 시간", "상담 신청서"],
+              ["필수(민감정보)", "관심 시술 — 아래 「민감정보의 처리」 조항에 따라 따로 동의받습니다", "상담 신청서"],
               ["선택", "메모, 상담 병원(병원 상세에서 신청한 경우)", "상담 신청서"],
               [
                 "자동 수집",
@@ -39,9 +48,11 @@ export default function PrivacyPage() {
               ],
             ]}
           />
-          <p className="rounded-md bg-brand-weak px-4 py-3 text-brand-ink">
-            <strong className="font-semibold">민감정보 안내</strong> — 관심 시술은 신체 부위나 건강 상태를 짐작할 수 있는 정보이므로
-            「개인정보 보호법」 제23조에 따라 다른 개인정보와 구분해 별도로 동의받고, 상담 안내 외의 목적에는 쓰지 않습니다.
+          <p>
+            상담 신청서의 동의는 <span className={strong}>[필수] 개인정보 수집·이용</span>,{" "}
+            <span className={strong}>[필수] 민감정보(관심 시술) 처리</span>, <span className={strong}>[선택] 병원 연결을 위한 제3자 제공</span>,{" "}
+            <span className={strong}>[선택] 마케팅 정보 수신</span>으로 나눠 받습니다. 선택 항목에 동의하지 않아도 상담 신청은 할 수
+            있습니다.
           </p>
         </>
       ),
@@ -69,30 +80,56 @@ export default function PrivacyPage() {
       ),
     },
     {
+      id: "sensitive",
+      title: "민감정보의 처리",
+      body: (
+        <>
+          <p>
+            관심 시술은 신체 부위나 건강 상태를 짐작할 수 있는 정보이므로 「개인정보 보호법」 제23조에 따라 민감정보로 다룹니다.
+            상담 신청서에서 다른 개인정보와 구분한 <span className={strong}>[필수] 민감정보(관심 시술) 처리 동의</span>를 따로
+            받으며, 동의한 목적 외에는 쓰지 않습니다.
+          </p>
+          <PolicyTable
+            caption="민감정보 처리"
+            columns={["처리 항목", "처리 목적", "보유 기간", "거부 시 불이익"]}
+            rows={[
+              [
+                SENSITIVE_ITEMS,
+                SENSITIVE_PURPOSE,
+                `${RETENTION_LABEL} 파기 (상담이 이뤄지지 않으면 신청일로부터 1년)`,
+                consentDetail("consent_sensitive").refusal,
+              ],
+            ]}
+          />
+          <p>
+            관심 시술은 마케팅 정보 수신에 따로 동의한 경우에만 맞춤 안내에 쓰고, 병원에는 제3자 제공에 동의한 경우에만 제공합니다.
+          </p>
+        </>
+      ),
+    },
+    {
       id: "third-party",
       title: "개인정보의 제3자 제공",
       body: (
         <>
           <p>
-            리얼성형은 이용자가 별도로 동의한 경우에만, 상담을 연결할 병원에 필요한 최소한의 정보를 제공합니다. 그 밖에는 법령에
-            근거가 있는 경우를 제외하고 개인정보를 외부에 제공하지 않습니다.
+            리얼성형은 이용자가 <span className={strong}>[선택] 병원 연결을 위한 제3자 제공</span>에 동의하고 병원 연결을 원할
+            때에만, 상담을 연결할 병원에 필요한 최소한의 정보를 제공합니다. 그 밖에는 법령에 근거가 있는 경우를 제외하고 개인정보를
+            외부에 제공하지 않습니다.
           </p>
           <PolicyTable
             caption="제3자 제공"
             columns={["제공받는 자", "제공 항목", "제공 목적", "보유 기간"]}
-            rows={[
-              [
-                "상담을 연결할 병원 1곳",
-                "이름, 휴대폰 번호, 관심 시술, 희망 시기, 연락 가능 시간, 메모",
-                "상담·진료 예약 안내",
-                "상담 목적 달성 후 지체 없이 파기 (진료로 이어지면 의료법에 따른 보존 기간)",
-              ],
-            ]}
+            rows={[[THIRD_PARTY.recipient, THIRD_PARTY.items, THIRD_PARTY.purpose, THIRD_PARTY.retention]]}
           />
           <p>
-            <span className={strong}>현재 제휴 병원은 없습니다.</span> 지금은 리얼성형 운영팀이 직접 상담 가이드를 안내하며 병원에
-            정보를 제공하지 않습니다. 제휴 병원이 생기면 이 항목에 병원 이름을 게시하고, 정보를 넘기기 전에 이용자에게 병원 이름을
-            문자로 먼저 알립니다.
+            <span className={strong}>현재 제휴 병원은 없습니다.</span> 지금은 어떤 병원에도 정보를 제공하지 않으며, 리얼성형
+            운영팀이 직접 상담 가이드를 안내합니다. 병원을 연결하게 되면 제공받는 병원 이름을 이 항목에 게시하고, 정보를 넘기기
+            전에 이용자에게 병원 이름을 먼저 알려 다시 확인을 받습니다.
+          </p>
+          <p>
+            제3자 제공에 동의하지 않아도 상담 신청과 운영팀의 상담 가이드 안내는 똑같이 받을 수 있습니다. 다만 병원 상담 연결은
+            해 드릴 수 없습니다.
           </p>
           <p>리얼성형은 병원으로부터 상담 연결의 대가(건당 수수료)를 받지 않습니다.</p>
         </>
@@ -206,15 +243,17 @@ export default function PrivacyPage() {
           <dl className="grid gap-2 rounded-md bg-canvas-soft p-4 text-sm">
             <div className="grid grid-cols-3 gap-2">
               <dt className="text-ink-muted">책임 부서</dt>
-              <dd className="col-span-2 font-semibold text-ink">리얼성형 운영팀</dd>
+              <dd className="col-span-2 font-semibold text-ink">리얼성형 운영팀(시연 사이트)</dd>
             </div>
             <div className="grid grid-cols-3 gap-2">
               <dt className="text-ink-muted">연락처</dt>
-              <dd className="col-span-2 text-ink-muted">사업자 등록 절차를 마친 뒤 이곳에 게시합니다.</dd>
+              <dd className="col-span-2 text-ink-muted" data-testid="privacy-officer-contact">
+                실제 영업을 하지 않는 포트폴리오용 시연 사이트라 연락처를 두지 않았습니다. 사이트 운영을 시작하면 이곳에 게시합니다.
+              </dd>
             </div>
             <div className="grid grid-cols-3 gap-2">
               <dt className="text-ink-muted">응대 시간</dt>
-              <dd className="col-span-2 text-ink-muted">{SITE.hours}</dd>
+              <dd className="col-span-2 text-ink-muted">운영 시 {SITE.hours}</dd>
             </div>
           </dl>
           <p>개인정보 침해에 대한 신고나 상담이 필요하면 아래 기관에 문의할 수 있습니다.</p>
@@ -245,11 +284,16 @@ export default function PrivacyPage() {
       title={TITLE}
       effectiveLabel={POLICY_EFFECTIVE_LABEL}
       intro={
-        <p>
-          {SITE.name}(이하 &lsquo;리얼성형&rsquo;)은 「개인정보 보호법」에 따라 이용자의 개인정보를 보호하고 관련 고충을 신속하게
-          처리하기 위해 다음과 같이 개인정보처리방침을 둡니다. 리얼성형은 의료기관이 아니며, 상담 신청에 필요한 최소한의 정보만
-          받습니다.
-        </p>
+        <>
+          <p>
+            {SITE.name}(이하 &lsquo;리얼성형&rsquo;)은 「개인정보 보호법」에 따라 이용자의 개인정보를 보호하고 관련 고충을 신속하게
+            처리하기 위해 다음과 같이 개인정보처리방침을 둡니다. 리얼성형은 의료기관이 아니며, 상담 신청에 필요한 최소한의 정보만
+            받습니다.
+          </p>
+          <p data-testid="privacy-demo-note" className="rounded-md bg-canvas px-4 py-3 text-sm">
+            {SITE.businessPending} 아래 내용은 서비스를 운영할 때 적용할 기준입니다.
+          </p>
+        </>
       }
       sections={sections}
       footer={

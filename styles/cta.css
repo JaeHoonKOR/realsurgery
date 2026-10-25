@@ -1,0 +1,12 @@
+/* 상담 CTA 노출 규칙 (components/common/SiteHeader 에서 import).
+   app/globals.css 는 공용 파일이라 CTA 전용 규칙은 여기 둔다.
+
+   모바일(48rem 미만)에서 하단 고정 바(BottomBar)에 상담 버튼이 있는 화면은 헤더 CTA 를 숨긴다.
+   헤더 + 하단 바 + 본문 CTA 블록으로 같은 버튼이 세 번 보이지 않게 한다(본문 CTA 블록과 하단 바만 남는다).
+   데스크톱은 하단 바가 숨겨지므로 헤더 CTA 를 그대로 둔다.
+   btn 유틸리티(@layer utilities 의 inline-flex)를 덮어야 하므로 레이어 밖에 둔다. */
+@media (width < 48rem) {
+  body:has([data-bottom-bar-cta]) .site-header-cta {
+    display: none;
+  }
+}

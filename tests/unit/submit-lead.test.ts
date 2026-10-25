@@ -22,6 +22,7 @@ const VALUES: ConsultValues = {
   phone: "010-1234-5678",
   contact_time: "anytime",
   consent_privacy: true,
+  consent_sensitive: true,
   consent_3rd: true,
 };
 const ATTR = {
@@ -95,6 +96,8 @@ describe("검증 — 화면(lib/consult/validation)과 같은 판정", () => {
     [{ contact_time: null }, "contact_time"],
     [{ memo: "가".repeat(501) }, "memo"],
     [{ consent_privacy: false }, "consent_privacy"],
+    [{ consent_sensitive: false }, "consent_sensitive"],
+    [{ consent_sensitive: undefined }, "consent_sensitive"],
     [{ consent_3rd: "yes" }, "consent_3rd"],
     [{ procedure_id: "../etc" }, "procedure_id"],
     [{ clinic_id: 3 }, "clinic_id"],
@@ -103,6 +106,15 @@ describe("검증 — 화면(lib/consult/validation)과 같은 판정", () => {
     const r = validateLead(body(over));
     expect(r.ok).toBe(false);
     if (!r.ok) expect(Object.keys(r.fields)).toContain(field);
+  });
+  it("병원 제3자 제공은 선택 — false·생략도 통과하고 false 로 저장 값에 남는다", () => {
+    for (const over of [{ consent_3rd: false }, { consent_3rd: undefined }]) {
+      const r = validateLead(body(over));
+      expect(r.ok).toBe(true);
+      if (r.ok) expect(r.value.consent_3rd).toBe(false);
+    }
+    const yes = validateLead(body());
+    expect(yes.ok && yes.value.consent_3rd).toBe(true);
   });
   it("객체가 아니면 전부 오류", () => {
     const r = validateLead(null);
@@ -164,7 +176,13 @@ describe("handler", () => {
     expect(dup?.url).toContain(encodeURIComponent("2026-10-26T04:55:00.000Z"));
     expect(insert?.init.headers).toMatchObject({ Authorization: "Bearer service-key", Prefer: "return=minimal" });
     const row = JSON.parse(String(insert?.init.body)) as Record<string, unknown>;
-    expect(row).toMatchObject({ id: "7f3a9c2e-1b4d-4e5f-8a6b-0c1d2e3f4a5b", consent_privacy: true, consent_3rd: true, ga_client_id: "555.666" });
+    expect(row).toMatchObject({
+      id: "7f3a9c2e-1b4d-4e5f-8a6b-0c1d2e3f4a5b",
+      consent_privacy: true,
+      consent_sensitive: true,
+      consent_3rd: true,
+      ga_client_id: "555.666",
+    });
     expect(row.consent_ads).toBeUndefined();
     expect(String(row.phone)).toMatch(/^v1:/);
     expect(await decryptPhone(String(row.phone), KEY)).toBe("01012345678");
@@ -192,6 +210,16 @@ describe("handler", () => {
         client_user_agent: "UA/1",
       },
     });
+  });
+
+  it("제3자 제공에 동의하지 않은 신청도 접수 — 행에는 consent_3rd=false, 알림 메일에 '병원에 넘기지 않음'", async () => {
+    const { handler, calls } = setup({ env: { RESEND_API_KEY: "re_x", LEAD_NOTIFY_EMAIL: "ops@example.com" } });
+    const res = await handler(post(body({ consent_3rd: false })));
+    expect(res.status).toBe(200);
+    const insert = calls.find((c) => c.url.endsWith("/rest/v1/leads"));
+    expect(JSON.parse(String(insert?.init.body))).toMatchObject({ consent_privacy: true, consent_sensitive: true, consent_3rd: false });
+    const resend = calls.find((c) => c.url.includes("resend.com"));
+    expect(String(resend?.init.body)).toContain("병원에 넘기지 않음");
   });
 
   it("광고 측정 동의가 없거나 키가 없으면 CAPI·알림을 보내지 않는다", async () => {

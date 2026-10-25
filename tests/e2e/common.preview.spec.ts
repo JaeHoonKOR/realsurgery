@@ -56,9 +56,16 @@ test.describe("헤더 (3절: 로고·GNB·검색창·CTA, 스크롤 시 축소 �
     ]);
 
     const cta = page.getByTestId("header-cta");
-    await expect(cta).toHaveText("무료 상담 예약");
+    await expect(cta).toHaveText("상담 신청");
     await expect(cta).toHaveAttribute("data-track", "click_cta");
     expect(new URL((await cta.getAttribute("href")) ?? "", "http://x").pathname).toMatch(/\/consult\/$/);
+    if (isMobile(info.project.name)) {
+      // 미리보기 화면에는 하단 고정 바(상담 신청)가 있으므로 모바일 헤더 CTA 는 숨긴다(중복 노출 방지, styles/cta.css)
+      await expect(page.getByTestId("bottom-bar")).toBeVisible();
+      await expect(cta).toBeHidden();
+      return;
+    }
+    await expect(cta).toBeVisible();
     await cta.click();
     expect(await events(page)).toContainEqual({ event: "click_cta", location: "header" });
   });
@@ -141,14 +148,14 @@ test.describe("헤더 검색 (3절: 시술명 자동완성 최대 5개 → P-03,
   });
 });
 
-test.describe("상담 예약 CTA 블록 (3절: 제목·1줄 혜택·버튼, location 구분)", () => {
+test.describe("상담 신청 CTA 블록 (3절: 제목·1줄 혜택·버튼, location 구분)", () => {
   for (const location of ["mid", "bottom"] as const) {
     test(`location=${location}: 시술 ID 를 상담 폼에 넘기고 click_cta 를 보낸다`, async ({ page }) => {
       await page.goto("./");
       const block = page.getByTestId(`consult-cta-${location}`);
       await expect(block.getByRole("heading", { level: 2 })).toBeVisible();
-      await expect(block.locator("p")).toContainText("영업일 기준 1일");
-      const button = block.getByRole("link", { name: "무료 상담 예약" });
+      await expect(block.locator("p")).toContainText("비용은 들지 않습니다");
+      const button = block.getByRole("link", { name: "상담 신청하기" });
       const url = new URL((await button.getAttribute("href")) ?? "", "http://x");
       expect(url.pathname).toMatch(/\/consult\/$/);
       expect(url.searchParams.get("procedure_id")).toBe("double-eyelid");
@@ -158,7 +165,7 @@ test.describe("상담 예약 CTA 블록 (3절: 제목·1줄 혜택·버튼, loca
   }
 });
 
-test.describe("모바일 하단 고정 바 (3절: 전화·카카오톡·무료 상담 예약, 버튼별 이벤트)", () => {
+test.describe("모바일 하단 고정 바 (3절: 전화·카카오톡·상담 신청, 버튼별 이벤트)", () => {
   test("모바일: 화면 하단 고정, 버튼 3개와 각 이벤트, 콘텐츠를 가리지 않음", async ({ page }, info) => {
     test.skip(!isMobile(info.project.name), "모바일 전용 요소");
     await page.goto("./");
@@ -172,7 +179,7 @@ test.describe("모바일 하단 고정 바 (3절: 전화·카카오톡·무료 �
 
     const phone = bar.getByRole("link", { name: "전화" });
     const kakao = bar.getByRole("link", { name: "카카오톡 상담" });
-    const consult = bar.getByRole("link", { name: "무료 상담 예약" });
+    const consult = bar.getByRole("link", { name: "상담 신청" });
     await expect(phone).toHaveAttribute("href", "tel:0200000000");
     await expect(kakao).toHaveAttribute("target", "_blank");
     await expect(kakao).toHaveAttribute("rel", /noopener/);
@@ -222,7 +229,7 @@ test.describe("모바일 하단 고정 바 (3절: 전화·카카오톡·무료 �
       });
       expect(hit, `${await link.textContent()} 버튼이 가려짐`).toBe(true);
     }
-    await bar.getByRole("link", { name: "무료 상담 예약" }).click();
+    await bar.getByRole("link", { name: "상담 신청" }).click();
     expect(await events(page)).toContainEqual({ event: "click_cta", location: "bottom_bar", procedure_id: "double-eyelid" });
     // 배너의 저장·동의 버튼도 그대로 누를 수 있다
     await page.getByTestId("consent-save").click();

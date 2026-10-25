@@ -35,12 +35,14 @@ function Checkbox({ checked, size = "md" }: { checked: boolean; size?: "md" | "l
 }
 
 /**
- * 동의 3종(screen-spec 4절 P-06, 1절 법적 고려): 개인정보 수집·이용(필수, 민감정보 안내), 제3자 제공(필수), 마케팅 수신(선택).
- * "전체 동의"는 세 항목을 한 번에 켜고 끈다. 항목마다 "내용 보기"로 항목·목적·보유 기간을 펼친다.
+ * 동의 4종(screen-spec 4절 P-06, 1절 법적 고려 — lib/consult/policy.ts):
+ * 개인정보 수집·이용(필수), 민감정보(관심 시술) 처리(필수, 개인정보 보호법 제23조 별도 동의),
+ * 병원 연결을 위한 제3자 제공(선택 — 제휴 병원 없음), 마케팅 수신(선택).
+ * "전체 동의"는 네 항목을 한 번에 켜고 끈다. 항목마다 "내용 보기"로 항목·목적·보유 기간·거부 시 불이익을 펼친다.
  */
 export function ConsentFields({ values, onChange, errors, firstRef, privacyHref }: Props) {
   const [openKey, setOpenKey] = useState<ConsentKey | null>(null);
-  const all = values.consent_privacy && values.consent_3rd && values.consent_marketing;
+  const all = CONSENT_DETAILS.every((c) => values[c.key]);
 
   return (
     <fieldset data-testid="consult-consents" className="min-w-0">
@@ -50,9 +52,7 @@ export function ConsentFields({ values, onChange, errors, firstRef, privacyHref 
           <input
             type="checkbox"
             checked={all}
-            onChange={(e) =>
-              onChange({ consent_privacy: e.target.checked, consent_3rd: e.target.checked, consent_marketing: e.target.checked })
-            }
+            onChange={(e) => onChange(Object.fromEntries(CONSENT_DETAILS.map((c) => [c.key, e.target.checked])) as Values)}
             data-testid="consent-all"
             className="peer sr-only"
           />
@@ -105,7 +105,7 @@ export function ConsentFields({ values, onChange, errors, firstRef, privacyHref 
                 </div>
                 <div id={panelId} hidden={!expanded} className="mx-3 mb-2 rounded-md bg-canvas-soft p-4 text-sm">
                   <dl className="grid gap-2">
-                    {c.rows.map((r) => (
+                    {[...c.rows, { label: "거부 시 불이익", value: c.refusal }].map((r) => (
                       <div key={r.label} className="grid gap-0.5 sm:grid-cols-4 sm:gap-3">
                         <dt className="font-semibold text-ink">{r.label}</dt>
                         <dd className="text-ink-muted sm:col-span-3">{r.value}</dd>
@@ -113,7 +113,6 @@ export function ConsentFields({ values, onChange, errors, firstRef, privacyHref 
                     ))}
                   </dl>
                   {c.notice && <p className="mt-3 rounded-sm bg-brand-weak px-3 py-2 text-brand-ink">{c.notice}</p>}
-                  <p className="mt-3 text-ink-muted">{c.refusal}</p>
                 </div>
                 {error && (
                   <div className="px-3 pb-2">
