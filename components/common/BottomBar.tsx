@@ -24,7 +24,7 @@ export function BottomBar({ page, procedureId, clinic }: Props) {
   if (!showConsult && !phone && !kakao) return null;
 
   const secondary =
-    "flex h-14 basis-0 grow flex-col items-center justify-center gap-1 rounded-sm border border-line text-sm font-semibold text-ink";
+    "flex h-14 basis-0 grow flex-col items-center justify-center gap-0.5 rounded-md bg-canvas text-sm font-semibold text-ink";
   return (
     <>
       {/* data-bottom-bar → globals.css 가 모바일에서 body 아래 여백(바 높이 + 안전 영역)을 만들어 푸터까지 가리지 않게 한다 */}
@@ -37,7 +37,7 @@ export function BottomBar({ page, procedureId, clinic }: Props) {
         <div className="flex gap-2 px-4 pt-2">
           {phone && clinic && (
             <TrackedLink href={`tel:${phone}`} event="phone_click" params={{ clinic_id: clinic.id, page }} className={secondary}>
-              <Phone aria-hidden="true" className="size-5 text-brand" />
+              <Phone aria-hidden="true" className="size-5 text-brand-strong" />
               전화
             </TrackedLink>
           )}
@@ -50,7 +50,7 @@ export function BottomBar({ page, procedureId, clinic }: Props) {
               params={{ clinic_id: clinic.id, page }}
               className={secondary}
             >
-              <MessageCircle aria-hidden="true" className="size-5 text-brand" />
+              <MessageCircle aria-hidden="true" className="size-5 text-brand-strong" />
               카카오톡 상담
             </TrackedLink>
           )}
@@ -60,7 +60,7 @@ export function BottomBar({ page, procedureId, clinic }: Props) {
               event="click_cta"
               params={{ location: "bottom_bar", procedure_id: procedureId }}
               // 전화·카톡이 있으면 세 버튼을 같은 폭으로("카카오톡 상담"이 375px 에서 잘리지 않게), 없으면 혼자 전체 폭
-              className="flex h-14 basis-0 grow items-center justify-center rounded-sm bg-accent-strong px-2 text-center font-semibold text-surface"
+              className="flex h-14 basis-0 grow items-center justify-center rounded-md bg-brand-strong px-2 text-center text-lg font-semibold text-surface"
             >
               무료 상담 예약
             </TrackedLink>

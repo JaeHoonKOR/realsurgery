@@ -2,8 +2,9 @@ import Link from "next/link";
 import { isPathBuilt } from "@/lib/built-routes";
 import { getSearchItems } from "@/lib/content";
 import { GNB, ROUTES, consultPath, procedurePath } from "@/lib/routes";
-import { SITE } from "@/lib/site";
+import { btn, cx } from "@/lib/ui";
 import { HeaderSearch } from "./HeaderSearch";
+import { Logo } from "./Logo";
 import { TrackedLink } from "./TrackedLink";
 
 /**
@@ -20,14 +21,15 @@ export function SiteHeader() {
 
   return (
     <>
-      <header data-testid="site-header" className="site-header sticky top-0 z-(--z-header) border-b border-line bg-surface">
-        <div className="mx-auto flex h-14 max-w-content items-center gap-6 px-5 md:h-16 md:px-10">
+      <header data-testid="site-header" className="site-header sticky top-0 z-(--z-header) bg-surface">
+        <div className="mx-auto flex h-14 max-w-content items-center gap-8 px-5 md:h-16 md:px-10">
           <Link
             href={ROUTES.home}
             data-testid="site-logo"
-            className="inline-flex h-11 shrink-0 items-center text-h3 font-bold tracking-tight text-brand"
+            aria-label="리얼성형 홈"
+            className="inline-flex h-11 shrink-0 items-center"
           >
-            {SITE.name}
+            <Logo />
           </Link>
 
           {nav.length > 0 && (
@@ -37,7 +39,7 @@ export function SiteHeader() {
                   <li key={item.href}>
                     <Link
                       href={item.href}
-                      className="inline-flex h-11 items-center rounded-sm px-3 text-sm font-semibold text-ink-muted hover:bg-canvas hover:text-ink"
+                      className="inline-flex h-11 items-center rounded-sm px-3 font-semibold text-ink-muted hover:bg-canvas hover:text-ink"
                     >
                       {item.label}
                     </Link>
@@ -49,7 +51,7 @@ export function SiteHeader() {
 
           <div className="ml-auto flex items-center gap-3">
             {searchItems.length > 0 && (
-              <div className="hidden w-72 md:block">
+              <div className="hidden w-64 lg:block">
                 <HeaderSearch items={searchItems} testId="header-search-desktop" />
               </div>
             )}
@@ -59,7 +61,7 @@ export function SiteHeader() {
                 event="click_cta"
                 params={{ location: "header" }}
                 data-testid="header-cta"
-                className="inline-flex h-11 shrink-0 items-center rounded-sm bg-accent-strong px-4 text-sm font-semibold text-surface hover:opacity-90"
+                className={cx(btn.primary, "h-10 rounded-sm px-4 text-sm")}
               >
                 무료 상담 예약
               </TrackedLink>
@@ -74,12 +76,12 @@ export function SiteHeader() {
             {searchItems.length > 0 && <HeaderSearch items={searchItems} testId="header-search-mobile" />}
             {nav.length > 0 && (
               <nav aria-label="주요 메뉴" data-testid="gnb-mobile">
-                <ul className="-mx-3 flex items-center">
+                <ul className="-mx-3 flex items-center overflow-x-auto">
                   {nav.map((item) => (
                     <li key={item.href}>
                       <Link
                         href={item.href}
-                        className="inline-flex h-11 items-center px-3 text-sm font-semibold text-ink-muted hover:text-ink"
+                        className="inline-flex h-11 shrink-0 items-center px-3 font-semibold text-ink-muted hover:text-ink"
                       >
                         {item.label}
                       </Link>

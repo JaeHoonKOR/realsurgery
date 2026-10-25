@@ -11,7 +11,19 @@ import { TrackedLink } from "./TrackedLink";
  * 헤더 시술 검색 (screen-spec 3절: 시술명 자동완성 최대 5개 → P-03, 이벤트 search)
  * WAI-ARIA combobox(목록형 자동완성) 패턴: 입력창에 포커스를 둔 채 ↑↓ 로 이동, Enter 로 이동, Esc 로 닫기.
  */
-export function HeaderSearch({ items, testId }: { items: SearchItem[]; testId?: string }) {
+export function HeaderSearch({
+  items,
+  testId,
+  size = "md",
+  placeholder = "시술명 검색 (예: 쌍꺼풀)",
+}: {
+  items: SearchItem[];
+  testId?: string;
+  /** md = 헤더, lg = 메인 히어로 */
+  size?: "md" | "lg";
+  placeholder?: string;
+}) {
+  const lg = size === "lg";
   const id = useId();
   const inputId = `${id}-input`;
   const listId = `${id}-list`;
@@ -63,7 +75,7 @@ export function HeaderSearch({ items, testId }: { items: SearchItem[]; testId?: 
       <label htmlFor={inputId} className="sr-only">
         시술 검색
       </label>
-      <Search aria-hidden="true" className="pointer-events-none absolute top-3 left-3 size-5 text-ink-muted" />
+      <Search aria-hidden="true" className={`pointer-events-none absolute left-4 text-ink-subtle ${lg ? "top-4.5 size-6" : "top-3 size-5"}`} />
       <input
         id={inputId}
         type="search"
@@ -74,7 +86,7 @@ export function HeaderSearch({ items, testId }: { items: SearchItem[]; testId?: 
         aria-activedescendant={expanded && active >= 0 ? `${listId}-${active}` : undefined}
         autoComplete="off"
         enterKeyHint="search"
-        placeholder="시술명 검색 (예: 쌍꺼풀)"
+        placeholder={placeholder}
         value={query}
         onChange={(e) => {
           setQuery(e.target.value);
@@ -87,14 +99,14 @@ export function HeaderSearch({ items, testId }: { items: SearchItem[]; testId?: 
           setOpen(false);
           setActive(-1);
         }}
-        className="h-11 w-full rounded-sm border border-line bg-canvas pr-3 pl-10 text-base text-ink placeholder:text-ink-muted focus:border-brand focus:bg-surface"
+        className={`w-full border border-transparent bg-canvas pr-3 text-ink placeholder:text-ink-subtle focus:border-brand focus:bg-surface focus:outline-none ${lg ? "h-15 rounded-lg pl-13 text-lg" : "h-11 rounded-md pl-11 text-base"}`}
       />
       <div
         id={listId}
         role="listbox"
         aria-label="검색어와 일치하는 시술"
         hidden={!expanded || results.length === 0}
-        className="absolute inset-x-0 top-full z-(--z-popover) mt-1 overflow-hidden rounded-sm border border-line bg-surface py-1 shadow-lg"
+        className="absolute inset-x-0 top-full z-(--z-popover) mt-2 overflow-hidden rounded-md border border-line bg-surface py-1 shadow-lg"
       >
         {results.map((item, i) => (
           <TrackedLink
@@ -116,10 +128,10 @@ export function HeaderSearch({ items, testId }: { items: SearchItem[]; testId?: 
               setOpen(false);
               setActive(-1);
             }}
-            className={`flex h-11 items-center justify-between gap-3 px-3 text-sm ${i === active ? "bg-canvas" : ""}`}
+            className={`flex h-12 items-center justify-between gap-3 px-4 ${i === active ? "bg-canvas" : ""}`}
           >
             <span className="font-semibold text-ink">{item.name}</span>
-            <span className="text-ink-muted">{item.category}</span>
+            <span className="text-sm text-ink-subtle">{item.category}</span>
           </TrackedLink>
         ))}
       </div>
@@ -128,7 +140,7 @@ export function HeaderSearch({ items, testId }: { items: SearchItem[]; testId?: 
         role="status"
         className={
           noMatch
-            ? "absolute inset-x-0 top-full z-(--z-popover) mt-1 rounded-sm border border-line bg-surface px-3 py-3 text-sm text-ink-muted shadow-lg"
+            ? "absolute inset-x-0 top-full z-(--z-popover) mt-2 rounded-md border border-line bg-surface px-4 py-3 text-sm text-ink-muted shadow-lg"
             : "sr-only"
         }
       >

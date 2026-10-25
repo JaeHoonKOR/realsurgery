@@ -12,7 +12,7 @@
 
 @layer base {
   html {
-    background-color: var(--color-canvas);
+    background-color: var(--color-surface);
     color: var(--color-ink);
     font-family: var(--font-sans);
     -webkit-text-size-adjust: 100%;
@@ -65,13 +65,11 @@
   }
 }
 
-/* 첫 방문(동의 배너가 떠 있을 때)에도 모바일 하단 바의 전화·카톡·상담 버튼을 누를 수 있게 배너를 바 바로 위로 올린다.
-   배너의 bottom-0·pb-safe-4 유틸리티(@layer utilities)를 덮어야 하므로 레이어 밖에 둔다.
-   안전 영역은 바가 이미 채우므로 배너 아래 패딩은 기본값만. 배너가 바의 윗 테두리(1px)를 덮어 한 장처럼 이어진다. */
+/* 첫 방문(동의 배너가 떠 있을 때)에도 모바일 하단 바의 전화·카톡·상담 버튼을 누를 수 있게 배너를 바 위로 띄운다.
+   배너의 bottom-3 유틸리티(@layer utilities)를 덮어야 하므로 레이어 밖에 둔다. */
 @media (width < 48rem) {
   body:has([data-bottom-bar]) [data-consent-banner] {
-    bottom: calc(var(--spacing) * 18 + env(safe-area-inset-bottom, 0px));
-    padding-bottom: calc(var(--spacing) * 4);
+    bottom: calc(var(--spacing) * 21 + env(safe-area-inset-bottom, 0px));
   }
 }
 

@@ -13,7 +13,8 @@ export const DIRS = ["app", "components", "lib", "styles", "content"];
 export const EXT = [".ts", ".tsx", ".js", ".jsx", ".css", ".mdx"];
 
 const HEX = /#[0-9a-fA-F]{3,8}\b/g;
-const ARBITRARY = /(?:^|[\s"'`{])(?:[a-z]+:)*-?[a-z][a-z0-9-]*-\[[^\]\s]+\]/g;
+// 임의 "변형"(data-[state=open]:·aria-[invalid=true]:)은 값이 아니라 선택자라 허용 — 뒤에 ":" 가 오면 제외
+const ARBITRARY = /(?:^|[\s"'`{])(?:[a-z-]+(?:-\[[^\]\s]+\])?:)*-?[a-z][a-z0-9-]*-\[[^\]\s]+\](?!:)/g;
 // URL 앵커 예외: `#` 이 href·id·to 값 안에 있을 때만.
 //   href="#main"  href='/a#top'  href={"#main"}  href={`#main`}  xlink:href="#icon"
 //   객체 리터럴(링크 목록 등): href: "#main"  (to: 는 그라디언트 { from, to } 색과 겹치므로 제외하지 않는다)

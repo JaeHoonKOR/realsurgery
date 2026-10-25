@@ -1,7 +1,8 @@
-import { ArrowRight } from "lucide-react";
+import { Emoji3D } from "@/components/ui/Emoji3D";
 import { isPathBuilt } from "@/lib/built-routes";
 import { ROUTES, consultPath } from "@/lib/routes";
 import type { CtaLocation } from "@/lib/track";
+import { btn, cx } from "@/lib/ui";
 import { TrackedLink } from "./TrackedLink";
 
 type Props = {
@@ -31,22 +32,22 @@ export function ConsultCta({
     <section
       data-testid={`consult-cta-${location}`}
       aria-labelledby={titleId}
-      className="flex flex-col gap-5 rounded-lg bg-brand px-6 py-7 text-surface md:flex-row md:items-center md:justify-between md:gap-10 md:px-10 md:py-8"
+      className="flex flex-col gap-6 rounded-xl bg-brand-weak px-6 py-7 md:flex-row md:items-center md:gap-8 md:px-10 md:py-9"
     >
-      <div>
-        <h2 id={titleId} className="text-h3 font-bold">
+      <Emoji3D name="chat" size={64} />
+      <div className="md:flex-1">
+        <h2 id={titleId} className="text-h3 font-bold tracking-tight text-ink">
           {title}
         </h2>
-        <p className="mt-1 text-sm">{benefit}</p>
+        <p className="mt-1 text-ink-muted">{benefit}</p>
       </div>
       <TrackedLink
         href={consultPath({ procedure_id: procedureId, clinic_id: clinicId })}
         event="click_cta"
         params={{ location, procedure_id: procedureId }}
-        className="inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-sm bg-surface px-6 font-semibold text-brand hover:opacity-90"
+        className={cx(btn.primary, btn.md, "w-full md:w-auto")}
       >
         무료 상담 예약
-        <ArrowRight aria-hidden="true" className="size-5" />
       </TrackedLink>
     </section>
   );

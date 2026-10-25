@@ -1,62 +1,87 @@
 /*
  * 리얼성형 디자인 토큰 — 단일 소스 (docs/QUALITY.md 3절)
- * - 색 8개, 간격 4px 배수(--spacing), 모서리 2종, 그림자 2종, 제목 3단계.
- * - Tailwind 기본 팔레트·반경·그림자·폰트 크기는 initial로 제거한다. 여기 없는 값은 쓰지 않는다.
- * - 팔레트 기준: docs/IMAGES.md (#F7F3EF 배경, #D97B66 코랄, #2F6F6B 틸)
+ * 방향: 토스형 클린 — 흰 바탕·회색 밴드·넓은 여백·블루 1색 강조·3D 일러스트(Fluent Emoji 3D, MIT).
+ * 시그니처: "가격 범위 바" — 시술·병원 가격을 같은 눈금 위 막대로 보여 준다(가격 투명성).
+ * Tailwind 기본 팔레트·반경·그림자·폰트 크기는 initial로 제거한다. 여기 없는 값은 쓰지 않는다.
  */
 @theme {
-  /* 색 (8) */
+  /* 색 — 중립 9 + 블루 4 + 상태 3 */
   --color-*: initial;
-  --color-canvas: #f7f3ef; /* 페이지 배경 */
-  --color-surface: #ffffff; /* 카드·입력 배경 */
-  --color-line: #e4ddd5; /* 경계선 */
-  --color-ink: #1f2a2e; /* 본문·제목 */
-  --color-ink-muted: #5b6468; /* 보조 텍스트 (canvas 대비 5.49:1, surface 대비 6.06:1) */
-  --color-brand: #2f6f6b; /* 틸 — 링크·강조 (흰 글자 대비 5.82:1, canvas 위 글자 5.27:1) */
-  --color-accent: #d97b66; /* 코랄 — 장식 전용(흰 글자 대비 3.01:1 → 글자 배경·본문 글자색 금지) */
-  --color-accent-strong: #b4553f; /* 코랄 진한 — CTA 버튼 배경 (흰 글자 대비 4.87:1) */
+  --color-surface: #ffffff; /* 기본 바탕·카드 */
+  --color-canvas: #f2f4f6; /* 회색 밴드·입력·타일 바탕 */
+  --color-canvas-soft: #f9fafb; /* 옅은 밴드 */
+  --color-line: #e5e8eb; /* 경계선 */
+  --color-line-strong: #d1d6db; /* 입력 테두리·눈금 */
+  --color-ink: #191f28; /* 제목·본문 (흰 바탕 16.6:1) */
+  --color-ink-muted: #4e5968; /* 보조 본문 (canvas 위 6.45:1) */
+  --color-ink-subtle: #6b7684; /* 캡션 — 흰 바탕 전용 (4.62:1) */
+  --color-ink-faint: #8b95a1; /* 장식·비활성 (글자 본문 금지) */
+  --color-brand: #3182f6; /* 블루 — 막대·아이콘·포커스 등 그래픽 전용 (글자 배경 금지) */
+  --color-brand-strong: #1b64da; /* 버튼 배경·링크 글자 (흰 글자 5.41:1) */
+  --color-brand-weak: #e8f3ff; /* 칩·선택 상태 바탕 */
+  --color-brand-ink: #1957c2; /* brand-weak 위 글자 (5.87:1) */
+  --color-danger: #d22030; /* 오류 글자 */
+  --color-danger-weak: #fff0f1; /* 오류 바탕 */
+  --color-success: #0a7d50; /* 완료·갱신 표시 */
+
+  /* 호환 별칭(기존 컴포넌트) — 새 코드는 brand·brand-strong 을 직접 쓴다 */
+  --color-accent: #3182f6;
+  --color-accent-strong: #1b64da;
 
   /* 간격: 4px 배수. p-1=4px, p-4=16px … */
   --spacing: 4px;
 
-  /* 모서리 (2) */
+  /* 모서리 — 위계별: 칩·작은 입력 sm, 버튼·입력 md, 카드 lg, 히어로·CTA 패널 xl */
   --radius-*: initial;
   --radius-sm: 8px;
-  --radius-lg: 16px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+  --radius-full: 9999px;
 
-  /* 그림자 (2) */
+  /* 그림자 — 카드는 기본 그림자 없음(회색 밴드 위 흰 카드로 구분). 떠 있는 요소만 */
   --shadow-*: initial;
-  --shadow-sm: 0 1px 2px rgb(31 42 46 / 0.06), 0 1px 4px rgb(31 42 46 / 0.04);
-  --shadow-lg: 0 8px 24px rgb(31 42 46 / 0.08), 0 2px 6px rgb(31 42 46 / 0.04);
+  --shadow-sm: 0 1px 3px rgb(25 31 40 / 0.06);
+  --shadow-lg: 0 12px 32px rgb(25 31 40 / 0.1), 0 2px 8px rgb(25 31 40 / 0.04);
 
-  /* 타이포: Pretendard Variable 서브셋, 본문 16px/1.7, 제목 3단계(h1·h2·h3) */
-  /* Fallback 패밀리는 styles/fonts.css (Pretendard 메트릭에 맞춘 시스템 폰트) */
+  /* 타이포: Pretendard Variable. 숫자는 tabular-nums. 제목은 촘촘한 자간(tracking-tight) */
   --font-sans: "Pretendard Variable", "Apple SD Gothic Neo", "Pretendard Fallback Noto", "Pretendard Fallback Malgun",
     system-ui, sans-serif;
   --text-*: initial;
+  --text-xs: 13px;
+  --text-xs--line-height: 1.5;
   --text-sm: 14px;
   --text-sm--line-height: 1.6;
   --text-base: 16px;
   --text-base--line-height: 1.7;
+  --text-lg: 18px;
+  --text-lg--line-height: 1.6;
   --text-h3: 20px;
   --text-h3--line-height: 1.45;
-  --text-h2: 24px;
-  --text-h2--line-height: 1.4;
+  --text-h2: clamp(22px, 18px + 1vw, 28px);
+  --text-h2--line-height: 1.35;
   --text-h1: clamp(28px, 22px + 1.6vw, 40px);
   --text-h1--line-height: 1.3;
+  --text-display: clamp(34px, 24px + 2.8vw, 56px);
+  --text-display--line-height: 1.22;
+
+  --tracking-tight: -0.02em;
+  --tracking-tighter: -0.03em;
 
   /* 레이아웃 폭: 1280px에서 콘텐츠 최대폭 1120px */
   --container-*: initial;
   --container-content: 1120px;
-  --container-text: 640px;
+  --container-text: 680px;
+  --container-form: 520px;
+  --container-banner: 400px;
 }
 
 /*
  * 쌓임 순서(z-index) — 숫자를 컴포넌트에 직접 쓰지 않는다(check-tokens 인라인 style 규칙).
  * 사용: className="z-(--z-header)" 또는 style={{ zIndex: "var(--z-header)" }}
- * @theme 밖 :root 에 두어 사용 여부와 관계없이 항상 출력한다.
  */
 :root {
+  --z-raised: 1; /* 카드 안 겹침 요소 */
   --z-header: 30; /* 상단 고정 헤더 */
   --z-popover: 35; /* 검색 자동완성 목록 */
   --z-bottom-bar: 40; /* 모바일 하단 고정 바 */

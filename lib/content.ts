@@ -29,6 +29,17 @@ export type Procedure = {
   updated_at: string;
   view_count: number;
   faqs: ProcedureFaq[];
+  /** 구조화 보조 데이터(data/seed/procedure-extras.json). 없으면 null */
+  extras: ProcedureExtras | null;
+};
+/** 회복 타임라인·대상·주의·비슷한 시술 — P-03 카드 UI용 */
+export type ProcedureExtras = {
+  /** 한 줄 소개(카드·메타용, 30자 내외) */
+  tagline: string;
+  timeline: { day: string; label: string; detail: string }[];
+  good_for: string[];
+  cautions: string[];
+  similar: string[];
 };
 export type ClinicHours = { label: string; days: Weekday[]; open: string; close: string };
 export type ClinicProcedure = {

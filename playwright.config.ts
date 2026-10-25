@@ -29,6 +29,8 @@ export default defineConfig({
   outputDir: "test-results/playwright",
   use: {
     locale: "ko-KR",
+    // 로컬·샌드박스에서 Playwright 브라우저 대신 다른 Chromium 을 쓸 때만(미설정이면 기본 브라우저)
+    launchOptions: process.env.PW_CHROMIUM_PATH ? { executablePath: process.env.PW_CHROMIUM_PATH } : {},
     trace: "retain-on-failure",
   },
   projects: [

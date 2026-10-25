@@ -365,6 +365,24 @@ export function toSeedSql(tables) {
   return `${lines.join("\n").trimEnd()}\n`;
 }
 
+// ---------- 로컬 콘텐츠 (본문 MD·구조화 보조 데이터) ----------
+export const CONTENT_DIR = path.join(ROOT, "content", "procedures");
+export const EXTRAS_FILE = path.join(SEED_DIR, "procedure-extras.json");
+
+/**
+ * 시술 본문(content/procedures/<id>.md)과 구조화 보조 데이터(data/seed/procedure-extras.json)를 붙인다.
+ * DB content_mdx 가 비어 있을 때만 파일 본문을 쓴다. 시드 SQL 대상이 아니다(콘텐츠 파일이 원본).
+ */
+export function attachLocalContent(content, { contentDir = CONTENT_DIR, extrasFile = EXTRAS_FILE } = {}) {
+  const extras = fs.existsSync(extrasFile) ? readJson(extrasFile) : {};
+  const procedures = content.procedures.map((p) => {
+    const mdFile = path.join(contentDir, `${p.id}.md`);
+    const body = p.content_mdx ?? (fs.existsSync(mdFile) ? fs.readFileSync(mdFile, "utf8") : null);
+    return { ...p, content_mdx: body, extras: extras[p.id] ?? null };
+  });
+  return { ...content, procedures };
+}
+
 // ---------- Supabase ----------
 /** 브라우저 공개 키(anon)만 쓴다. 둘 다 있어야 실호출, 아니면 null → mock 모드. */
 export function supabaseConfig(env = process.env) {
@@ -402,7 +420,7 @@ export async function buildData({
   const tables = cfg ? await fetchSupabaseTables(cfg, fetchImpl) : flattenSeed(readSeed(seedDir));
   const problems = validateTables(tables);
   if (problems.length) throw new Error(`콘텐츠 검증 실패 ${problems.length}건\n${problems.join("\n")}`);
-  const content = assemble(tables, { mode, generated_at: now().toISOString() });
+  const content = attachLocalContent(assemble(tables, { mode, generated_at: now().toISOString() }));
   fs.mkdirSync(path.dirname(outFile), { recursive: true });
   fs.writeFileSync(outFile, `${JSON.stringify(content, null, 2)}\n`, "utf8");
   const counts = `시술 ${content.procedures.length} · 병원 ${content.clinics.length} · 칼럼 ${content.posts.length} · 카테고리 ${content.categories.length}`;
