@@ -9,6 +9,7 @@
  */
 import type { Metadata } from "next";
 import { hasPublicKey } from "@/lib/env.public";
+import { withShareDefaults } from "@/lib/seo";
 import { SITE } from "@/lib/site";
 import { RETENTION_LABEL } from "./policy";
 
@@ -101,7 +102,7 @@ export function consultPageMetadata(mode: ConsultMode): Metadata {
     description,
     // ?procedure_id 같은 쿼리는 같은 화면 → canonical 은 쿼리 없는 경로
     alternates: { canonical: "./" },
-    openGraph: { title: CONSULT_TITLE, description, url: "./" },
+    ...withShareDefaults({ title: CONSULT_TITLE, description, url: "./" }),
     ...(mode === "demo" ? { robots: { index: false, follow: true } } : {}),
   };
 }

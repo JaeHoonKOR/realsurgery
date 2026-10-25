@@ -233,13 +233,13 @@ test.describe("P-03 시술 상세 가이드", () => {
     test.skip(!HAS_CONSULT, "T-101(P-06 상담 폼) 미구현 — 상담 CTA 는 P-06 이 빌드되면 노출된다");
     await page.goto(EYELID);
     const mid = page.getByTestId("consult-cta-mid");
-    await expect(mid).toContainText("이 시술 상담 가이드 받기");
+    await expect(mid).toContainText("쌍꺼풀 수술 상담 신청");
     const link = mid.getByRole("link");
     await expect(link).toHaveAttribute("href", /\/consult\/\?procedure_id=double-eyelid$/);
     // 같은 상담 블록을 페이지 끝에 한 번 더 두지 않는다(하단은 모바일 고정 바·헤더 CTA 가 맡는다)
     await expect(page.getByTestId("consult-cta-bottom")).toHaveCount(0);
     if (testInfo.project.name === "mobile-375") {
-      await expect(page.getByTestId("bottom-bar").getByRole("link", { name: "무료 상담 예약" })).toHaveAttribute(
+      await expect(page.getByTestId("bottom-bar").getByRole("link", { name: "상담 신청" })).toHaveAttribute(
         "href",
         /procedure_id=double-eyelid/,
       );

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { withShareDefaults } from "@/lib/seo";
 import { Clauses, PolicyDoc, type PolicySection } from "@/components/consult/PolicyDoc";
 import { POLICY_EFFECTIVE_LABEL } from "@/lib/consult/policy";
 import { SITE } from "@/lib/site";
@@ -13,7 +14,7 @@ export const metadata: Metadata = {
   title: TITLE,
   description: DESCRIPTION,
   alternates: { canonical: "./" },
-  openGraph: { title: TITLE, description: DESCRIPTION, url: "./" },
+  ...withShareDefaults({ title: TITLE, description: DESCRIPTION, url: "./" }),
 };
 
 const strong = "font-semibold text-ink";

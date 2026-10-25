@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { withShareDefaults } from "@/lib/seo";
 import { Breadcrumb } from "@/components/common/Breadcrumb";
 import { ConsultCta } from "@/components/common/ConsultCta";
 import { CategoryChips } from "@/components/procedure/CategoryChips";
@@ -11,7 +12,6 @@ import { jsonLdString, procedureListJsonLd } from "@/lib/procedure/jsonld";
 import { PROCEDURES_TITLE, groupByCategory, proceduresDescription } from "@/lib/procedure/list";
 import { clinicCountByProcedure } from "@/lib/procedure/prices";
 import { ROUTES } from "@/lib/routes";
-import { SITE } from "@/lib/site";
 import { container, cx } from "@/lib/ui";
 
 // P-02 시술 카테고리 목록 (screen-spec 2절: /procedures, 부위별 시술 탐색)
@@ -33,8 +33,7 @@ export function generateMetadata(): Metadata {
     title: PROCEDURES_TITLE,
     description: desc,
     alternates: { canonical: "./" },
-    openGraph: { type: "website", locale: "ko_KR", siteName: SITE.name, url: "./", title: PROCEDURES_TITLE, description: desc },
-    twitter: { card: "summary", title: PROCEDURES_TITLE, description: desc },
+    ...withShareDefaults({ url: "./", title: PROCEDURES_TITLE, description: desc }),
   };
 }
 
@@ -143,7 +142,7 @@ export default function ProceduresPage() {
           <ConsultCta
             location="bottom"
             title="어떤 시술이 맞을지 고민된다면"
-            benefit="고민 부위와 희망 시기만 남기면 가격대와 회복 일정을 정리해 영업일 기준 1일 안에 연락드립니다."
+            benefit="고민 부위와 희망 시기만 남기면 가격대와 회복 일정을 정리해 드립니다. 신청 비용은 들지 않습니다."
           />
         </div>
       )}

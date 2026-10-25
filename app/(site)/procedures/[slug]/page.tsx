@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { withShareDefaults } from "@/lib/seo";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowDown, ChevronRight, Info } from "lucide-react";
@@ -65,17 +66,14 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
     title,
     description,
     alternates: { canonical: "./" },
-    openGraph: {
+    ...withShareDefaults({
       type: "article",
-      locale: "ko_KR",
-      siteName: SITE.name,
       url: "./",
       title,
       description,
       modifiedTime: p.updated_at,
       ...(category ? { section: category.name } : {}),
-    },
-    twitter: { card: "summary", title, description },
+    }),
   };
 }
 
@@ -205,8 +203,8 @@ export default async function ProcedurePage({ params }: Params) {
                 <ConsultCta
                   location="mid"
                   procedureId={p.id}
-                  title="이 시술 상담 가이드 받기"
-                  benefit="가격대·회복 일정·상담 질문을 정리해 영업일 기준 1일 안에 연락드립니다."
+                  title={`${p.name} 상담 신청`}
+                  benefit="가격대·회복 일정·상담 때 물어볼 질문을 정리해 드립니다. 신청 비용은 들지 않습니다."
                 />
               </div>
             )}
