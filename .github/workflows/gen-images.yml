@@ -1,18 +1,12 @@
 name: Generate images (Gemini)
-# 수동 실행 전용 — 비용이 드는 작업이다(1장 약 $0.05). 결과는 검토용 브랜치 gen-images 에 커밋한다.
+# 비용이 드는 작업(1장 약 $0.05). 실행 조건: feat/** 브랜치에서 content/images/request.json 이 바뀐 push, 또는 수동 실행.
+# 결과(후보 이미지 + 실행 로그)는 검토용 브랜치 gen-images 에 커밋한다. 배포(main)와 무관.
 # 필요: 저장소 Settings → Secrets and variables → Actions → GEMINI_API_KEY
 on:
+  push:
+    branches: ["feat/**"]
+    paths: ["content/images/request.json"]
   workflow_dispatch:
-    inputs:
-      ids:
-        description: "prompts.json id 목록(쉼표) 또는 all"
-        default: all
-      variants:
-        description: "id 당 후보 수"
-        default: "1"
-      max:
-        description: "이번 실행 최대 장수(비용 상한)"
-        default: "30"
 permissions:
   contents: write
 concurrency:
@@ -30,23 +24,32 @@ jobs:
       - name: Generate
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-        run: node scripts/gen-images.mjs --ids "${{ inputs.ids }}" --variants "${{ inputs.variants }}" --max "${{ inputs.max }}" --out-dir .gen-candidates
-      - name: Commit candidates to gen-images branch
+        run: |
+          set -o pipefail
+          REQ=content/images/request.json
+          IDS=$(node -p "require('./$REQ').ids")
+          VARIANTS=$(node -p "require('./$REQ').variants")
+          MAX=$(node -p "require('./$REQ').max")
+          RUN=$(node -p "require('./$REQ').run")
+          echo "RUN=$RUN" >> "$GITHUB_ENV"
+          mkdir -p .gen-candidates
+          node scripts/gen-images.mjs --ids "$IDS" --variants "$VARIANTS" --max "$MAX" --out-dir .gen-candidates 2>&1 | tee .gen-candidates/log.txt
+      - name: Commit candidates and log to gen-images branch
         if: always()
         run: |
           shopt -s nullglob
-          files=(.gen-candidates/*.webp)
-          if [ ${#files[@]} -eq 0 ]; then echo "생성된 파일 없음"; exit 0; fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          mkdir -p /tmp/cand && cp .gen-candidates/*.webp /tmp/cand/
+          mkdir -p /tmp/cand && cp .gen-candidates/* /tmp/cand/ 2>/dev/null || true
           git fetch origin gen-images || true
           if git rev-parse --verify origin/gen-images >/dev/null 2>&1; then
-            git checkout -B gen-images origin/gen-images
+            git checkout -f -B gen-images origin/gen-images
           else
-            git checkout --orphan gen-images && git rm -rfq . && git clean -fdq -e .gen-candidates
+            git checkout -f --orphan gen-images && git rm -rfq . && git clean -fdq
           fi
-          mkdir -p candidates && cp /tmp/cand/*.webp candidates/
-          git add candidates
-          git commit -m "chore(images): Gemini 후보 ${#files[@]}장 (${{ inputs.ids }})" || exit 0
+          mkdir -p candidates logs
+          cp /tmp/cand/*.webp candidates/ 2>/dev/null || true
+          cp /tmp/cand/log.txt "logs/run-${RUN:-manual}.txt" 2>/dev/null || echo "로그 없음(생성 단계 전에 실패)" > "logs/run-${RUN:-manual}.txt"
+          git add candidates logs
+          git commit -m "chore(images): Gemini 후보 (request run ${RUN:-manual})" || exit 0
           git push origin gen-images
