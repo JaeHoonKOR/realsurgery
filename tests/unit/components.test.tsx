@@ -13,6 +13,12 @@ vi.mock("next/link", () => ({
   ),
 }));
 
+// "아직 없는 화면" 경우를 재현하려고 isPathBuilt 만 감싼다(기본은 실제 app/ 스캔 결과 그대로).
+vi.mock("@/lib/built-routes", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@/lib/built-routes")>();
+  return { ...actual, isPathBuilt: vi.fn(actual.isPathBuilt) };
+});
+
 import { BottomBar } from "@/components/common/BottomBar";
 import { Breadcrumb, breadcrumbJsonLd } from "@/components/common/Breadcrumb";
 import { ConsentBanner } from "@/components/common/ConsentBanner";
@@ -21,6 +27,7 @@ import { HeaderSearch } from "@/components/common/HeaderSearch";
 import { SiteFooter } from "@/components/common/SiteFooter";
 import { SkeletonList, SkeletonText } from "@/components/common/Skeleton";
 import { TrackedLink } from "@/components/common/TrackedLink";
+import { isPathBuilt } from "@/lib/built-routes";
 import { CONSENT_ATTR } from "@/lib/consent";
 
 (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
@@ -95,6 +102,13 @@ describe("TrackedLink", () => {
   });
 });
 
+
+/** 상담 폼(P-06)이 아직 없는 상태를 만든다 — 실제 app/ 에는 이미 /consult/ 가 있으므로 이 판정만 바꾼다 */
+function withoutConsultPage() {
+  // 컴포넌트가 렌더 중 1회 묻는 ROUTES.consult 판정만 false 로(다음 호출부터는 원래대로)
+  vi.mocked(isPathBuilt).mockImplementationOnce((href: string) => !href.startsWith("/consult/"));
+}
+
 describe("ConsultCta (3절 상담 예약 CTA 블록)", () => {
   it("제목·혜택·버튼, location·procedure_id 를 이벤트와 링크에 싣는다", () => {
     render(<ConsultCta location="mid" procedureId="double-eyelid" title="이 시술 상담 가능한 병원 보기" />);
@@ -108,6 +122,7 @@ describe("ConsultCta (3절 상담 예약 CTA 블록)", () => {
 
   it("상담 폼이 아직 없으면 그리지 않는다(깨진 CTA 금지)", () => {
     vi.stubEnv("RS_PREVIEW", "");
+    withoutConsultPage();
     render(<ConsultCta location="bottom" />);
     expect(container.innerHTML).toBe("");
   });
@@ -138,6 +153,7 @@ describe("BottomBar (3절 모바일 하단 고정 바)", () => {
 
   it("보여 줄 버튼이 하나도 없으면 그리지 않는다", () => {
     vi.stubEnv("RS_PREVIEW", "");
+    withoutConsultPage();
     render(<BottomBar page="procedure" />);
     expect(container.innerHTML).toBe("");
   });
