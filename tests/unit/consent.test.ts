@@ -65,14 +65,37 @@ describe("saveConsent", () => {
     expect(readConsent()).toEqual(stored);
     const pushed = window.dataLayer?.[0];
     expect(Object.prototype.toString.call(pushed)).toBe("[object Arguments]");
-    expect(args()).toEqual([["consent", "update", toConsentState({ analytics: true, ads: false })]]);
+    expect(args()).toEqual([
+      ["consent", "update", toConsentState({ analytics: true, ads: false })],
+      // GTM 트리거용 이벤트(tracking-plan R-1): 같은 페이지에서 새로 동의한 태그를 로드
+      {
+        event: "consent_update",
+        analytics_storage: "granted",
+        ad_storage: "denied",
+        prev_analytics_storage: "denied",
+        prev_ad_storage: "denied",
+      },
+    ]);
     expect(document.documentElement.getAttribute(CONSENT_ATTR)).toBe("set");
+  });
+
+  it("consent_update 의 prev_* 는 이전에 저장된 선택이다", () => {
+    saveConsent({ analytics: true, ads: true });
+    window.dataLayer = [];
+    saveConsent({ analytics: false, ads: true });
+    expect(args()).toContainEqual({
+      event: "consent_update",
+      analytics_storage: "denied",
+      ad_storage: "granted",
+      prev_analytics_storage: "granted",
+      prev_ad_storage: "granted",
+    });
   });
 
   it("저장이 막혀도 이번 페이지에는 적용한다", () => {
     const full = { setItem: () => { throw new Error("QuotaExceeded"); } } as unknown as Storage;
     saveConsent({ analytics: false, ads: true }, { storage: full });
-    expect(args()).toHaveLength(1);
+    expect(args()).toHaveLength(2);
     expect(document.documentElement.getAttribute(CONSENT_ATTR)).toBe("set");
   });
 

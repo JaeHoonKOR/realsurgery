@@ -1,0 +1,4036 @@
+{
+  "exportFormatVersion": 2,
+  "exportTime": "2026-10-26 09:00:00",
+  "containerVersion": {
+    "path": "accounts/0/containers/0/versions/0",
+    "accountId": "0",
+    "containerId": "0",
+    "containerVersionId": "0",
+    "name": "realsurgery-web v1 (tracking-plan 2026-10-26)",
+    "description": "리얼성형 웹 컨테이너. 이벤트 원본 = lib/track.ts, 설계 = docs/tracking/tracking-plan.md. 가져오기: 관리 > 컨테이너 가져오기 > 새 작업공간 dev > 병합(이름 충돌 시 덮어쓰기).",
+    "container": {
+      "path": "accounts/0/containers/0",
+      "accountId": "0",
+      "containerId": "0",
+      "name": "realsurgery-web",
+      "publicId": "GTM-XXXXXXX",
+      "usageContext": [
+        "WEB"
+      ],
+      "fingerprint": "1792972800000"
+    },
+    "tag": [
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "tagId": "1",
+        "name": "GA4 - Config",
+        "type": "googtag",
+        "parameter": [
+          {
+            "type": "TEMPLATE",
+            "key": "tagId",
+            "value": "{{CONST - GA4 Measurement ID}}"
+          },
+          {
+            "type": "LIST",
+            "key": "configSettingsTable",
+            "list": [
+              {
+                "type": "MAP",
+                "map": [
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameter",
+                    "value": "send_page_view"
+                  },
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameterValue",
+                    "value": "true"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "firingTriggerId": [
+          "2147479573",
+          "122"
+        ],
+        "parentFolderId": "1",
+        "consentSettings": {
+          "consentStatus": "NEEDED",
+          "consentType": {
+            "type": "LIST",
+            "list": [
+              {
+                "type": "TEMPLATE",
+                "value": "analytics_storage"
+              }
+            ]
+          }
+        },
+        "notes": "Google 태그. Initialization - All Pages + 같은 페이지 동의(consent_update). SPA 화면 전환 page_view 는 GA4 향상된 측정 '브라우저 기록 기반 페이지 변경'에 위임. Basic 동의 모드: analytics_storage granted 일 때만 발화.",
+        "fingerprint": "1792972800000",
+        "blockingTriggerId": [
+          "124"
+        ],
+        "tagFiringOption": "ONCE_PER_EVENT",
+        "monitoringMetadata": {
+          "type": "MAP"
+        }
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "tagId": "2",
+        "name": "GA4 - Event - view_procedure",
+        "type": "gaawe",
+        "parameter": [
+          {
+            "type": "BOOLEAN",
+            "key": "sendEcommerceData",
+            "value": "false"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "enhancedUserId",
+            "value": "false"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "eventName",
+            "value": "view_procedure"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "measurementIdOverride",
+            "value": "{{CONST - GA4 Measurement ID}}"
+          },
+          {
+            "type": "LIST",
+            "key": "eventSettingsTable",
+            "list": [
+              {
+                "type": "MAP",
+                "map": [
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameter",
+                    "value": "procedure_id"
+                  },
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameterValue",
+                    "value": "{{DLV - procedure_id}}"
+                  }
+                ]
+              },
+              {
+                "type": "MAP",
+                "map": [
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameter",
+                    "value": "procedure_name"
+                  },
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameterValue",
+                    "value": "{{DLV - procedure_name}}"
+                  }
+                ]
+              },
+              {
+                "type": "MAP",
+                "map": [
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameter",
+                    "value": "category"
+                  },
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameterValue",
+                    "value": "{{DLV - category}}"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "firingTriggerId": [
+          "101"
+        ],
+        "parentFolderId": "1",
+        "consentSettings": {
+          "consentStatus": "NEEDED",
+          "consentType": {
+            "type": "LIST",
+            "list": [
+              {
+                "type": "TEMPLATE",
+                "value": "analytics_storage"
+              }
+            ]
+          }
+        },
+        "notes": "행동 이벤트. dataLayer → GA4 파라미터 procedure_id, procedure_name, category.",
+        "fingerprint": "1792972800000",
+        "blockingTriggerId": [
+          "124"
+        ],
+        "tagFiringOption": "ONCE_PER_EVENT",
+        "monitoringMetadata": {
+          "type": "MAP"
+        }
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "tagId": "3",
+        "name": "GA4 - Event - view_clinic",
+        "type": "gaawe",
+        "parameter": [
+          {
+            "type": "BOOLEAN",
+            "key": "sendEcommerceData",
+            "value": "false"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "enhancedUserId",
+            "value": "false"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "eventName",
+            "value": "view_clinic"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "measurementIdOverride",
+            "value": "{{CONST - GA4 Measurement ID}}"
+          },
+          {
+            "type": "LIST",
+            "key": "eventSettingsTable",
+            "list": [
+              {
+                "type": "MAP",
+                "map": [
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameter",
+                    "value": "clinic_id"
+                  },
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameterValue",
+                    "value": "{{DLV - clinic_id}}"
+                  }
+                ]
+              },
+              {
+                "type": "MAP",
+                "map": [
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameter",
+                    "value": "clinic_name"
+                  },
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameterValue",
+                    "value": "{{DLV - clinic_name}}"
+                  }
+                ]
+              },
+              {
+                "type": "MAP",
+                "map": [
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameter",
+                    "value": "is_premium"
+                  },
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameterValue",
+                    "value": "{{DLV - is_premium}}"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "firingTriggerId": [
+          "102"
+        ],
+        "parentFolderId": "1",
+        "consentSettings": {
+          "consentStatus": "NEEDED",
+          "consentType": {
+            "type": "LIST",
+            "list": [
+              {
+                "type": "TEMPLATE",
+                "value": "analytics_storage"
+              }
+            ]
+          }
+        },
+        "notes": "행동 이벤트. dataLayer → GA4 파라미터 clinic_id, clinic_name, is_premium.",
+        "fingerprint": "1792972800000",
+        "blockingTriggerId": [
+          "124"
+        ],
+        "tagFiringOption": "ONCE_PER_EVENT",
+        "monitoringMetadata": {
+          "type": "MAP"
+        }
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "tagId": "4",
+        "name": "GA4 - Event - view_lp",
+        "type": "gaawe",
+        "parameter": [
+          {
+            "type": "BOOLEAN",
+            "key": "sendEcommerceData",
+            "value": "false"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "enhancedUserId",
+            "value": "false"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "eventName",
+            "value": "view_lp"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "measurementIdOverride",
+            "value": "{{CONST - GA4 Measurement ID}}"
+          },
+          {
+            "type": "LIST",
+            "key": "eventSettingsTable",
+            "list": [
+              {
+                "type": "MAP",
+                "map": [
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameter",
+                    "value": "lp_campaign"
+                  },
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameterValue",
+                    "value": "{{DLV - campaign}}"
+                  }
+                ]
+              },
+              {
+                "type": "MAP",
+                "map": [
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameter",
+                    "value": "variant"
+                  },
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameterValue",
+                    "value": "{{DLV - variant}}"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "firingTriggerId": [
+          "103"
+        ],
+        "parentFolderId": "1",
+        "consentSettings": {
+          "consentStatus": "NEEDED",
+          "consentType": {
+            "type": "LIST",
+            "list": [
+              {
+                "type": "TEMPLATE",
+                "value": "analytics_storage"
+              }
+            ]
+          }
+        },
+        "notes": "행동 이벤트. dataLayer → GA4 파라미터 campaign→lp_campaign, variant.",
+        "fingerprint": "1792972800000",
+        "blockingTriggerId": [
+          "124"
+        ],
+        "tagFiringOption": "ONCE_PER_EVENT",
+        "monitoringMetadata": {
+          "type": "MAP"
+        }
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "tagId": "5",
+        "name": "GA4 - Event - click_cta",
+        "type": "gaawe",
+        "parameter": [
+          {
+            "type": "BOOLEAN",
+            "key": "sendEcommerceData",
+            "value": "false"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "enhancedUserId",
+            "value": "false"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "eventName",
+            "value": "click_cta"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "measurementIdOverride",
+            "value": "{{CONST - GA4 Measurement ID}}"
+          },
+          {
+            "type": "LIST",
+            "key": "eventSettingsTable",
+            "list": [
+              {
+                "type": "MAP",
+                "map": [
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameter",
+                    "value": "location"
+                  },
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameterValue",
+                    "value": "{{DLV - location}}"
+                  }
+                ]
+              },
+              {
+                "type": "MAP",
+                "map": [
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameter",
+                    "value": "procedure_id"
+                  },
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameterValue",
+                    "value": "{{DLV - procedure_id}}"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "firingTriggerId": [
+          "104"
+        ],
+        "parentFolderId": "1",
+        "consentSettings": {
+          "consentStatus": "NEEDED",
+          "consentType": {
+            "type": "LIST",
+            "list": [
+              {
+                "type": "TEMPLATE",
+                "value": "analytics_storage"
+              }
+            ]
+          }
+        },
+        "notes": "행동 이벤트. dataLayer → GA4 파라미터 location, procedure_id.",
+        "fingerprint": "1792972800000",
+        "blockingTriggerId": [
+          "124"
+        ],
+        "tagFiringOption": "ONCE_PER_EVENT",
+        "monitoringMetadata": {
+          "type": "MAP"
+        }
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "tagId": "6",
+        "name": "GA4 - Event - form_start",
+        "type": "gaawe",
+        "parameter": [
+          {
+            "type": "BOOLEAN",
+            "key": "sendEcommerceData",
+            "value": "false"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "enhancedUserId",
+            "value": "false"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "eventName",
+            "value": "form_start"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "measurementIdOverride",
+            "value": "{{CONST - GA4 Measurement ID}}"
+          },
+          {
+            "type": "LIST",
+            "key": "eventSettingsTable",
+            "list": [
+              {
+                "type": "MAP",
+                "map": [
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameter",
+                    "value": "procedure_id"
+                  },
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameterValue",
+                    "value": "{{DLV - procedure_id}}"
+                  }
+                ]
+              },
+              {
+                "type": "MAP",
+                "map": [
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameter",
+                    "value": "clinic_id"
+                  },
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameterValue",
+                    "value": "{{DLV - clinic_id}}"
+                  }
+                ]
+              },
+              {
+                "type": "MAP",
+                "map": [
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameter",
+                    "value": "source_page"
+                  },
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameterValue",
+                    "value": "{{DLV - source_page}}"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "firingTriggerId": [
+          "105"
+        ],
+        "parentFolderId": "1",
+        "consentSettings": {
+          "consentStatus": "NEEDED",
+          "consentType": {
+            "type": "LIST",
+            "list": [
+              {
+                "type": "TEMPLATE",
+                "value": "analytics_storage"
+              }
+            ]
+          }
+        },
+        "notes": "행동 이벤트. dataLayer → GA4 파라미터 procedure_id, clinic_id, source_page.",
+        "fingerprint": "1792972800000",
+        "blockingTriggerId": [
+          "124"
+        ],
+        "tagFiringOption": "ONCE_PER_EVENT",
+        "monitoringMetadata": {
+          "type": "MAP"
+        }
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "tagId": "7",
+        "name": "GA4 - Event - form_step2",
+        "type": "gaawe",
+        "parameter": [
+          {
+            "type": "BOOLEAN",
+            "key": "sendEcommerceData",
+            "value": "false"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "enhancedUserId",
+            "value": "false"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "eventName",
+            "value": "form_step2"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "measurementIdOverride",
+            "value": "{{CONST - GA4 Measurement ID}}"
+          },
+          {
+            "type": "LIST",
+            "key": "eventSettingsTable",
+            "list": [
+              {
+                "type": "MAP",
+                "map": [
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameter",
+                    "value": "procedure_id"
+                  },
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameterValue",
+                    "value": "{{DLV - procedure_id}}"
+                  }
+                ]
+              },
+              {
+                "type": "MAP",
+                "map": [
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameter",
+                    "value": "clinic_id"
+                  },
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameterValue",
+                    "value": "{{DLV - clinic_id}}"
+                  }
+                ]
+              },
+              {
+                "type": "MAP",
+                "map": [
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameter",
+                    "value": "source_page"
+                  },
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameterValue",
+                    "value": "{{DLV - source_page}}"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "firingTriggerId": [
+          "106"
+        ],
+        "parentFolderId": "1",
+        "consentSettings": {
+          "consentStatus": "NEEDED",
+          "consentType": {
+            "type": "LIST",
+            "list": [
+              {
+                "type": "TEMPLATE",
+                "value": "analytics_storage"
+              }
+            ]
+          }
+        },
+        "notes": "행동 이벤트. dataLayer → GA4 파라미터 procedure_id, clinic_id, source_page.",
+        "fingerprint": "1792972800000",
+        "blockingTriggerId": [
+          "124"
+        ],
+        "tagFiringOption": "ONCE_PER_EVENT",
+        "monitoringMetadata": {
+          "type": "MAP"
+        }
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "tagId": "8",
+        "name": "GA4 - Event - generate_lead",
+        "type": "gaawe",
+        "parameter": [
+          {
+            "type": "BOOLEAN",
+            "key": "sendEcommerceData",
+            "value": "false"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "enhancedUserId",
+            "value": "false"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "eventName",
+            "value": "generate_lead"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "measurementIdOverride",
+            "value": "{{CONST - GA4 Measurement ID}}"
+          },
+          {
+            "type": "LIST",
+            "key": "eventSettingsTable",
+            "list": [
+              {
+                "type": "MAP",
+                "map": [
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameter",
+                    "value": "lead_id"
+                  },
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameterValue",
+                    "value": "{{DLV - lead_id}}"
+                  }
+                ]
+              },
+              {
+                "type": "MAP",
+                "map": [
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameter",
+                    "value": "procedure_id"
+                  },
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameterValue",
+                    "value": "{{DLV - procedure_id}}"
+                  }
+                ]
+              },
+              {
+                "type": "MAP",
+                "map": [
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameter",
+                    "value": "clinic_id"
+                  },
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameterValue",
+                    "value": "{{DLV - clinic_id}}"
+                  }
+                ]
+              },
+              {
+                "type": "MAP",
+                "map": [
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameter",
+                    "value": "value"
+                  },
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameterValue",
+                    "value": "{{DLV - value}}"
+                  }
+                ]
+              },
+              {
+                "type": "MAP",
+                "map": [
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameter",
+                    "value": "currency"
+                  },
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameterValue",
+                    "value": "{{DLV - currency}}"
+                  }
+                ]
+              },
+              {
+                "type": "MAP",
+                "map": [
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameter",
+                    "value": "first_touch_source"
+                  },
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameterValue",
+                    "value": "{{CJS - first_touch.source}}"
+                  }
+                ]
+              },
+              {
+                "type": "MAP",
+                "map": [
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameter",
+                    "value": "first_touch_medium"
+                  },
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameterValue",
+                    "value": "{{CJS - first_touch.medium}}"
+                  }
+                ]
+              },
+              {
+                "type": "MAP",
+                "map": [
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameter",
+                    "value": "first_touch_campaign"
+                  },
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameterValue",
+                    "value": "{{CJS - first_touch.campaign}}"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "firingTriggerId": [
+          "107"
+        ],
+        "parentFolderId": "1",
+        "consentSettings": {
+          "consentStatus": "NEEDED",
+          "consentType": {
+            "type": "LIST",
+            "list": [
+              {
+                "type": "TEMPLATE",
+                "value": "analytics_storage"
+              }
+            ]
+          }
+        },
+        "notes": "주 전환(키 이벤트). dataLayer → GA4 파라미터 lead_id, procedure_id, clinic_id, value, currency, first_touch_source/medium/campaign(_utm 쿠키).",
+        "fingerprint": "1792972800000",
+        "blockingTriggerId": [
+          "124"
+        ],
+        "tagFiringOption": "ONCE_PER_EVENT",
+        "monitoringMetadata": {
+          "type": "MAP"
+        }
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "tagId": "9",
+        "name": "GA4 - Event - phone_click",
+        "type": "gaawe",
+        "parameter": [
+          {
+            "type": "BOOLEAN",
+            "key": "sendEcommerceData",
+            "value": "false"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "enhancedUserId",
+            "value": "false"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "eventName",
+            "value": "phone_click"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "measurementIdOverride",
+            "value": "{{CONST - GA4 Measurement ID}}"
+          },
+          {
+            "type": "LIST",
+            "key": "eventSettingsTable",
+            "list": [
+              {
+                "type": "MAP",
+                "map": [
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameter",
+                    "value": "clinic_id"
+                  },
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameterValue",
+                    "value": "{{DLV - clinic_id}}"
+                  }
+                ]
+              },
+              {
+                "type": "MAP",
+                "map": [
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameter",
+                    "value": "page"
+                  },
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameterValue",
+                    "value": "{{DLV - page}}"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "firingTriggerId": [
+          "108"
+        ],
+        "parentFolderId": "1",
+        "consentSettings": {
+          "consentStatus": "NEEDED",
+          "consentType": {
+            "type": "LIST",
+            "list": [
+              {
+                "type": "TEMPLATE",
+                "value": "analytics_storage"
+              }
+            ]
+          }
+        },
+        "notes": "보조 전환(키 이벤트). dataLayer → GA4 파라미터 clinic_id, page.",
+        "fingerprint": "1792972800000",
+        "blockingTriggerId": [
+          "124"
+        ],
+        "tagFiringOption": "ONCE_PER_EVENT",
+        "monitoringMetadata": {
+          "type": "MAP"
+        }
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "tagId": "10",
+        "name": "GA4 - Event - kakao_click",
+        "type": "gaawe",
+        "parameter": [
+          {
+            "type": "BOOLEAN",
+            "key": "sendEcommerceData",
+            "value": "false"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "enhancedUserId",
+            "value": "false"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "eventName",
+            "value": "kakao_click"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "measurementIdOverride",
+            "value": "{{CONST - GA4 Measurement ID}}"
+          },
+          {
+            "type": "LIST",
+            "key": "eventSettingsTable",
+            "list": [
+              {
+                "type": "MAP",
+                "map": [
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameter",
+                    "value": "clinic_id"
+                  },
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameterValue",
+                    "value": "{{DLV - clinic_id}}"
+                  }
+                ]
+              },
+              {
+                "type": "MAP",
+                "map": [
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameter",
+                    "value": "page"
+                  },
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameterValue",
+                    "value": "{{DLV - page}}"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "firingTriggerId": [
+          "109"
+        ],
+        "parentFolderId": "1",
+        "consentSettings": {
+          "consentStatus": "NEEDED",
+          "consentType": {
+            "type": "LIST",
+            "list": [
+              {
+                "type": "TEMPLATE",
+                "value": "analytics_storage"
+              }
+            ]
+          }
+        },
+        "notes": "보조 전환(키 이벤트). dataLayer → GA4 파라미터 clinic_id, page.",
+        "fingerprint": "1792972800000",
+        "blockingTriggerId": [
+          "124"
+        ],
+        "tagFiringOption": "ONCE_PER_EVENT",
+        "monitoringMetadata": {
+          "type": "MAP"
+        }
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "tagId": "11",
+        "name": "GA4 - Event - click_affiliate",
+        "type": "gaawe",
+        "parameter": [
+          {
+            "type": "BOOLEAN",
+            "key": "sendEcommerceData",
+            "value": "false"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "enhancedUserId",
+            "value": "false"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "eventName",
+            "value": "click_affiliate"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "measurementIdOverride",
+            "value": "{{CONST - GA4 Measurement ID}}"
+          },
+          {
+            "type": "LIST",
+            "key": "eventSettingsTable",
+            "list": [
+              {
+                "type": "MAP",
+                "map": [
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameter",
+                    "value": "item_id"
+                  },
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameterValue",
+                    "value": "{{DLV - item_id}}"
+                  }
+                ]
+              },
+              {
+                "type": "MAP",
+                "map": [
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameter",
+                    "value": "procedure_id"
+                  },
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameterValue",
+                    "value": "{{DLV - procedure_id}}"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "firingTriggerId": [
+          "110"
+        ],
+        "parentFolderId": "1",
+        "consentSettings": {
+          "consentStatus": "NEEDED",
+          "consentType": {
+            "type": "LIST",
+            "list": [
+              {
+                "type": "TEMPLATE",
+                "value": "analytics_storage"
+              }
+            ]
+          }
+        },
+        "notes": "행동 이벤트. dataLayer → GA4 파라미터 item_id, procedure_id.",
+        "fingerprint": "1792972800000",
+        "blockingTriggerId": [
+          "124"
+        ],
+        "tagFiringOption": "ONCE_PER_EVENT",
+        "monitoringMetadata": {
+          "type": "MAP"
+        }
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "tagId": "12",
+        "name": "GA4 - Event - scroll_depth",
+        "type": "gaawe",
+        "parameter": [
+          {
+            "type": "BOOLEAN",
+            "key": "sendEcommerceData",
+            "value": "false"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "enhancedUserId",
+            "value": "false"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "eventName",
+            "value": "scroll_depth"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "measurementIdOverride",
+            "value": "{{CONST - GA4 Measurement ID}}"
+          },
+          {
+            "type": "LIST",
+            "key": "eventSettingsTable",
+            "list": [
+              {
+                "type": "MAP",
+                "map": [
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameter",
+                    "value": "percent"
+                  },
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameterValue",
+                    "value": "{{DLV - percent}}"
+                  }
+                ]
+              },
+              {
+                "type": "MAP",
+                "map": [
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameter",
+                    "value": "page_type"
+                  },
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameterValue",
+                    "value": "{{DLV - page_type}}"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "firingTriggerId": [
+          "111"
+        ],
+        "parentFolderId": "1",
+        "consentSettings": {
+          "consentStatus": "NEEDED",
+          "consentType": {
+            "type": "LIST",
+            "list": [
+              {
+                "type": "TEMPLATE",
+                "value": "analytics_storage"
+              }
+            ]
+          }
+        },
+        "notes": "행동 이벤트. dataLayer → GA4 파라미터 percent, page_type.",
+        "fingerprint": "1792972800000",
+        "blockingTriggerId": [
+          "124"
+        ],
+        "tagFiringOption": "ONCE_PER_EVENT",
+        "monitoringMetadata": {
+          "type": "MAP"
+        }
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "tagId": "13",
+        "name": "GA4 - Event - search",
+        "type": "gaawe",
+        "parameter": [
+          {
+            "type": "BOOLEAN",
+            "key": "sendEcommerceData",
+            "value": "false"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "enhancedUserId",
+            "value": "false"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "eventName",
+            "value": "search"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "measurementIdOverride",
+            "value": "{{CONST - GA4 Measurement ID}}"
+          },
+          {
+            "type": "LIST",
+            "key": "eventSettingsTable",
+            "list": [
+              {
+                "type": "MAP",
+                "map": [
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameter",
+                    "value": "search_term"
+                  },
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameterValue",
+                    "value": "{{DLV - search_term}}"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "firingTriggerId": [
+          "112"
+        ],
+        "parentFolderId": "1",
+        "consentSettings": {
+          "consentStatus": "NEEDED",
+          "consentType": {
+            "type": "LIST",
+            "list": [
+              {
+                "type": "TEMPLATE",
+                "value": "analytics_storage"
+              }
+            ]
+          }
+        },
+        "notes": "행동 이벤트. dataLayer → GA4 파라미터 search_term.",
+        "fingerprint": "1792972800000",
+        "blockingTriggerId": [
+          "124"
+        ],
+        "tagFiringOption": "ONCE_PER_EVENT",
+        "monitoringMetadata": {
+          "type": "MAP"
+        }
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "tagId": "14",
+        "name": "GA4 - Event - lead_qualified",
+        "type": "gaawe",
+        "parameter": [
+          {
+            "type": "BOOLEAN",
+            "key": "sendEcommerceData",
+            "value": "false"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "enhancedUserId",
+            "value": "false"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "eventName",
+            "value": "lead_qualified"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "measurementIdOverride",
+            "value": "{{CONST - GA4 Measurement ID}}"
+          },
+          {
+            "type": "LIST",
+            "key": "eventSettingsTable",
+            "list": [
+              {
+                "type": "MAP",
+                "map": [
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameter",
+                    "value": "lead_id"
+                  },
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameterValue",
+                    "value": "{{DLV - lead_id}}"
+                  }
+                ]
+              },
+              {
+                "type": "MAP",
+                "map": [
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameter",
+                    "value": "value"
+                  },
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameterValue",
+                    "value": "{{DLV - value}}"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "firingTriggerId": [
+          "113"
+        ],
+        "parentFolderId": "1",
+        "consentSettings": {
+          "consentStatus": "NEEDED",
+          "consentType": {
+            "type": "LIST",
+            "list": [
+              {
+                "type": "TEMPLATE",
+                "value": "analytics_storage"
+              }
+            ]
+          }
+        },
+        "paused": true,
+        "notes": "일시중지 유지(의도). 보조 전환이지만 GA4 MP(qualify-lead)로만 보낸다 — 관리자 브라우저에서 보내면 관리자 client_id로 귀속·이중 집계. 해제 금지. dataLayer → GA4 파라미터 lead_id, value.",
+        "fingerprint": "1792972800000",
+        "blockingTriggerId": [
+          "124"
+        ],
+        "tagFiringOption": "ONCE_PER_EVENT",
+        "monitoringMetadata": {
+          "type": "MAP"
+        }
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "tagId": "15",
+        "name": "GA4 - Event - select_category",
+        "type": "gaawe",
+        "parameter": [
+          {
+            "type": "BOOLEAN",
+            "key": "sendEcommerceData",
+            "value": "false"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "enhancedUserId",
+            "value": "false"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "eventName",
+            "value": "select_category"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "measurementIdOverride",
+            "value": "{{CONST - GA4 Measurement ID}}"
+          },
+          {
+            "type": "LIST",
+            "key": "eventSettingsTable",
+            "list": [
+              {
+                "type": "MAP",
+                "map": [
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameter",
+                    "value": "category"
+                  },
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameterValue",
+                    "value": "{{DLV - category}}"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "firingTriggerId": [
+          "114"
+        ],
+        "parentFolderId": "1",
+        "consentSettings": {
+          "consentStatus": "NEEDED",
+          "consentType": {
+            "type": "LIST",
+            "list": [
+              {
+                "type": "TEMPLATE",
+                "value": "analytics_storage"
+              }
+            ]
+          }
+        },
+        "notes": "행동 이벤트. dataLayer → GA4 파라미터 category.",
+        "fingerprint": "1792972800000",
+        "blockingTriggerId": [
+          "124"
+        ],
+        "tagFiringOption": "ONCE_PER_EVENT",
+        "monitoringMetadata": {
+          "type": "MAP"
+        }
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "tagId": "16",
+        "name": "GA4 - Event - select_procedure",
+        "type": "gaawe",
+        "parameter": [
+          {
+            "type": "BOOLEAN",
+            "key": "sendEcommerceData",
+            "value": "false"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "enhancedUserId",
+            "value": "false"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "eventName",
+            "value": "select_procedure"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "measurementIdOverride",
+            "value": "{{CONST - GA4 Measurement ID}}"
+          },
+          {
+            "type": "LIST",
+            "key": "eventSettingsTable",
+            "list": [
+              {
+                "type": "MAP",
+                "map": [
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameter",
+                    "value": "procedure_id"
+                  },
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameterValue",
+                    "value": "{{DLV - procedure_id}}"
+                  }
+                ]
+              },
+              {
+                "type": "MAP",
+                "map": [
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameter",
+                    "value": "from_page"
+                  },
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameterValue",
+                    "value": "{{DLV - from_page}}"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "firingTriggerId": [
+          "115"
+        ],
+        "parentFolderId": "1",
+        "consentSettings": {
+          "consentStatus": "NEEDED",
+          "consentType": {
+            "type": "LIST",
+            "list": [
+              {
+                "type": "TEMPLATE",
+                "value": "analytics_storage"
+              }
+            ]
+          }
+        },
+        "notes": "행동 이벤트. dataLayer → GA4 파라미터 procedure_id, from_page.",
+        "fingerprint": "1792972800000",
+        "blockingTriggerId": [
+          "124"
+        ],
+        "tagFiringOption": "ONCE_PER_EVENT",
+        "monitoringMetadata": {
+          "type": "MAP"
+        }
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "tagId": "17",
+        "name": "GA4 - Event - select_clinic",
+        "type": "gaawe",
+        "parameter": [
+          {
+            "type": "BOOLEAN",
+            "key": "sendEcommerceData",
+            "value": "false"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "enhancedUserId",
+            "value": "false"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "eventName",
+            "value": "select_clinic"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "measurementIdOverride",
+            "value": "{{CONST - GA4 Measurement ID}}"
+          },
+          {
+            "type": "LIST",
+            "key": "eventSettingsTable",
+            "list": [
+              {
+                "type": "MAP",
+                "map": [
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameter",
+                    "value": "clinic_id"
+                  },
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameterValue",
+                    "value": "{{DLV - clinic_id}}"
+                  }
+                ]
+              },
+              {
+                "type": "MAP",
+                "map": [
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameter",
+                    "value": "from"
+                  },
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameterValue",
+                    "value": "{{DLV - from}}"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "firingTriggerId": [
+          "116"
+        ],
+        "parentFolderId": "1",
+        "consentSettings": {
+          "consentStatus": "NEEDED",
+          "consentType": {
+            "type": "LIST",
+            "list": [
+              {
+                "type": "TEMPLATE",
+                "value": "analytics_storage"
+              }
+            ]
+          }
+        },
+        "notes": "행동 이벤트. dataLayer → GA4 파라미터 clinic_id, from.",
+        "fingerprint": "1792972800000",
+        "blockingTriggerId": [
+          "124"
+        ],
+        "tagFiringOption": "ONCE_PER_EVENT",
+        "monitoringMetadata": {
+          "type": "MAP"
+        }
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "tagId": "18",
+        "name": "GA4 - Event - select_post",
+        "type": "gaawe",
+        "parameter": [
+          {
+            "type": "BOOLEAN",
+            "key": "sendEcommerceData",
+            "value": "false"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "enhancedUserId",
+            "value": "false"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "eventName",
+            "value": "select_post"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "measurementIdOverride",
+            "value": "{{CONST - GA4 Measurement ID}}"
+          },
+          {
+            "type": "LIST",
+            "key": "eventSettingsTable",
+            "list": [
+              {
+                "type": "MAP",
+                "map": [
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameter",
+                    "value": "post_id"
+                  },
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameterValue",
+                    "value": "{{DLV - post_id}}"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "firingTriggerId": [
+          "117"
+        ],
+        "parentFolderId": "1",
+        "consentSettings": {
+          "consentStatus": "NEEDED",
+          "consentType": {
+            "type": "LIST",
+            "list": [
+              {
+                "type": "TEMPLATE",
+                "value": "analytics_storage"
+              }
+            ]
+          }
+        },
+        "notes": "행동 이벤트. dataLayer → GA4 파라미터 post_id.",
+        "fingerprint": "1792972800000",
+        "blockingTriggerId": [
+          "124"
+        ],
+        "tagFiringOption": "ONCE_PER_EVENT",
+        "monitoringMetadata": {
+          "type": "MAP"
+        }
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "tagId": "19",
+        "name": "GA4 - Event - expand_faq",
+        "type": "gaawe",
+        "parameter": [
+          {
+            "type": "BOOLEAN",
+            "key": "sendEcommerceData",
+            "value": "false"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "enhancedUserId",
+            "value": "false"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "eventName",
+            "value": "expand_faq"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "measurementIdOverride",
+            "value": "{{CONST - GA4 Measurement ID}}"
+          },
+          {
+            "type": "LIST",
+            "key": "eventSettingsTable",
+            "list": [
+              {
+                "type": "MAP",
+                "map": [
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameter",
+                    "value": "procedure_id"
+                  },
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameterValue",
+                    "value": "{{DLV - procedure_id}}"
+                  }
+                ]
+              },
+              {
+                "type": "MAP",
+                "map": [
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameter",
+                    "value": "question_index"
+                  },
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameterValue",
+                    "value": "{{DLV - question_index}}"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "firingTriggerId": [
+          "118"
+        ],
+        "parentFolderId": "1",
+        "consentSettings": {
+          "consentStatus": "NEEDED",
+          "consentType": {
+            "type": "LIST",
+            "list": [
+              {
+                "type": "TEMPLATE",
+                "value": "analytics_storage"
+              }
+            ]
+          }
+        },
+        "notes": "행동 이벤트. dataLayer → GA4 파라미터 procedure_id, question_index.",
+        "fingerprint": "1792972800000",
+        "blockingTriggerId": [
+          "124"
+        ],
+        "tagFiringOption": "ONCE_PER_EVENT",
+        "monitoringMetadata": {
+          "type": "MAP"
+        }
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "tagId": "20",
+        "name": "GA4 - Event - click_map",
+        "type": "gaawe",
+        "parameter": [
+          {
+            "type": "BOOLEAN",
+            "key": "sendEcommerceData",
+            "value": "false"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "enhancedUserId",
+            "value": "false"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "eventName",
+            "value": "click_map"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "measurementIdOverride",
+            "value": "{{CONST - GA4 Measurement ID}}"
+          },
+          {
+            "type": "LIST",
+            "key": "eventSettingsTable",
+            "list": [
+              {
+                "type": "MAP",
+                "map": [
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameter",
+                    "value": "clinic_id"
+                  },
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameterValue",
+                    "value": "{{DLV - clinic_id}}"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "firingTriggerId": [
+          "119"
+        ],
+        "parentFolderId": "1",
+        "consentSettings": {
+          "consentStatus": "NEEDED",
+          "consentType": {
+            "type": "LIST",
+            "list": [
+              {
+                "type": "TEMPLATE",
+                "value": "analytics_storage"
+              }
+            ]
+          }
+        },
+        "notes": "행동 이벤트. dataLayer → GA4 파라미터 clinic_id.",
+        "fingerprint": "1792972800000",
+        "blockingTriggerId": [
+          "124"
+        ],
+        "tagFiringOption": "ONCE_PER_EVENT",
+        "monitoringMetadata": {
+          "type": "MAP"
+        }
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "tagId": "21",
+        "name": "GA4 - Event - kakao_add",
+        "type": "gaawe",
+        "parameter": [
+          {
+            "type": "BOOLEAN",
+            "key": "sendEcommerceData",
+            "value": "false"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "enhancedUserId",
+            "value": "false"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "eventName",
+            "value": "kakao_add"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "measurementIdOverride",
+            "value": "{{CONST - GA4 Measurement ID}}"
+          }
+        ],
+        "firingTriggerId": [
+          "120"
+        ],
+        "parentFolderId": "1",
+        "consentSettings": {
+          "consentStatus": "NEEDED",
+          "consentType": {
+            "type": "LIST",
+            "list": [
+              {
+                "type": "TEMPLATE",
+                "value": "analytics_storage"
+              }
+            ]
+          }
+        },
+        "notes": "행동 이벤트. dataLayer → GA4 파라미터 (없음).",
+        "fingerprint": "1792972800000",
+        "blockingTriggerId": [
+          "124"
+        ],
+        "tagFiringOption": "ONCE_PER_EVENT",
+        "monitoringMetadata": {
+          "type": "MAP"
+        }
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "tagId": "22",
+        "name": "GA4 - Event - experiment_variant",
+        "type": "gaawe",
+        "parameter": [
+          {
+            "type": "BOOLEAN",
+            "key": "sendEcommerceData",
+            "value": "false"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "enhancedUserId",
+            "value": "false"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "eventName",
+            "value": "experiment_variant"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "measurementIdOverride",
+            "value": "{{CONST - GA4 Measurement ID}}"
+          },
+          {
+            "type": "LIST",
+            "key": "eventSettingsTable",
+            "list": [
+              {
+                "type": "MAP",
+                "map": [
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameter",
+                    "value": "lp_campaign"
+                  },
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameterValue",
+                    "value": "{{DLV - campaign}}"
+                  }
+                ]
+              },
+              {
+                "type": "MAP",
+                "map": [
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameter",
+                    "value": "variant"
+                  },
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameterValue",
+                    "value": "{{DLV - variant}}"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "firingTriggerId": [
+          "121"
+        ],
+        "parentFolderId": "1",
+        "consentSettings": {
+          "consentStatus": "NEEDED",
+          "consentType": {
+            "type": "LIST",
+            "list": [
+              {
+                "type": "TEMPLATE",
+                "value": "analytics_storage"
+              }
+            ]
+          }
+        },
+        "notes": "행동 이벤트. dataLayer → GA4 파라미터 campaign→lp_campaign, variant.",
+        "fingerprint": "1792972800000",
+        "blockingTriggerId": [
+          "124"
+        ],
+        "tagFiringOption": "ONCE_PER_EVENT",
+        "monitoringMetadata": {
+          "type": "MAP"
+        }
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "tagId": "23",
+        "name": "Meta - Pixel Base",
+        "type": "html",
+        "parameter": [
+          {
+            "type": "TEMPLATE",
+            "key": "html",
+            "value": "<script>\n(function () {\n  // 페이지당 1회 초기화. 이벤트 태그의 설정 태그로도 호출되므로 재진입 시 바로 종료한다.\n  if (window.__rsMetaPixelInit) return;\n  window.__rsMetaPixelInit = true;\n  !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?\n  n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;\n  n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;\n  t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,\n  document,'script','https://connect.facebook.net/en_US/fbevents.js');\n  window.fbq('init', {{CONST - Meta Pixel ID}});\n  window.fbq('track', 'PageView', {}, { eventID: {{CJS - Meta Event ID}} });\n})();\n</script>"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "supportDocumentWrite",
+            "value": "false"
+          }
+        ],
+        "firingTriggerId": [
+          "2147479553",
+          "123"
+        ],
+        "parentFolderId": "2",
+        "consentSettings": {
+          "consentStatus": "NEEDED",
+          "consentType": {
+            "type": "LIST",
+            "list": [
+              {
+                "type": "TEMPLATE",
+                "value": "ad_storage"
+              }
+            ]
+          }
+        },
+        "notes": "픽셀 기본 코드 + 첫 PageView. All Pages + 같은 페이지 동의(consent_update). ad_storage 필요. SPA 화면 전환 PageView 는 픽셀 기본 history 추적에 위임(GTM History Change 태그 없음 → 중복 0).",
+        "fingerprint": "1792972800000",
+        "blockingTriggerId": [
+          "124"
+        ],
+        "tagFiringOption": "ONCE_PER_EVENT",
+        "monitoringMetadata": {
+          "type": "MAP"
+        }
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "tagId": "24",
+        "name": "Meta - ViewContent",
+        "type": "html",
+        "parameter": [
+          {
+            "type": "TEMPLATE",
+            "key": "html",
+            "value": "<script>\n(function () {\n  if (typeof window.fbq !== 'function') return;\n  var ev = {{Event}};\n  var data = { content_type: 'product' };\n  if (ev === 'view_procedure') {\n    data.content_ids = [{{DLV - procedure_id}}];\n    data.content_category = {{DLV - category}};\n  } else if (ev === 'view_clinic') {\n    data.content_ids = [{{DLV - clinic_id}}];\n    data.content_category = 'clinic';\n  } else if (ev === 'view_lp') {\n    data.content_ids = [{{DLV - campaign}}];\n    data.content_category = 'lp';\n  } else {\n    return;\n  }\n  window.fbq('track', 'ViewContent', data, { eventID: {{CJS - Meta Event ID}} });\n})();\n</script>"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "supportDocumentWrite",
+            "value": "false"
+          }
+        ],
+        "firingTriggerId": [
+          "101",
+          "102",
+          "103"
+        ],
+        "parentFolderId": "2",
+        "consentSettings": {
+          "consentStatus": "NEEDED",
+          "consentType": {
+            "type": "LIST",
+            "list": [
+              {
+                "type": "TEMPLATE",
+                "value": "ad_storage"
+              }
+            ]
+          }
+        },
+        "notes": "view_procedure·view_clinic·view_lp → ViewContent. 메타 전송 최소화: 내부 slug ID·카테고리만, 시술명·병원명 미전송. 리타게팅(시술 조회 7일) 소스.",
+        "setupTag": [
+          {
+            "tagName": "Meta - Pixel Base",
+            "stopOnSetupFailure": true
+          }
+        ],
+        "fingerprint": "1792972800000",
+        "blockingTriggerId": [
+          "124"
+        ],
+        "tagFiringOption": "ONCE_PER_EVENT",
+        "monitoringMetadata": {
+          "type": "MAP"
+        }
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "tagId": "25",
+        "name": "Meta - InitiateCheckout",
+        "type": "html",
+        "parameter": [
+          {
+            "type": "TEMPLATE",
+            "key": "html",
+            "value": "<script>\n(function () {\n  if (typeof window.fbq !== 'function') return;\n  var ids = [];\n  var p = {{DLV - procedure_id}};\n  if (p) ids.push(p);\n  window.fbq('track', 'InitiateCheckout', { content_type: 'product', content_ids: ids, content_category: 'consult' }, { eventID: {{CJS - Meta Event ID}} });\n})();\n</script>"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "supportDocumentWrite",
+            "value": "false"
+          }
+        ],
+        "firingTriggerId": [
+          "105"
+        ],
+        "parentFolderId": "2",
+        "consentSettings": {
+          "consentStatus": "NEEDED",
+          "consentType": {
+            "type": "LIST",
+            "list": [
+              {
+                "type": "TEMPLATE",
+                "value": "ad_storage"
+              }
+            ]
+          }
+        },
+        "notes": "form_start → InitiateCheckout. 리드 50건 미만 구간의 캠페인 최적화 이벤트(스펙 7절), 폼 이탈 3일 리타게팅 소스.",
+        "setupTag": [
+          {
+            "tagName": "Meta - Pixel Base",
+            "stopOnSetupFailure": true
+          }
+        ],
+        "fingerprint": "1792972800000",
+        "blockingTriggerId": [
+          "124"
+        ],
+        "tagFiringOption": "ONCE_PER_EVENT",
+        "monitoringMetadata": {
+          "type": "MAP"
+        }
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "tagId": "26",
+        "name": "Meta - Lead",
+        "type": "html",
+        "parameter": [
+          {
+            "type": "TEMPLATE",
+            "key": "html",
+            "value": "<script>\n(function () {\n  if (typeof window.fbq !== 'function') return;\n  var leadId = {{DLV - lead_id}};\n  // event_id 없이 보내면 CAPI(submit-lead) Lead 와 중복 제거가 안 되므로 전송하지 않는다.\n  if (!leadId) return;\n  var ids = [];\n  var p = {{DLV - procedure_id}};\n  if (p) ids.push(p);\n  window.fbq('track', 'Lead', {\n    value: {{DLV - value}},\n    currency: {{DLV - currency}},\n    content_type: 'product',\n    content_ids: ids,\n    content_category: 'consult'\n  }, { eventID: String(leadId) });\n})();\n</script>"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "supportDocumentWrite",
+            "value": "false"
+          }
+        ],
+        "firingTriggerId": [
+          "107"
+        ],
+        "parentFolderId": "2",
+        "consentSettings": {
+          "consentStatus": "NEEDED",
+          "consentType": {
+            "type": "LIST",
+            "list": [
+              {
+                "type": "TEMPLATE",
+                "value": "ad_storage"
+              }
+            ]
+          }
+        },
+        "notes": "generate_lead → Lead. eventID = lead_id = CAPI event_id → 48시간 내 동일 event_name+event_id 1건으로 중복 제거.",
+        "setupTag": [
+          {
+            "tagName": "Meta - Pixel Base",
+            "stopOnSetupFailure": true
+          }
+        ],
+        "fingerprint": "1792972800000",
+        "blockingTriggerId": [
+          "124"
+        ],
+        "tagFiringOption": "ONCE_PER_EVENT",
+        "monitoringMetadata": {
+          "type": "MAP"
+        }
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "tagId": "27",
+        "name": "Meta - Contact",
+        "type": "html",
+        "parameter": [
+          {
+            "type": "TEMPLATE",
+            "key": "html",
+            "value": "<script>\n(function () {\n  if (typeof window.fbq !== 'function') return;\n  var ev = {{Event}};\n  window.fbq('track', 'Contact', {\n    content_ids: [{{DLV - clinic_id}}],\n    content_category: 'clinic',\n    contact_method: ev === 'phone_click' ? 'phone' : 'kakao'\n  }, { eventID: {{CJS - Meta Event ID}} });\n})();\n</script>"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "supportDocumentWrite",
+            "value": "false"
+          }
+        ],
+        "firingTriggerId": [
+          "108",
+          "109"
+        ],
+        "parentFolderId": "2",
+        "consentSettings": {
+          "consentStatus": "NEEDED",
+          "consentType": {
+            "type": "LIST",
+            "list": [
+              {
+                "type": "TEMPLATE",
+                "value": "ad_storage"
+              }
+            ]
+          }
+        },
+        "notes": "phone_click·kakao_click → Contact(보조 전환). contact_method 로 구분.",
+        "setupTag": [
+          {
+            "tagName": "Meta - Pixel Base",
+            "stopOnSetupFailure": true
+          }
+        ],
+        "fingerprint": "1792972800000",
+        "blockingTriggerId": [
+          "124"
+        ],
+        "tagFiringOption": "ONCE_PER_EVENT",
+        "monitoringMetadata": {
+          "type": "MAP"
+        }
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "tagId": "28",
+        "name": "Meta - Search",
+        "type": "html",
+        "parameter": [
+          {
+            "type": "TEMPLATE",
+            "key": "html",
+            "value": "<script>\n(function () {\n  if (typeof window.fbq !== 'function') return;\n  window.fbq('track', 'Search', { search_string: {{DLV - search_term}} }, { eventID: {{CJS - Meta Event ID}} });\n})();\n</script>"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "supportDocumentWrite",
+            "value": "false"
+          }
+        ],
+        "firingTriggerId": [
+          "112"
+        ],
+        "parentFolderId": "2",
+        "consentSettings": {
+          "consentStatus": "NEEDED",
+          "consentType": {
+            "type": "LIST",
+            "list": [
+              {
+                "type": "TEMPLATE",
+                "value": "ad_storage"
+              }
+            ]
+          }
+        },
+        "notes": "search → Search. 검색어는 자동완성 시술명 위주.",
+        "setupTag": [
+          {
+            "tagName": "Meta - Pixel Base",
+            "stopOnSetupFailure": true
+          }
+        ],
+        "fingerprint": "1792972800000",
+        "blockingTriggerId": [
+          "124"
+        ],
+        "tagFiringOption": "ONCE_PER_EVENT",
+        "monitoringMetadata": {
+          "type": "MAP"
+        }
+      }
+    ],
+    "trigger": [
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "triggerId": "101",
+        "name": "CE - view_procedure",
+        "type": "CUSTOM_EVENT",
+        "customEventFilter": [
+          {
+            "type": "EQUALS",
+            "parameter": [
+              {
+                "type": "TEMPLATE",
+                "key": "arg0",
+                "value": "{{_event}}"
+              },
+              {
+                "type": "TEMPLATE",
+                "key": "arg1",
+                "value": "view_procedure"
+              }
+            ]
+          }
+        ],
+        "fingerprint": "1792972800000"
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "triggerId": "102",
+        "name": "CE - view_clinic",
+        "type": "CUSTOM_EVENT",
+        "customEventFilter": [
+          {
+            "type": "EQUALS",
+            "parameter": [
+              {
+                "type": "TEMPLATE",
+                "key": "arg0",
+                "value": "{{_event}}"
+              },
+              {
+                "type": "TEMPLATE",
+                "key": "arg1",
+                "value": "view_clinic"
+              }
+            ]
+          }
+        ],
+        "fingerprint": "1792972800000"
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "triggerId": "103",
+        "name": "CE - view_lp",
+        "type": "CUSTOM_EVENT",
+        "customEventFilter": [
+          {
+            "type": "EQUALS",
+            "parameter": [
+              {
+                "type": "TEMPLATE",
+                "key": "arg0",
+                "value": "{{_event}}"
+              },
+              {
+                "type": "TEMPLATE",
+                "key": "arg1",
+                "value": "view_lp"
+              }
+            ]
+          }
+        ],
+        "fingerprint": "1792972800000"
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "triggerId": "104",
+        "name": "CE - click_cta",
+        "type": "CUSTOM_EVENT",
+        "customEventFilter": [
+          {
+            "type": "EQUALS",
+            "parameter": [
+              {
+                "type": "TEMPLATE",
+                "key": "arg0",
+                "value": "{{_event}}"
+              },
+              {
+                "type": "TEMPLATE",
+                "key": "arg1",
+                "value": "click_cta"
+              }
+            ]
+          }
+        ],
+        "fingerprint": "1792972800000"
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "triggerId": "105",
+        "name": "CE - form_start",
+        "type": "CUSTOM_EVENT",
+        "customEventFilter": [
+          {
+            "type": "EQUALS",
+            "parameter": [
+              {
+                "type": "TEMPLATE",
+                "key": "arg0",
+                "value": "{{_event}}"
+              },
+              {
+                "type": "TEMPLATE",
+                "key": "arg1",
+                "value": "form_start"
+              }
+            ]
+          }
+        ],
+        "fingerprint": "1792972800000"
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "triggerId": "106",
+        "name": "CE - form_step2",
+        "type": "CUSTOM_EVENT",
+        "customEventFilter": [
+          {
+            "type": "EQUALS",
+            "parameter": [
+              {
+                "type": "TEMPLATE",
+                "key": "arg0",
+                "value": "{{_event}}"
+              },
+              {
+                "type": "TEMPLATE",
+                "key": "arg1",
+                "value": "form_step2"
+              }
+            ]
+          }
+        ],
+        "fingerprint": "1792972800000"
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "triggerId": "107",
+        "name": "CE - generate_lead",
+        "type": "CUSTOM_EVENT",
+        "customEventFilter": [
+          {
+            "type": "EQUALS",
+            "parameter": [
+              {
+                "type": "TEMPLATE",
+                "key": "arg0",
+                "value": "{{_event}}"
+              },
+              {
+                "type": "TEMPLATE",
+                "key": "arg1",
+                "value": "generate_lead"
+              }
+            ]
+          }
+        ],
+        "filter": [
+          {
+            "type": "MATCH_REGEX",
+            "parameter": [
+              {
+                "type": "TEMPLATE",
+                "key": "arg0",
+                "value": "{{DLV - lead_id}}"
+              },
+              {
+                "type": "TEMPLATE",
+                "key": "arg1",
+                "value": ".+"
+              }
+            ]
+          },
+          {
+            "type": "EQUALS",
+            "parameter": [
+              {
+                "type": "TEMPLATE",
+                "key": "arg0",
+                "value": "{{DLV - lead_id}}"
+              },
+              {
+                "type": "TEMPLATE",
+                "key": "arg1",
+                "value": "undefined"
+              },
+              {
+                "type": "BOOLEAN",
+                "key": "negate",
+                "value": "true"
+              }
+            ]
+          }
+        ],
+        "notes": "P-07 단일 발화. lead_id 없는 push 는 무시(중복 방지 3계층). tracking-plan.md 6절.",
+        "fingerprint": "1792972800000"
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "triggerId": "108",
+        "name": "CE - phone_click",
+        "type": "CUSTOM_EVENT",
+        "customEventFilter": [
+          {
+            "type": "EQUALS",
+            "parameter": [
+              {
+                "type": "TEMPLATE",
+                "key": "arg0",
+                "value": "{{_event}}"
+              },
+              {
+                "type": "TEMPLATE",
+                "key": "arg1",
+                "value": "phone_click"
+              }
+            ]
+          }
+        ],
+        "fingerprint": "1792972800000"
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "triggerId": "109",
+        "name": "CE - kakao_click",
+        "type": "CUSTOM_EVENT",
+        "customEventFilter": [
+          {
+            "type": "EQUALS",
+            "parameter": [
+              {
+                "type": "TEMPLATE",
+                "key": "arg0",
+                "value": "{{_event}}"
+              },
+              {
+                "type": "TEMPLATE",
+                "key": "arg1",
+                "value": "kakao_click"
+              }
+            ]
+          }
+        ],
+        "fingerprint": "1792972800000"
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "triggerId": "110",
+        "name": "CE - click_affiliate",
+        "type": "CUSTOM_EVENT",
+        "customEventFilter": [
+          {
+            "type": "EQUALS",
+            "parameter": [
+              {
+                "type": "TEMPLATE",
+                "key": "arg0",
+                "value": "{{_event}}"
+              },
+              {
+                "type": "TEMPLATE",
+                "key": "arg1",
+                "value": "click_affiliate"
+              }
+            ]
+          }
+        ],
+        "fingerprint": "1792972800000"
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "triggerId": "111",
+        "name": "CE - scroll_depth",
+        "type": "CUSTOM_EVENT",
+        "customEventFilter": [
+          {
+            "type": "EQUALS",
+            "parameter": [
+              {
+                "type": "TEMPLATE",
+                "key": "arg0",
+                "value": "{{_event}}"
+              },
+              {
+                "type": "TEMPLATE",
+                "key": "arg1",
+                "value": "scroll_depth"
+              }
+            ]
+          }
+        ],
+        "fingerprint": "1792972800000"
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "triggerId": "112",
+        "name": "CE - search",
+        "type": "CUSTOM_EVENT",
+        "customEventFilter": [
+          {
+            "type": "EQUALS",
+            "parameter": [
+              {
+                "type": "TEMPLATE",
+                "key": "arg0",
+                "value": "{{_event}}"
+              },
+              {
+                "type": "TEMPLATE",
+                "key": "arg1",
+                "value": "search"
+              }
+            ]
+          }
+        ],
+        "fingerprint": "1792972800000"
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "triggerId": "113",
+        "name": "CE - lead_qualified",
+        "type": "CUSTOM_EVENT",
+        "customEventFilter": [
+          {
+            "type": "EQUALS",
+            "parameter": [
+              {
+                "type": "TEMPLATE",
+                "key": "arg0",
+                "value": "{{_event}}"
+              },
+              {
+                "type": "TEMPLATE",
+                "key": "arg1",
+                "value": "lead_qualified"
+              }
+            ]
+          }
+        ],
+        "notes": "연결 태그는 일시중지(GA4 - Event - lead_qualified). 실전송은 qualify-lead 의 GA4 MP·CAPI Schedule. /admin 은 EX - Admin pages 로도 차단. Preview QA 용 트리거.",
+        "fingerprint": "1792972800000"
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "triggerId": "114",
+        "name": "CE - select_category",
+        "type": "CUSTOM_EVENT",
+        "customEventFilter": [
+          {
+            "type": "EQUALS",
+            "parameter": [
+              {
+                "type": "TEMPLATE",
+                "key": "arg0",
+                "value": "{{_event}}"
+              },
+              {
+                "type": "TEMPLATE",
+                "key": "arg1",
+                "value": "select_category"
+              }
+            ]
+          }
+        ],
+        "fingerprint": "1792972800000"
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "triggerId": "115",
+        "name": "CE - select_procedure",
+        "type": "CUSTOM_EVENT",
+        "customEventFilter": [
+          {
+            "type": "EQUALS",
+            "parameter": [
+              {
+                "type": "TEMPLATE",
+                "key": "arg0",
+                "value": "{{_event}}"
+              },
+              {
+                "type": "TEMPLATE",
+                "key": "arg1",
+                "value": "select_procedure"
+              }
+            ]
+          }
+        ],
+        "fingerprint": "1792972800000"
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "triggerId": "116",
+        "name": "CE - select_clinic",
+        "type": "CUSTOM_EVENT",
+        "customEventFilter": [
+          {
+            "type": "EQUALS",
+            "parameter": [
+              {
+                "type": "TEMPLATE",
+                "key": "arg0",
+                "value": "{{_event}}"
+              },
+              {
+                "type": "TEMPLATE",
+                "key": "arg1",
+                "value": "select_clinic"
+              }
+            ]
+          }
+        ],
+        "fingerprint": "1792972800000"
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "triggerId": "117",
+        "name": "CE - select_post",
+        "type": "CUSTOM_EVENT",
+        "customEventFilter": [
+          {
+            "type": "EQUALS",
+            "parameter": [
+              {
+                "type": "TEMPLATE",
+                "key": "arg0",
+                "value": "{{_event}}"
+              },
+              {
+                "type": "TEMPLATE",
+                "key": "arg1",
+                "value": "select_post"
+              }
+            ]
+          }
+        ],
+        "fingerprint": "1792972800000"
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "triggerId": "118",
+        "name": "CE - expand_faq",
+        "type": "CUSTOM_EVENT",
+        "customEventFilter": [
+          {
+            "type": "EQUALS",
+            "parameter": [
+              {
+                "type": "TEMPLATE",
+                "key": "arg0",
+                "value": "{{_event}}"
+              },
+              {
+                "type": "TEMPLATE",
+                "key": "arg1",
+                "value": "expand_faq"
+              }
+            ]
+          }
+        ],
+        "fingerprint": "1792972800000"
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "triggerId": "119",
+        "name": "CE - click_map",
+        "type": "CUSTOM_EVENT",
+        "customEventFilter": [
+          {
+            "type": "EQUALS",
+            "parameter": [
+              {
+                "type": "TEMPLATE",
+                "key": "arg0",
+                "value": "{{_event}}"
+              },
+              {
+                "type": "TEMPLATE",
+                "key": "arg1",
+                "value": "click_map"
+              }
+            ]
+          }
+        ],
+        "fingerprint": "1792972800000"
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "triggerId": "120",
+        "name": "CE - kakao_add",
+        "type": "CUSTOM_EVENT",
+        "customEventFilter": [
+          {
+            "type": "EQUALS",
+            "parameter": [
+              {
+                "type": "TEMPLATE",
+                "key": "arg0",
+                "value": "{{_event}}"
+              },
+              {
+                "type": "TEMPLATE",
+                "key": "arg1",
+                "value": "kakao_add"
+              }
+            ]
+          }
+        ],
+        "fingerprint": "1792972800000"
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "triggerId": "121",
+        "name": "CE - experiment_variant",
+        "type": "CUSTOM_EVENT",
+        "customEventFilter": [
+          {
+            "type": "EQUALS",
+            "parameter": [
+              {
+                "type": "TEMPLATE",
+                "key": "arg0",
+                "value": "{{_event}}"
+              },
+              {
+                "type": "TEMPLATE",
+                "key": "arg1",
+                "value": "experiment_variant"
+              }
+            ]
+          }
+        ],
+        "fingerprint": "1792972800000"
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "triggerId": "122",
+        "name": "CE - consent_update - analytics granted",
+        "type": "CUSTOM_EVENT",
+        "customEventFilter": [
+          {
+            "type": "EQUALS",
+            "parameter": [
+              {
+                "type": "TEMPLATE",
+                "key": "arg0",
+                "value": "{{_event}}"
+              },
+              {
+                "type": "TEMPLATE",
+                "key": "arg1",
+                "value": "consent_update"
+              }
+            ]
+          }
+        ],
+        "filter": [
+          {
+            "type": "EQUALS",
+            "parameter": [
+              {
+                "type": "TEMPLATE",
+                "key": "arg0",
+                "value": "{{DLV - analytics_storage}}"
+              },
+              {
+                "type": "TEMPLATE",
+                "key": "arg1",
+                "value": "granted"
+              }
+            ]
+          },
+          {
+            "type": "EQUALS",
+            "parameter": [
+              {
+                "type": "TEMPLATE",
+                "key": "arg0",
+                "value": "{{DLV - prev_analytics_storage}}"
+              },
+              {
+                "type": "TEMPLATE",
+                "key": "arg1",
+                "value": "granted"
+              },
+              {
+                "type": "BOOLEAN",
+                "key": "negate",
+                "value": "true"
+              }
+            ]
+          }
+        ],
+        "notes": "같은 페이지에서 analytics 가 denied→granted 로 바뀔 때만 GA4 - Config 로드(이미 granted 면 Initialization 에서 로드됨 → page_view 중복 방지). 앱 R-1: consent update 직후 {event:'consent_update', analytics_storage, ad_storage, prev_analytics_storage, prev_ad_storage} push. 미구현 시 발화 없음(다음 페이지부터 로드).",
+        "fingerprint": "1792972800000"
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "triggerId": "123",
+        "name": "CE - consent_update - ads granted",
+        "type": "CUSTOM_EVENT",
+        "customEventFilter": [
+          {
+            "type": "EQUALS",
+            "parameter": [
+              {
+                "type": "TEMPLATE",
+                "key": "arg0",
+                "value": "{{_event}}"
+              },
+              {
+                "type": "TEMPLATE",
+                "key": "arg1",
+                "value": "consent_update"
+              }
+            ]
+          }
+        ],
+        "filter": [
+          {
+            "type": "EQUALS",
+            "parameter": [
+              {
+                "type": "TEMPLATE",
+                "key": "arg0",
+                "value": "{{DLV - ad_storage}}"
+              },
+              {
+                "type": "TEMPLATE",
+                "key": "arg1",
+                "value": "granted"
+              }
+            ]
+          },
+          {
+            "type": "EQUALS",
+            "parameter": [
+              {
+                "type": "TEMPLATE",
+                "key": "arg0",
+                "value": "{{DLV - prev_ad_storage}}"
+              },
+              {
+                "type": "TEMPLATE",
+                "key": "arg1",
+                "value": "granted"
+              },
+              {
+                "type": "BOOLEAN",
+                "key": "negate",
+                "value": "true"
+              }
+            ]
+          }
+        ],
+        "notes": "같은 페이지에서 ads 가 denied→granted 로 바뀔 때만 Meta - Pixel Base 로드(태그 안 __rsMetaPixelInit 가드로 이중 init 도 차단).",
+        "fingerprint": "1792972800000"
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "triggerId": "124",
+        "name": "EX - Admin pages",
+        "type": "CUSTOM_EVENT",
+        "customEventFilter": [
+          {
+            "type": "MATCH_REGEX",
+            "parameter": [
+              {
+                "type": "TEMPLATE",
+                "key": "arg0",
+                "value": "{{_event}}"
+              },
+              {
+                "type": "TEMPLATE",
+                "key": "arg1",
+                "value": ".*"
+              }
+            ]
+          }
+        ],
+        "filter": [
+          {
+            "type": "MATCH_REGEX",
+            "parameter": [
+              {
+                "type": "TEMPLATE",
+                "key": "arg0",
+                "value": "{{Page Path}}"
+              },
+              {
+                "type": "TEMPLATE",
+                "key": "arg1",
+                "value": "^(/[^/]+)?/admin(/|$)"
+              }
+            ]
+          }
+        ],
+        "notes": "차단 트리거. /admin(basePath 포함) 화면에서는 모든 태그 차단 — 내부 트래픽·리드 개인정보 화면 오염 방지.",
+        "fingerprint": "1792972800000"
+      }
+    ],
+    "variable": [
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "variableId": "201",
+        "name": "CONST - GA4 Measurement ID",
+        "type": "c",
+        "notes": "GA4 웹 데이터 스트림 측정 ID로 교체(G-로 시작).",
+        "parameter": [
+          {
+            "type": "TEMPLATE",
+            "key": "value",
+            "value": "G-XXXXXXXXXX"
+          }
+        ],
+        "fingerprint": "1792972800000",
+        "parentFolderId": "3",
+        "formatValue": {}
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "variableId": "202",
+        "name": "CONST - Meta Pixel ID",
+        "type": "c",
+        "notes": "메타 이벤트 관리자 데이터 세트(픽셀) ID로 교체. submit-lead·qualify-lead CAPI와 같은 ID.",
+        "parameter": [
+          {
+            "type": "TEMPLATE",
+            "key": "value",
+            "value": "000000000000000"
+          }
+        ],
+        "fingerprint": "1792972800000",
+        "parentFolderId": "3",
+        "formatValue": {}
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "variableId": "203",
+        "name": "DLV - procedure_id",
+        "type": "v",
+        "parameter": [
+          {
+            "type": "INTEGER",
+            "key": "dataLayerVersion",
+            "value": "2"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "setDefaultValue",
+            "value": "false"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "name",
+            "value": "procedure_id"
+          }
+        ],
+        "fingerprint": "1792972800000",
+        "parentFolderId": "3",
+        "formatValue": {}
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "variableId": "204",
+        "name": "DLV - procedure_name",
+        "type": "v",
+        "parameter": [
+          {
+            "type": "INTEGER",
+            "key": "dataLayerVersion",
+            "value": "2"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "setDefaultValue",
+            "value": "false"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "name",
+            "value": "procedure_name"
+          }
+        ],
+        "fingerprint": "1792972800000",
+        "parentFolderId": "3",
+        "formatValue": {}
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "variableId": "205",
+        "name": "DLV - category",
+        "type": "v",
+        "parameter": [
+          {
+            "type": "INTEGER",
+            "key": "dataLayerVersion",
+            "value": "2"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "setDefaultValue",
+            "value": "false"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "name",
+            "value": "category"
+          }
+        ],
+        "fingerprint": "1792972800000",
+        "parentFolderId": "3",
+        "formatValue": {}
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "variableId": "206",
+        "name": "DLV - clinic_id",
+        "type": "v",
+        "parameter": [
+          {
+            "type": "INTEGER",
+            "key": "dataLayerVersion",
+            "value": "2"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "setDefaultValue",
+            "value": "false"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "name",
+            "value": "clinic_id"
+          }
+        ],
+        "fingerprint": "1792972800000",
+        "parentFolderId": "3",
+        "formatValue": {}
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "variableId": "207",
+        "name": "DLV - clinic_name",
+        "type": "v",
+        "parameter": [
+          {
+            "type": "INTEGER",
+            "key": "dataLayerVersion",
+            "value": "2"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "setDefaultValue",
+            "value": "false"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "name",
+            "value": "clinic_name"
+          }
+        ],
+        "fingerprint": "1792972800000",
+        "parentFolderId": "3",
+        "formatValue": {}
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "variableId": "208",
+        "name": "DLV - is_premium",
+        "type": "v",
+        "parameter": [
+          {
+            "type": "INTEGER",
+            "key": "dataLayerVersion",
+            "value": "2"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "setDefaultValue",
+            "value": "false"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "name",
+            "value": "is_premium"
+          }
+        ],
+        "fingerprint": "1792972800000",
+        "parentFolderId": "3",
+        "formatValue": {}
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "variableId": "209",
+        "name": "DLV - campaign",
+        "type": "v",
+        "notes": "dataLayer 키는 campaign. GA4로는 lp_campaign 이름으로 보낸다(GA4 트래픽 소스 파라미터 campaign 과 충돌 방지).",
+        "parameter": [
+          {
+            "type": "INTEGER",
+            "key": "dataLayerVersion",
+            "value": "2"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "setDefaultValue",
+            "value": "false"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "name",
+            "value": "campaign"
+          }
+        ],
+        "fingerprint": "1792972800000",
+        "parentFolderId": "3",
+        "formatValue": {}
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "variableId": "210",
+        "name": "DLV - variant",
+        "type": "v",
+        "parameter": [
+          {
+            "type": "INTEGER",
+            "key": "dataLayerVersion",
+            "value": "2"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "setDefaultValue",
+            "value": "false"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "name",
+            "value": "variant"
+          }
+        ],
+        "fingerprint": "1792972800000",
+        "parentFolderId": "3",
+        "formatValue": {}
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "variableId": "211",
+        "name": "DLV - location",
+        "type": "v",
+        "parameter": [
+          {
+            "type": "INTEGER",
+            "key": "dataLayerVersion",
+            "value": "2"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "setDefaultValue",
+            "value": "false"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "name",
+            "value": "location"
+          }
+        ],
+        "fingerprint": "1792972800000",
+        "parentFolderId": "3",
+        "formatValue": {}
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "variableId": "212",
+        "name": "DLV - source_page",
+        "type": "v",
+        "parameter": [
+          {
+            "type": "INTEGER",
+            "key": "dataLayerVersion",
+            "value": "2"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "setDefaultValue",
+            "value": "false"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "name",
+            "value": "source_page"
+          }
+        ],
+        "fingerprint": "1792972800000",
+        "parentFolderId": "3",
+        "formatValue": {}
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "variableId": "213",
+        "name": "DLV - lead_id",
+        "type": "v",
+        "notes": "P-07 generate_lead 에서만 존재. Meta - Lead eventID 와 CAPI event_id 의 공통 키.",
+        "parameter": [
+          {
+            "type": "INTEGER",
+            "key": "dataLayerVersion",
+            "value": "2"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "setDefaultValue",
+            "value": "false"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "name",
+            "value": "lead_id"
+          }
+        ],
+        "fingerprint": "1792972800000",
+        "parentFolderId": "3",
+        "formatValue": {}
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "variableId": "214",
+        "name": "DLV - value",
+        "type": "v",
+        "notes": "KRW 정수. generate_lead 50000, lead_qualified 200000(서버 MP).",
+        "parameter": [
+          {
+            "type": "INTEGER",
+            "key": "dataLayerVersion",
+            "value": "2"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "setDefaultValue",
+            "value": "false"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "name",
+            "value": "value"
+          }
+        ],
+        "fingerprint": "1792972800000",
+        "parentFolderId": "3",
+        "formatValue": {}
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "variableId": "215",
+        "name": "DLV - currency",
+        "type": "v",
+        "parameter": [
+          {
+            "type": "INTEGER",
+            "key": "dataLayerVersion",
+            "value": "2"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "setDefaultValue",
+            "value": "false"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "name",
+            "value": "currency"
+          }
+        ],
+        "fingerprint": "1792972800000",
+        "parentFolderId": "3",
+        "formatValue": {}
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "variableId": "216",
+        "name": "DLV - page",
+        "type": "v",
+        "parameter": [
+          {
+            "type": "INTEGER",
+            "key": "dataLayerVersion",
+            "value": "2"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "setDefaultValue",
+            "value": "false"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "name",
+            "value": "page"
+          }
+        ],
+        "fingerprint": "1792972800000",
+        "parentFolderId": "3",
+        "formatValue": {}
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "variableId": "217",
+        "name": "DLV - item_id",
+        "type": "v",
+        "parameter": [
+          {
+            "type": "INTEGER",
+            "key": "dataLayerVersion",
+            "value": "2"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "setDefaultValue",
+            "value": "false"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "name",
+            "value": "item_id"
+          }
+        ],
+        "fingerprint": "1792972800000",
+        "parentFolderId": "3",
+        "formatValue": {}
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "variableId": "218",
+        "name": "DLV - percent",
+        "type": "v",
+        "parameter": [
+          {
+            "type": "INTEGER",
+            "key": "dataLayerVersion",
+            "value": "2"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "setDefaultValue",
+            "value": "false"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "name",
+            "value": "percent"
+          }
+        ],
+        "fingerprint": "1792972800000",
+        "parentFolderId": "3",
+        "formatValue": {}
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "variableId": "219",
+        "name": "DLV - page_type",
+        "type": "v",
+        "parameter": [
+          {
+            "type": "INTEGER",
+            "key": "dataLayerVersion",
+            "value": "2"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "setDefaultValue",
+            "value": "false"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "name",
+            "value": "page_type"
+          }
+        ],
+        "fingerprint": "1792972800000",
+        "parentFolderId": "3",
+        "formatValue": {}
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "variableId": "220",
+        "name": "DLV - search_term",
+        "type": "v",
+        "parameter": [
+          {
+            "type": "INTEGER",
+            "key": "dataLayerVersion",
+            "value": "2"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "setDefaultValue",
+            "value": "false"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "name",
+            "value": "search_term"
+          }
+        ],
+        "fingerprint": "1792972800000",
+        "parentFolderId": "3",
+        "formatValue": {}
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "variableId": "221",
+        "name": "DLV - from_page",
+        "type": "v",
+        "parameter": [
+          {
+            "type": "INTEGER",
+            "key": "dataLayerVersion",
+            "value": "2"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "setDefaultValue",
+            "value": "false"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "name",
+            "value": "from_page"
+          }
+        ],
+        "fingerprint": "1792972800000",
+        "parentFolderId": "3",
+        "formatValue": {}
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "variableId": "222",
+        "name": "DLV - from",
+        "type": "v",
+        "parameter": [
+          {
+            "type": "INTEGER",
+            "key": "dataLayerVersion",
+            "value": "2"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "setDefaultValue",
+            "value": "false"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "name",
+            "value": "from"
+          }
+        ],
+        "fingerprint": "1792972800000",
+        "parentFolderId": "3",
+        "formatValue": {}
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "variableId": "223",
+        "name": "DLV - post_id",
+        "type": "v",
+        "parameter": [
+          {
+            "type": "INTEGER",
+            "key": "dataLayerVersion",
+            "value": "2"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "setDefaultValue",
+            "value": "false"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "name",
+            "value": "post_id"
+          }
+        ],
+        "fingerprint": "1792972800000",
+        "parentFolderId": "3",
+        "formatValue": {}
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "variableId": "224",
+        "name": "DLV - question_index",
+        "type": "v",
+        "parameter": [
+          {
+            "type": "INTEGER",
+            "key": "dataLayerVersion",
+            "value": "2"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "setDefaultValue",
+            "value": "false"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "name",
+            "value": "question_index"
+          }
+        ],
+        "fingerprint": "1792972800000",
+        "parentFolderId": "3",
+        "formatValue": {}
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "variableId": "225",
+        "name": "DLV - analytics_storage",
+        "type": "v",
+        "notes": "consent_update 이벤트 페이로드. granted|denied.",
+        "parameter": [
+          {
+            "type": "INTEGER",
+            "key": "dataLayerVersion",
+            "value": "2"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "setDefaultValue",
+            "value": "false"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "name",
+            "value": "analytics_storage"
+          }
+        ],
+        "fingerprint": "1792972800000",
+        "parentFolderId": "3",
+        "formatValue": {}
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "variableId": "226",
+        "name": "DLV - ad_storage",
+        "type": "v",
+        "notes": "consent_update 이벤트 페이로드. granted|denied.",
+        "parameter": [
+          {
+            "type": "INTEGER",
+            "key": "dataLayerVersion",
+            "value": "2"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "setDefaultValue",
+            "value": "false"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "name",
+            "value": "ad_storage"
+          }
+        ],
+        "fingerprint": "1792972800000",
+        "parentFolderId": "3",
+        "formatValue": {}
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "variableId": "227",
+        "name": "DLV - prev_analytics_storage",
+        "type": "v",
+        "notes": "consent_update 직전 상태(저장값 없으면 denied). denied→granted 전환일 때만 GA4 - Config 재로드.",
+        "parameter": [
+          {
+            "type": "INTEGER",
+            "key": "dataLayerVersion",
+            "value": "2"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "setDefaultValue",
+            "value": "true"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "defaultValue",
+            "value": "denied"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "name",
+            "value": "prev_analytics_storage"
+          }
+        ],
+        "fingerprint": "1792972800000",
+        "parentFolderId": "3",
+        "formatValue": {}
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "variableId": "228",
+        "name": "DLV - prev_ad_storage",
+        "type": "v",
+        "notes": "consent_update 직전 상태(저장값 없으면 denied).",
+        "parameter": [
+          {
+            "type": "INTEGER",
+            "key": "dataLayerVersion",
+            "value": "2"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "setDefaultValue",
+            "value": "true"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "defaultValue",
+            "value": "denied"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "name",
+            "value": "prev_ad_storage"
+          }
+        ],
+        "fingerprint": "1792972800000",
+        "parentFolderId": "3",
+        "formatValue": {}
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "variableId": "229",
+        "name": "Cookie - _fbp",
+        "type": "k",
+        "notes": "메타 픽셀 브라우저 ID(ad_storage 동의 후 생성). QA용. CAPI용 fbp는 P-06이 쿠키에서 직접 읽어 submit-lead로 전달.",
+        "parameter": [
+          {
+            "type": "BOOLEAN",
+            "key": "decodeCookie",
+            "value": "false"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "name",
+            "value": "_fbp"
+          }
+        ],
+        "fingerprint": "1792972800000",
+        "parentFolderId": "3",
+        "formatValue": {}
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "variableId": "230",
+        "name": "Cookie - _fbc",
+        "type": "k",
+        "notes": "메타 클릭 ID(fb.1.<ms>.<fbclid>). 없으면 submit-lead가 _utm.fbclid로 생성. QA용.",
+        "parameter": [
+          {
+            "type": "BOOLEAN",
+            "key": "decodeCookie",
+            "value": "false"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "name",
+            "value": "_fbc"
+          }
+        ],
+        "fingerprint": "1792972800000",
+        "parentFolderId": "3",
+        "formatValue": {}
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "variableId": "231",
+        "name": "Cookie - _utm",
+        "type": "k",
+        "notes": "첫 유입 쿠키(90일). 값 = encodeURIComponent(JSON) {source,medium,campaign,content,term,gclid,fbclid,lp,ref,ts}. tracking-plan.md 9절.",
+        "parameter": [
+          {
+            "type": "BOOLEAN",
+            "key": "decodeCookie",
+            "value": "true"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "name",
+            "value": "_utm"
+          }
+        ],
+        "fingerprint": "1792972800000",
+        "parentFolderId": "3",
+        "formatValue": {}
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "variableId": "232",
+        "name": "CJS - first_touch",
+        "type": "jsm",
+        "notes": "_utm 쿠키 JSON 파싱. 실패·부재 시 undefined.",
+        "parameter": [
+          {
+            "type": "TEMPLATE",
+            "key": "javascript",
+            "value": "function () {\n  var raw = {{Cookie - _utm}};\n  if (!raw) return undefined;\n  try {\n    var o = JSON.parse(raw);\n    return o && typeof o === 'object' ? o : undefined;\n  } catch (e) {\n    return undefined;\n  }\n}"
+          }
+        ],
+        "fingerprint": "1792972800000",
+        "parentFolderId": "3",
+        "formatValue": {}
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "variableId": "233",
+        "name": "CJS - first_touch.source",
+        "type": "jsm",
+        "notes": "generate_lead 의 first_touch_source 파라미터. 동의 전 첫 방문의 유입도 보존(GA4 첫 사용자 측정기준 보완).",
+        "parameter": [
+          {
+            "type": "TEMPLATE",
+            "key": "javascript",
+            "value": "function () {\n  var o = {{CJS - first_touch}};\n  return o && o.source ? String(o.source) : undefined;\n}"
+          }
+        ],
+        "fingerprint": "1792972800000",
+        "parentFolderId": "3",
+        "formatValue": {}
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "variableId": "234",
+        "name": "CJS - first_touch.medium",
+        "type": "jsm",
+        "notes": "generate_lead 의 first_touch_medium 파라미터. 동의 전 첫 방문의 유입도 보존(GA4 첫 사용자 측정기준 보완).",
+        "parameter": [
+          {
+            "type": "TEMPLATE",
+            "key": "javascript",
+            "value": "function () {\n  var o = {{CJS - first_touch}};\n  return o && o.medium ? String(o.medium) : undefined;\n}"
+          }
+        ],
+        "fingerprint": "1792972800000",
+        "parentFolderId": "3",
+        "formatValue": {}
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "variableId": "235",
+        "name": "CJS - first_touch.campaign",
+        "type": "jsm",
+        "notes": "generate_lead 의 first_touch_campaign 파라미터. 동의 전 첫 방문의 유입도 보존(GA4 첫 사용자 측정기준 보완).",
+        "parameter": [
+          {
+            "type": "TEMPLATE",
+            "key": "javascript",
+            "value": "function () {\n  var o = {{CJS - first_touch}};\n  return o && o.campaign ? String(o.campaign) : undefined;\n}"
+          }
+        ],
+        "fingerprint": "1792972800000",
+        "parentFolderId": "3",
+        "formatValue": {}
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "variableId": "236",
+        "name": "CJS - Meta Event ID",
+        "type": "jsm",
+        "notes": "브라우저 전용 메타 이벤트(PageView·ViewContent·InitiateCheckout·Contact·Search)의 eventID. Lead 는 이 변수가 아니라 {{DLV - lead_id}} 를 쓴다(CAPI 중복 제거).",
+        "parameter": [
+          {
+            "type": "TEMPLATE",
+            "key": "javascript",
+            "value": "function () {\n  return {{Event}} + '.' + new Date().getTime() + '.' + Math.floor(Math.random() * 1e9);\n}"
+          }
+        ],
+        "fingerprint": "1792972800000",
+        "parentFolderId": "3",
+        "formatValue": {}
+      }
+    ],
+    "folder": [
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "folderId": "1",
+        "name": "GA4",
+        "fingerprint": "1792972800000"
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "folderId": "2",
+        "name": "Meta",
+        "fingerprint": "1792972800000"
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "folderId": "3",
+        "name": "Variables",
+        "fingerprint": "1792972800000"
+      }
+    ],
+    "builtInVariable": [
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "type": "PAGE_URL",
+        "name": "Page URL"
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "type": "PAGE_HOSTNAME",
+        "name": "Page Hostname"
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "type": "PAGE_PATH",
+        "name": "Page Path"
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "type": "REFERRER",
+        "name": "Referrer"
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "type": "EVENT",
+        "name": "Event"
+      }
+    ],
+    "fingerprint": "1792972800000"
+  }
+}

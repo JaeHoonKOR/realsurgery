@@ -84,6 +84,7 @@ export function saveConsent(
   choice: ConsentChoice,
   { storage = browserStorage(), now = new Date() }: { storage?: Storage | null; now?: Date } = {},
 ): StoredConsent {
+  const prev = readConsent(storage);
   const stored: StoredConsent = { v: CONSENT_VERSION, analytics: choice.analytics, ads: choice.ads, at: now.toISOString() };
   try {
     storage?.setItem(CONSENT_STORAGE_KEY, JSON.stringify(stored));
@@ -91,6 +92,18 @@ export function saveConsent(
     /* 저장 불가(용량·차단)여도 이번 페이지에는 적용 */
   }
   pushConsent("update", toConsentState(choice));
+  // GTM 트리거용 이벤트(docs/tracking/tracking-plan.md R-1): 같은 페이지에서 새로 동의한 태그를 바로 로드한다.
+  // 동의 명령(Arguments)은 GTM 이벤트를 만들지 않으므로 별도의 custom event 를 함께 push 한다.
+  if (typeof window !== "undefined") {
+    window.dataLayer = window.dataLayer ?? [];
+    window.dataLayer.push({
+      event: "consent_update",
+      analytics_storage: g(choice.analytics),
+      ad_storage: g(choice.ads),
+      prev_analytics_storage: g(prev?.analytics ?? false),
+      prev_ad_storage: g(prev?.ads ?? false),
+    });
+  }
   if (typeof document !== "undefined") document.documentElement.setAttribute(CONSENT_ATTR, "set");
   return stored;
 }
