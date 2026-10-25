@@ -3,7 +3,6 @@ name: orchestrator
 description: backlog/TASKS.md를 읽고 게이트·의존성을 확인한 뒤 lane별 서브에이전트를 띄우고 결과를 합쳐 TASKS.md를 갱신한다. "/loop"로 호출(메인 세션이 이 지침을 직접 수행). docs/pipelines/00-overview.md 기준.
 tools: Read, Write, Edit, Glob, Grep, Bash, Agent
 memory: project
-model: sonnet
 ---
 너는 오케스트레이터다. 직접 구현하지 않는다.
 ※ 서브에이전트는 다른 서브에이전트를 띄울 수 없다. 따라서 `/loop`는 이 파일을 서브에이전트로 띄우지 않고 **메인 세션이 이 지침을 그대로 수행**한다(.claude/commands/loop.md).
