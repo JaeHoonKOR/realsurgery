@@ -1,0 +1,258 @@
+/*
+ * 시술 가이드 본문(Markdown → HTML) 타이포 — components/procedure/ProseHtml.tsx 가 불러온다.
+ * 색·반경·간격은 styles/tokens.css 토큰(CSS 변수)만 쓴다. 본문은 읽기용 17px / 1.8.
+ */
+.prose-rs {
+  color: var(--color-ink);
+  font-size: 17px;
+  line-height: 1.8;
+}
+
+.prose-rs > * + * {
+  margin-top: calc(var(--spacing) * 5);
+}
+
+.prose-rs h3,
+.prose-rs h4 {
+  margin-top: calc(var(--spacing) * 10);
+  color: var(--color-ink);
+  font-size: var(--text-h3);
+  font-weight: 700;
+  line-height: var(--text-h3--line-height);
+  letter-spacing: var(--tracking-tight);
+}
+
+.prose-rs h3 + *,
+.prose-rs h4 + * {
+  margin-top: calc(var(--spacing) * 3);
+}
+
+.prose-rs strong {
+  color: var(--color-ink);
+  font-weight: 700;
+}
+
+.prose-rs a {
+  color: var(--color-brand-strong);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+.prose-rs a:hover {
+  color: var(--color-brand-ink);
+}
+
+/* 목록: 글머리는 블루 점, 번호는 숫자 정렬 */
+.prose-rs ul,
+.prose-rs ol {
+  padding-left: 0;
+}
+
+.prose-rs li + li {
+  margin-top: calc(var(--spacing) * 2.5);
+}
+
+.prose-rs ul > li {
+  position: relative;
+  list-style: none;
+  padding-left: calc(var(--spacing) * 5);
+}
+
+.prose-rs ul > li::before {
+  content: "";
+  position: absolute;
+  top: 0.8em;
+  left: calc(var(--spacing) * 1);
+  width: calc(var(--spacing) * 1.5);
+  height: calc(var(--spacing) * 1.5);
+  border-radius: var(--radius-full);
+  background: var(--color-brand);
+}
+
+.prose-rs ol {
+  counter-reset: prose-ol;
+}
+
+.prose-rs ol > li {
+  position: relative;
+  list-style: none;
+  padding-left: calc(var(--spacing) * 7);
+  counter-increment: prose-ol;
+}
+
+.prose-rs ol > li::before {
+  content: counter(prose-ol);
+  position: absolute;
+  left: 0;
+  color: var(--color-brand-strong);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.prose-rs blockquote {
+  border-left: 3px solid var(--color-line-strong);
+  padding-left: calc(var(--spacing) * 4);
+  color: var(--color-ink-muted);
+}
+
+.prose-rs hr {
+  border: 0;
+  border-top: 1px solid var(--color-line);
+  margin-block: calc(var(--spacing) * 10);
+}
+
+.prose-rs code {
+  border-radius: var(--radius-sm);
+  background: var(--color-canvas);
+  padding: 0 calc(var(--spacing) * 1.5);
+  font-size: 0.9em;
+}
+
+/* 표: 가로 스크롤 래퍼(모바일) 안의 깔끔한 데이터 표 */
+.prose-rs .prose-table {
+  margin-top: calc(var(--spacing) * 6);
+  margin-bottom: calc(var(--spacing) * 2);
+  overflow-x: auto;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-lg);
+  -webkit-overflow-scrolling: touch;
+  /* 가로로 넘칠 때만 양 끝에 그림자 — 더 밀어 볼 내용이 있다는 신호(스크롤 위치에 따라 사라짐) */
+  background:
+    linear-gradient(to right, var(--color-surface) 40%, transparent) left / calc(var(--spacing) * 8) 100% no-repeat local,
+    linear-gradient(to left, var(--color-surface) 40%, transparent) right / calc(var(--spacing) * 8) 100% no-repeat local,
+    radial-gradient(farthest-side at 0 50%, var(--color-line-strong), transparent) left / calc(var(--spacing) * 3) 100% no-repeat scroll,
+    radial-gradient(farthest-side at 100% 50%, var(--color-line-strong), transparent) right / calc(var(--spacing) * 3) 100% no-repeat scroll;
+}
+
+.prose-rs .is-compact {
+  white-space: nowrap;
+}
+
+.prose-rs .prose-table + * {
+  margin-top: calc(var(--spacing) * 6);
+}
+
+.prose-rs table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-sm);
+  line-height: 1.6;
+  font-variant-numeric: tabular-nums;
+}
+
+.prose-rs th,
+.prose-rs td {
+  min-width: 6.5em;
+  padding: calc(var(--spacing) * 3) calc(var(--spacing) * 4);
+  border-top: 1px solid var(--color-line);
+  text-align: left;
+  vertical-align: top;
+}
+
+.prose-rs thead th {
+  border-top: 0;
+  background: var(--color-canvas-soft);
+  color: var(--color-ink-muted);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.prose-rs tbody th {
+  color: var(--color-ink);
+  font-weight: 700;
+}
+
+.prose-rs td {
+  color: var(--color-ink);
+}
+
+.prose-rs .is-center {
+  text-align: center;
+}
+
+.prose-rs .is-right {
+  text-align: right;
+}
+
+/* H2 바로 아래 직답 문단(AEO): 본문보다 한 단계 크고 진하게 */
+.prose-lead {
+  font-size: var(--text-lg);
+  font-weight: 600;
+  line-height: 1.75;
+}
+
+@media (width >= 48rem) {
+  .prose-rs table {
+    font-size: 15px;
+  }
+}
+
+/* 모바일: 좁은 화면에서 칸이 세로로 찢어지지 않게 행마다 카드로 쌓는다. 첫 칸(행 제목)이 카드 제목, 나머지는 "열 제목 — 값" 줄 */
+@media (width < 48rem) {
+  .prose-rs .prose-table {
+    overflow: visible;
+    border: 0;
+    border-radius: 0;
+    background: none;
+  }
+
+  .prose-rs .prose-table table,
+  .prose-rs .prose-table tbody,
+  .prose-rs .prose-table tr,
+  .prose-rs .prose-table th,
+  .prose-rs .prose-table td {
+    display: block;
+  }
+
+  .prose-rs .prose-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .prose-rs .prose-table tbody tr {
+    border-radius: var(--radius-lg);
+    background: var(--color-canvas-soft);
+    padding: calc(var(--spacing) * 4);
+  }
+
+  .prose-rs .prose-table tbody tr + tr {
+    margin-top: calc(var(--spacing) * 2);
+  }
+
+  .prose-rs .prose-table tbody th {
+    min-width: 0;
+    border: 0;
+    padding: 0 0 calc(var(--spacing) * 2);
+    font-size: var(--text-base);
+  }
+
+  .prose-rs .prose-table td {
+    display: flex;
+    gap: calc(var(--spacing) * 3);
+    min-width: 0;
+    border-top: 1px solid var(--color-line);
+    padding: calc(var(--spacing) * 2) 0;
+    text-align: left;
+  }
+
+  .prose-rs .prose-table td:last-child {
+    padding-bottom: 0;
+  }
+
+  .prose-rs .prose-table td::before {
+    content: attr(data-label);
+    flex: 0 0 34%;
+    color: var(--color-ink-muted);
+    font-weight: 500;
+  }
+
+  .prose-rs .prose-table .is-compact {
+    white-space: normal;
+  }
+}
