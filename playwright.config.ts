@@ -3,8 +3,8 @@ import { detectBasePath } from "./scripts/serve-out.mjs";
 
 // 1) out/(pnpm build 결과)를 GitHub Pages와 같은 basePath로 서빙해 실제 배포 화면을 검사한다.
 // 2) 공통 컴포넌트 미리보기(next dev, RS_PREVIEW=1 → app/**/page.preview.tsx)를 검사한다. 배포에는 포함되지 않는 화면.
-const PORT = 4173;
-const PREVIEW_PORT = 4174;
+const PORT = Number(process.env.PW_PORT ?? 4173);
+const PREVIEW_PORT = Number(process.env.PW_PREVIEW_PORT ?? 4174);
 const basePath: string = detectBasePath();
 const origin = `http://localhost:${PORT}`;
 const previewOrigin = `http://localhost:${PREVIEW_PORT}`;
