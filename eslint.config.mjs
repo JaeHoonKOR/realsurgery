@@ -5,6 +5,7 @@ const compat = new FlatCompat({ baseDirectory: import.meta.dirname });
 const config = [
   {
     ignores: [
+      ".claude/**",
       ".next/**",
       ".next-preview/**",
       "data/generated/**",

@@ -38,6 +38,7 @@
   ],
   "exclude": [
     "node_modules",
+    ".claude",
     "out",
     ".next/cache",
     ".next-preview/cache",

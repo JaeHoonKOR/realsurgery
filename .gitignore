@@ -15,3 +15,6 @@ secrets/
 reports/ads/inbox/*.csv
 reports/seo/inbox/*.csv
 .claude/settings.local.json
+
+# 에이전트 작업 트리
+.claude/worktrees/
