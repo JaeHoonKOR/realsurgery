@@ -1,7 +1,7 @@
 import { isPathBuilt } from "@/lib/built-routes";
 import { loadContent } from "@/lib/content";
 import { formatPriceRange, formatRecovery } from "@/lib/format";
-import { procedurePath } from "@/lib/routes";
+import { postPath, procedurePath } from "@/lib/routes";
 import { absoluteUrl } from "@/lib/seo";
 import { SITE } from "@/lib/site";
 
@@ -9,7 +9,7 @@ import { SITE } from "@/lib/site";
 export const dynamic = "force-static";
 
 export function GET(): Response {
-  const { procedures, categories } = loadContent();
+  const { procedures, categories, posts } = loadContent();
   const lines = [
     `# ${SITE.name}`,
     "",
@@ -25,6 +25,12 @@ export function GET(): Response {
         `- [${p.name}](${absoluteUrl(procedurePath(p.slug))}): 가격 ${formatPriceRange(p.price_low, p.price_high)}${p.price_note ? `(${p.price_note})` : ""}, 회복 ${formatRecovery(p.recovery_days)}. 최종 수정 ${p.updated_at}.`,
       );
     }
+    lines.push("");
+  }
+  const builtPosts = posts.filter((p) => isPathBuilt(postPath(p.slug)));
+  if (builtPosts.length) {
+    lines.push("## 칼럼", "");
+    for (const p of builtPosts) lines.push(`- [${p.title}](${absoluteUrl(postPath(p.slug))}): ${p.summary}`);
     lines.push("");
   }
   return new Response(`${lines.join("\n").trimEnd()}\n`, { headers: { "Content-Type": "text/plain; charset=utf-8" } });

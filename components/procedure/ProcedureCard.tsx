@@ -13,7 +13,7 @@ type Props = {
   /** 이 시술의 공개 가격이 있는 병원 수 */
   clinicCount?: number;
   /** select_procedure 의 from_page */
-  fromPage: "procedures" | "procedure";
+  fromPage: "procedures" | "procedure" | "blog";
   /** 부위 일러스트를 카드에 그릴지 — 부위 제목 아래 목록(P-02)처럼 이미 부위가 보이면 끈다 */
   showEmoji?: boolean;
 };

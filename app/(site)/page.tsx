@@ -3,14 +3,16 @@ import { MapPin } from "lucide-react";
 import { ConsultCta } from "@/components/common/ConsultCta";
 import { HeaderSearch } from "@/components/common/HeaderSearch";
 import { TrackedLink } from "@/components/common/TrackedLink";
+import { PostCard } from "@/components/blog/PostCard";
 import { HeroPriceCard, type HeroShowcase } from "@/components/home/HeroPriceCard";
 import { Emoji3D, categoryEmoji } from "@/components/ui/Emoji3D";
 import { Illustration } from "@/components/ui/Illustration";
 import { SectionHeading } from "@/components/ui/SectionHeading";
+import { sortPosts } from "@/lib/blog";
 import { isPathBuilt } from "@/lib/built-routes";
 import { getSearchItems, loadContent, type Clinic, type Procedure } from "@/lib/content";
 import { formatDate, formatDuration, formatManwon, formatPriceRange, formatRecovery } from "@/lib/format";
-import { ROUTES, clinicPath, procedurePath } from "@/lib/routes";
+import { ROUTES, clinicPath, postPath, procedurePath } from "@/lib/routes";
 import { chip, container, cx, section } from "@/lib/ui";
 
 // P-01 메인 (screen-spec 4절): 히어로(검색·CTA) · 부위별 바로가기 · 인기 시술 TOP 6 · 병원 · 하단 CTA
@@ -107,6 +109,9 @@ export default function HomePage() {
     return p ? [toShowcase(p, short, categoryById.get(p.category_id)?.name ?? "", clinics)] : [];
   });
   const procedureCount = procedures.length;
+  const latestPosts = sortPosts(content.posts)
+    .filter((p) => isPathBuilt(postPath(p.slug)))
+    .slice(0, 3);
   const clinicCount = clinics.length;
 
   return (
@@ -350,6 +355,27 @@ export default function HomePage() {
           </ol>
         </div>
       </section>
+
+      {/* 최신 칼럼 3 (screen-spec 4절 P-01) */}
+      {latestPosts.length > 0 && (
+        <section aria-labelledby="home-posts" data-testid="home-posts" className={cx("bg-canvas", section)}>
+          <div className={container}>
+            <SectionHeading
+              id="home-posts"
+              title="상담 전에 읽어 보세요"
+              description="상담 때 많이 묻는 질문을 칼럼으로 정리했습니다."
+              more={isPathBuilt(ROUTES.blog) ? { href: ROUTES.blog, label: "칼럼 전체" } : undefined}
+            />
+            <ul className="mt-8 grid gap-4 md:grid-cols-3">
+              {latestPosts.map((post) => (
+                <li key={post.id}>
+                  <PostCard post={post} />
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+      )}
 
       {/* 정보 원칙 — 출처·갱신일 실물 */}
       <section aria-labelledby="home-trust" data-testid="home-trust" className={cx(container, section)}>
