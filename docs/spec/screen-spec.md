@@ -84,7 +84,7 @@ URL 규칙: 소문자·하이픈. slug는 **한글 URL 허용**(네이버 검색
 | 히어로 | H1 "시술 가격·회복기간, 한 번에 비교", 시술 검색창, CTA | 검색 자동완성 → P-03 | procedures.name | search, click_cta(location=hero) |
 | 부위별 바로가기 | 눈·코·윤곽·리프팅·피부·가슴 아이콘 6개 | P-02(또는 대표 시술 P-03) | categories | select_category |
 | 인기 시술 TOP 6 | 카드(썸네일, 시술명, 가격 범위, 회복기간) | 주간 조회수 자동 정렬 | procedures + view_count | select_procedure |
-| 추천 병원 | 카드(병원명, 지역, 대표 시술 3개, 프리미엄 뱃지) | 프리미엄 상단 고정, 심의번호 표기 | clinics(is_premium) | select_clinic |
+| 병원 정보 | 카드(병원명, 지역, 대표 시술 3개) | "추천"·"제휴" 표현 금지(8절 폴백). is_partner 병원만 프리미엄 뱃지·심의번호 표기 | clinics(is_partner, is_premium) | select_clinic |
 | 최신 칼럼 3 | 제목·요약·날짜 | P-10 | posts | select_post |
 | 하단 CTA | 상담 예약 블록 | P-06 | — | click_cta(location=footer) |
 
@@ -163,7 +163,7 @@ SEO·AEO 핵심 화면. 첫 문단에 직답 2~3문장, 본문은 질문형 H2.
 
 ## 5. 전환 이벤트 및 GA4/GTM 트래킹 설계
 
-전환은 **generate_lead 1개**로 통일, 전화·카카오톡은 보조 전환. 모든 이벤트는 dataLayer.push → GTM → GA4·메타 픽셀.
+전환은 **generate_lead 1개**로 통일, 전화·카카오톡은 보조 전환. 모든 이벤트는 dataLayer.push → GTM → GA4·메타 픽셀. 총 21개 이벤트(전환 1 + 보조 3 + 행동 17).
 
 퍼널: 유입 → view_procedure → view_clinic → form_start → generate_lead → lead_qualified(오프라인).
 
@@ -182,6 +182,14 @@ SEO·AEO 핵심 화면. 첫 문단에 직답 2~3문장, 본문은 질문형 H2.
 | scroll_depth | 25/50/75/100% | percent, page_type | — | — |
 | search | 메인 검색 | search_term | — | Search |
 | lead_qualified | A-01 "예약확정" 변경 | lead_id, value=200000 | 보조(오프라인) | Schedule (CAPI) |
+| select_category | P-01 부위 아이콘 클릭 | category | — | — |
+| select_procedure | 시술 카드 클릭 | procedure_id, from_page | — | — |
+| select_clinic | 병원 카드·링크 클릭 | clinic_id, from | — | — |
+| select_post | 칼럼 카드 클릭 | post_id | — | — |
+| expand_faq | FAQ 아코디언 열기 | procedure_id, question_index | — | — |
+| click_map | 지도·길찾기 클릭 | clinic_id | — | — |
+| kakao_add | P-07 카카오 채널 추가 | — | — | — |
+| experiment_variant | P-12 로드 시 A/B 배정 | campaign, variant | — | — |
 
 ### GTM 구성
 - 컨테이너 1개, 작업공간 dev/live. 태그 명명: `GA4 - Event - generate_lead`, `Meta - Lead`.
@@ -208,7 +216,7 @@ SEO·AEO 핵심 화면. 첫 문단에 직답 2~3문장, 본문은 질문형 H2.
 ### 테크니컬 SEO
 | 항목 | 규칙 |
 | --- | --- |
-| 렌더링 | Next.js SSR/ISR — 콘텐츠 페이지는 서버 HTML |
+| 렌더링 | Next.js 정적 export — 모든 페이지가 빌드 시 완성 HTML (네이버봇 JS 렌더링 불필요) |
 | URL | 한글 slug 허용, 영문 별칭 301. 쿼리 파라미터는 canonical |
 | title | P-03: `{시술명} 가격·회복기간·부작용 총정리 (2026) | 리얼성형` — 60자 이내 |
 | description | 직답 1문장 + 가격 범위, 120~150자 |
@@ -243,7 +251,7 @@ SEO·AEO 핵심 화면. 첫 문단에 직답 2~3문장, 본문은 질문형 H2.
 | 최적화 목표 | Lead. 리드 50건 미만은 InitiateCheckout으로 학습 |
 | 랜딩 | P-12, 소재 헤드라인 = 랜딩 H1 |
 | Pixel | GTM 경유 PageView·ViewContent·InitiateCheckout·Lead·Contact, event_id 부여 |
-| CAPI | Route Handler에서 Lead·Schedule 전송, event_id 중복 제거, fbc·fbp·해시 전화번호 |
+| CAPI | Edge Function `submit-lead`(Lead)·`qualify-lead`(Schedule)에서 전송, event_id 중복 제거, fbc·fbp·해시 전화번호 |
 | 리타게팅 | view_procedure 7일 / form_start 미제출 3일 / 기존 리드 제외 |
 | 유사 타겟 | lead_qualified 1% (리드 100건 후) |
 | 소재 규칙 | 정보형만: "가격·회복기간 비교표" 식. 병원명·효과·전후 사진·신체 비하·개인 속성 언급 0. 첫 주는 트래픽 목표 소액(1만 원/일)으로 계정 워밍업 후 Lead 목표 전환. 거부 시 폴백: 네이버 검색광고 + 인스타 오가닉 |

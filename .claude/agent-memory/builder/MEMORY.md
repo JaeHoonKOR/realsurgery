@@ -1,0 +1,1 @@
+- [Env constraints](project_env_constraints.md) — Node 20.12 vite 6 override, Bash guard ($?, env prefix, rm), no PDF Read, medical source sites, evidence scripts in scripts/ not test-results/, box-value check, LH fonts

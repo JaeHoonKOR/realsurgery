@@ -1,0 +1,2 @@
+- [Procedure content checks](feedback_procedure_content_checks.md) — box values vs source *meaning*; fact-support keyword false negatives (mutation-probe checkTripleHtml); test-results/ scratch
+- [Bash env for reviews](reference_bash_env.md) — `pnpm --dir C:/rs`, plain git; /preview/ screens; full touch-target probe; out/ probe via serve-out startServer + route abort; node fetch for clinic-name check

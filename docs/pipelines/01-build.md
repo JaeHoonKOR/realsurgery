@@ -20,6 +20,7 @@
 
 ## VERIFY (전부 통과해야 REPORT — `docs/QUALITY.md` 1·2·3절 포함)
 - [ ] QUALITY.md 1절 자동 게이트 전부 통과 (`pnpm lh`, `pnpm test`, `pnpm test:a11y`, `pnpm test:e2e`)
+- [ ] **QUALITY.md 3-1 비주얼 필수 요건** 해당 화면 행 전부 구현 (이미지·아이콘·다이어그램·차트). 375×667 스크롤 구간마다 텍스트 외 요소 ≥ 1
 - [ ] QUALITY.md 2절 상태(로딩·빈·에러·성공) 구현 + 스크린샷
 - [ ] 스크린샷 `backlog/log/screens/<ID>-375.png`, `<ID>-1280.png` 저장 후 **직접 Read로 열어** 3절 디자인 기준 자가 점검, 위반 시 수정
 - [ ] `pnpm lint && pnpm typecheck && pnpm build` 통과 (`out/`에 해당 화면 HTML 생성 확인)
