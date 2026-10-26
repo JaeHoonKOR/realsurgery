@@ -1,5 +1,13 @@
 # 리얼성형 — 에이전트 작업 규칙
 
+## 개선 루프 (/improve) — 기본 운영 방식 (2026-10-27~)
+- 목표·채점·가드레일: `docs/loop/GOAL.md` (8개 영역 0~5점, 목표 전 영역 ≥4·A ≥4.5). 구현 절차: `docs/loop/IMPLEMENT.md`.
+- 1사이클 = `/improve`(`.claude/commands/improve.md`): 감사(auditor, `pnpm audit:site` + 스크린샷 육안 채점) → 항목 ≤3 계획 → lane 에이전트 병렬 구현(작업 트리) → 독립 reviewer → `feat/m1-flow` 병합 → 통합 게이트 → 재감사 → push.
+- 실행: `scripts/loop/improve.ps1`(1회), `scripts/loop/schedule.ps1 -Hours 3`(예약), `scripts/loop/unschedule.ps1`(해제). 시작 방법: `docs/loop/START.md`.
+- 지출은 `backlog/budget.md` 승인 범위 안에서만. 점수 기록 `backlog/scorecard.md`. 작업 큐 `backlog/TASKS.md` "개선 루프" 절.
+- **main 반영·배포는 소유자만.** 루프는 `feat/m1-flow` 에만 push 한다.
+- 아래 "단일 진실 소스·루프 프로토콜"은 레거시 `/loop`(스펙 기반 구축) 규칙이다. `/improve` 와 충돌하면 `/improve` 문서가 우선한다. 절대 규칙·한글 경로·인코딩·mock 규칙은 그대로 적용한다.
+
 ## 품질 원칙
 - 배포보다 **로컬 품질**이 우선. `docs/QUALITY.md`가 모든 화면의 완료 기준이며, 동작만 하는 화면은 미완성이다.
 - 눈으로 본다: 리뷰어는 스크린샷을 Read로 열어 판정한다. 수치 통과 + 외관 미달 = 반려.

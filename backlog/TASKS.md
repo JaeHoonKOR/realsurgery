@@ -1,5 +1,25 @@
 # TASKS
 
+## 개선 루프 (/improve) — 기본 운영 방식
+형식: `- [status] I-### | lane | 우선순위 | 제목 | 수용 기준 | 비고` · lane: ui / content / seo / tracking / assets / perf
+상태: todo / doing / review / done / blocked / needs-approval
+
+- [todo] I-001 | assets | P0 | 이미지 1차 배치 생성·검수·반영(승인 B-001, 41장) | 앵커(ic-eye·proc-double-eyelid·clinic-danhaneul·hero-obj-a/b) 먼저 확정 → 나머지; asset-plan 9절 QA 통과본만 finalize; 원장 기록; 홈·P-03·P-04·P-05 스크린샷에서 폴백 대신 실제 이미지 | 키: C:/rs/.env.local(--env-file), request.json 수정 금지
+- [todo] I-002 | ui | P0 | 시술 가이드 텍스트 벽 제거(감사 20261027-0805: 45곳) | 375·1280 모두 `text-wall` 0(시술 10편), 섹션마다 도표·아이콘·이미지·접기 중 하나, 본문 SEO 문장은 HTML 에 유지 | 선행 없음(이미지 없어도 도표·아이콘으로 해결)
+- [todo] I-003 | ui | P1 | 상담 폼(P-06) 1280 좌우 공백 해소 — 2열(폼 + 안내 패널) | 1280 스크린샷에서 좌우 공백 없음, 모바일 변화 없음, consult E2E 통과 | consult-desk 이미지 없으면 아이콘·안내 패널로
+- [todo] I-004 | perf | P1 | /clinics/새솔결의원 모바일 CLS 0.083 → ≤0.05 | 감사 CLS ≤0.05(375), 다른 병원 화면 회귀 없음 | —
+- [todo] I-005 | seo | P2 | description 120~150자 미달 12곳(/clinics/, /blog/ 등) 보강 | 감사 `description-length` 0건 | —
+
+### 사람 확인 필요 (개선 루프)
+- [needs-approval] H-001 | 이미지 2·3차 배치 지출(B-002 $3.18, B-003 $2.72) | 1차 결과 보고 후 결정
+- [todo] H-002 | GTM·GA4·메타 픽셀 무료 계정 생성 → ID 를 `.env.local`·GitHub Variables 에 입력(`NEXT_PUBLIC_GTM_ID` 등) | 측정(F) 4점 이상의 전제: 실제 GTM 로드·DebugView 캡처
+- [todo] H-003 | Search Console·네이버 서치어드바이저 등록(인증 메타 env) · sitemap 제출 | D 5점 전제
+- [todo] H-004 | 커스텀 도메인 구매·연결(T-000) | robots.txt 가 도메인 루트에서 유효해짐
+- [todo] H-005 | 배포(main 반영) 승인 — 루프는 feat/m1-flow 에만 push | 소유자가 원할 때 PR 로 반영
+
+---
+## 레거시 (스펙 기반 /loop, 2026-10-25까지) — 아래는 기록용
+
 상태: todo / doing / review / done / blocked / needs-approval / needs-key / spec-question
 `[human-gate]` 제목 태그 = 리뷰 통과 후에도 사람이 done으로 바꿈
 형식: `- [status] T-### | lane | 우선순위 | 제목 | 선행 | 비고`
