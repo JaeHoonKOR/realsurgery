@@ -27,6 +27,22 @@ const TYPES = {
 };
 const COMPRESSIBLE = new Set([".html", ".js", ".css", ".json", ".txt", ".xml", ".svg", ".map"]);
 
+/**
+ * Playwright·미리보기 기본 포트. 저장소 본체는 4173/4174, 에이전트 작업 트리(.claude/worktrees/<이름>)는 경로 해시로
+ * 4200~4799 의 다른 짝을 쓴다 → /improve 가 구현 에이전트를 병렬로 돌려도 다른 작업 트리의 서버를 재사용(reuseExistingServer)하지 않는다.
+ */
+export function defaultPorts(cwd = process.cwd()) {
+  const norm = String(cwd).replace(/\\/g, "/");
+  if (!/\/\.claude\/worktrees\/[^/]+/.test(norm)) return { serve: DEFAULT_PORT, preview: DEFAULT_PORT + 1 };
+  let h = 0x811c9dc5;
+  for (const ch of norm.toLowerCase()) {
+    h ^= ch.charCodeAt(0);
+    h = Math.imul(h, 0x01000193) >>> 0;
+  }
+  const serve = 4200 + (h % 300) * 2;
+  return { serve, preview: serve + 1 };
+}
+
 /** 실제 빌드 산출물에서 basePath를 읽는다(빌드 설정과 항상 일치). */
 export function detectBasePath(outDir = OUT_DIR) {
   const index = path.join(outDir, "index.html");

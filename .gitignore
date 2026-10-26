@@ -21,3 +21,6 @@ reports/seo/inbox/*.csv
 
 # AI 이미지 후보(검토 전)
 .gen-candidates/
+
+# 감사 스크린샷(로컬 전용)
+reports/audit/*/screens/
