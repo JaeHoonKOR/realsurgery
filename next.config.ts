@@ -24,8 +24,15 @@ const nextConfig: NextConfig = {
   devIndicators: false,
   // 상위 폴더(사용자 홈)의 다른 lockfile 을 워크스페이스 루트로 오인하지 않도록 저장소 루트 고정
   outputFileTracingRoot: process.cwd(),
-  // 정적 export는 이미지 최적화 서버가 없다. 원본을 WebP/AVIF로 미리 변환해 둔다(docs/IMAGES.md).
-  images: { unoptimized: true },
+  // 정적 export는 이미지 최적화 서버가 없다. 생성 이미지는 scripts/finalize-images.mjs 가 640·1024·1600 WebP 변형을 미리 만들고,
+  // 커스텀 로더(lib/image-loader.ts)가 srcset 폭을 그 파일에 연결한다(docs/design/asset-plan.md 10절).
+  // deviceSizes = 변형 폭 그대로(srcset 표기 = 실제 파일 폭). 고정 크기 아이콘(Icon3D·Emoji3D)은 unoptimized 라 로더를 거치지 않는다.
+  images: {
+    loader: "custom",
+    loaderFile: "./lib/image-loader.ts",
+    deviceSizes: [640, 1024, 1600],
+    imageSizes: [],
+  },
   env: {
     NEXT_PUBLIC_BASE_PATH: basePath,
   },

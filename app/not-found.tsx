@@ -3,7 +3,7 @@ import Link from "next/link";
 import { SiteFooter } from "@/components/common/SiteFooter";
 import { SiteHeader } from "@/components/common/SiteHeader";
 import { SkipLink } from "@/components/common/SkipLink";
-import { Emoji3D } from "@/components/ui/Emoji3D";
+import { Icon3D } from "@/components/ui/Icon3D";
 import { isPathBuilt } from "@/lib/built-routes";
 import { ROUTES } from "@/lib/routes";
 import { btn, cx } from "@/lib/ui";
@@ -26,7 +26,7 @@ export default function NotFound() {
       <SiteHeader />
       <main id="main" tabIndex={-1} className="flex flex-1 items-center focus:outline-none">
         <div className="mx-auto w-full max-w-form px-5 py-20 text-center md:py-28">
-          <Emoji3D name="search" size={80} className="mx-auto" />
+          <Icon3D name="ic-search" size={96} className="mx-auto" />
           <h1 className="mt-6 text-h1 font-bold tracking-tighter text-ink">페이지를 찾을 수 없습니다</h1>
           <p className="mt-3 text-lg text-ink-muted">
             주소가 바뀌었거나 삭제된 페이지입니다. 아래에서 찾으시는 정보를 다시 골라 주세요.

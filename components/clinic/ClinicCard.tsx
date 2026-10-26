@@ -2,12 +2,14 @@
 
 import { BadgeCheck, Check, MapPin } from "lucide-react";
 import { TrackedLink } from "@/components/common/TrackedLink";
-import { Emoji3D } from "@/components/ui/Emoji3D";
+import { ClinicPhoto } from "@/components/clinic/ClinicPhoto";
+import { Icon3D } from "@/components/ui/Icon3D";
 import { PriceBar } from "@/components/ui/PriceBar";
 import { formatMonthDay, lowestOffer } from "@/lib/clinic/view";
 import type { ClinicCardData, ProcedureOption } from "@/lib/clinic/types";
 import { MAX_COMPARE } from "@/lib/clinic/compare";
 import { formatManwon, formatPriceRange } from "@/lib/format";
+import { clinicImageId, hasAsset } from "@/lib/gen-assets";
 import { chip, cx } from "@/lib/ui";
 
 type Props = {
@@ -18,15 +20,18 @@ type Props = {
   selected: boolean;
   blocked: boolean;
   onToggle: (id: string) => void;
+  /** 커버 사진을 먼저 받을지(목록 첫 카드) */
+  priorityPhoto?: boolean;
 };
 
 const MAX_CHIPS = 3;
 
 /**
  * P-04 병원 카드 — 메인 병원 카드와 같은 모양(병원 타일·이름·지역·시술 칩·시작가) + 비교 담기.
+ * 병원 예시 사진(clinic-<id>)이 있으면 타일 대신 상단 16:9 커버('예시 이미지' 표기).
  * 카드 전체를 누르면 상세로 간다(제목 링크를 카드 크기로 늘림). 비교 체크박스는 그 위에 따로 눌린다.
  */
-export function ClinicCard({ clinic, procedures, focusProcedure, selected, blocked, onToggle }: Props) {
+export function ClinicCard({ clinic, procedures, focusProcedure, selected, blocked, onToggle, priorityPhoto }: Props) {
   const focusOffer = focusProcedure ? clinic.offers.find((o) => o.procedure_id === focusProcedure.id) : undefined;
   const low = lowestOffer(clinic.offers);
   const lowName = low ? procedures.get(low.procedure_id)?.name : null;
@@ -35,6 +40,20 @@ export function ClinicCard({ clinic, procedures, focusProcedure, selected, block
     .filter((p): p is { id: string; name: string } => Boolean(p.name));
   // 필터한 시술을 칩 맨 앞에
   const ordered = focusProcedure ? [...names.filter((n) => n.id === focusProcedure.id), ...names.filter((n) => n.id !== focusProcedure.id)] : names;
+  const photo = hasAsset(clinicImageId(clinic.id));
+  // 사진이 있으면 카드가 길어지므로 시술 칩은 2개 + N(asset-plan 7절)
+  const maxChips = photo ? 2 : MAX_CHIPS;
+  const badges = (clinic.is_premium || clinic.is_demo) && (
+    <div className={cx("flex flex-wrap gap-1.5", !photo && "justify-end")}>
+      {clinic.is_premium && (
+        <span className={cx(chip.base, chip.brand, "h-7 text-xs")}>
+          <BadgeCheck aria-hidden="true" className="size-4" />
+          프리미엄
+        </span>
+      )}
+      {clinic.is_demo && <span className={cx(chip.base, chip.outline, "h-7 text-xs")}>예시 데이터</span>}
+    </div>
+  );
   const checkboxId = `compare-${clinic.id}`;
   const msgId = `compare-msg-${clinic.id}`;
 
@@ -45,25 +64,26 @@ export function ClinicCard({ clinic, procedures, focusProcedure, selected, block
       data-selected={selected || undefined}
       className={cx(
         "relative flex h-full flex-col rounded-lg bg-surface p-6 ring-2 transition-shadow",
+        photo && "overflow-hidden",
         selected ? "ring-brand" : "ring-transparent hover:shadow-lg",
       )}
     >
-      <div className="flex items-center justify-between gap-3">
-        <span className="flex size-12 items-center justify-center rounded-md bg-canvas">
-          <Emoji3D name="hospital" size={32} />
-        </span>
-        <div className="flex flex-wrap justify-end gap-1.5">
-          {clinic.is_premium && (
-            <span className={cx(chip.base, chip.brand, "h-7 text-xs")}>
-              <BadgeCheck aria-hidden="true" className="size-4" />
-              프리미엄
-            </span>
-          )}
-          {clinic.is_demo && <span className={cx(chip.base, chip.outline, "h-7 text-xs")}>예시 데이터</span>}
+      {photo ? (
+        <>
+          {/* 커버는 카드 패딩 밖까지(상단 전폭) */}
+          <ClinicPhoto clinicId={clinic.id} priority={priorityPhoto} className="-mx-6 -mt-6 mb-5" />
+          {badges}
+        </>
+      ) : (
+        <div className="flex items-center justify-between gap-3">
+          <span className="flex size-12 items-center justify-center rounded-md bg-canvas">
+            <Icon3D name="ic-clinic" size={32} />
+          </span>
+          {badges}
         </div>
-      </div>
+      )}
 
-      <h3 className="mt-4 text-h3 font-bold tracking-tight text-ink">
+      <h3 className={cx("text-h3 font-bold tracking-tight text-ink", photo ? (badges ? "mt-3" : "") : "mt-4")}>
         {clinic.href ? (
           <TrackedLink
             href={clinic.href}
@@ -84,7 +104,7 @@ export function ClinicCard({ clinic, procedures, focusProcedure, selected, block
       </p>
 
       <ul className="mt-4 flex flex-wrap gap-1.5" aria-label="공개 시술">
-        {ordered.slice(0, MAX_CHIPS).map((p) => (
+        {ordered.slice(0, maxChips).map((p) => (
           <li
             key={p.id}
             className={cx(chip.base, "h-7 text-xs", p.id === focusProcedure?.id ? chip.brand : chip.neutral)}
@@ -92,9 +112,9 @@ export function ClinicCard({ clinic, procedures, focusProcedure, selected, block
             {p.name}
           </li>
         ))}
-        {ordered.length > MAX_CHIPS && (
+        {ordered.length > maxChips && (
           <li className={cx(chip.base, chip.neutral, "h-7 text-xs")}>
-            <span className="sr-only">외 </span>+{ordered.length - MAX_CHIPS}
+            <span className="sr-only">외 </span>+{ordered.length - maxChips}
           </li>
         )}
       </ul>

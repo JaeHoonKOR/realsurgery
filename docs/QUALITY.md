@@ -25,7 +25,7 @@
 - 긴 텍스트·긴 병원명·가격 미정(null) 같은 경계값에서 레이아웃이 깨지지 않음.
 
 ## 3. 디자인 기준 (리뷰어가 스크린샷으로 판정)
-- 방향: **토스형 클린 SaaS** — 흰 바탕·회색 밴드·넓은 여백·블루 1색 강조·3D 일러스트(Fluent Emoji 3D, MIT, `components/ui/Emoji3D`).
+- 방향: **토스형 클린 SaaS** — 흰 바탕·회색 밴드·넓은 여백·블루 1색 강조·3D 일러스트(`components/ui/Icon3D` — "Porcelain & Blue" 생성 아이콘, 파일이 들어오기 전에는 Fluent Emoji 3D(MIT) 폴백. 이미지 자리·규칙은 `docs/design/asset-plan.md`).
 - 디자인 토큰 1곳(`styles/tokens.css`): 중립·블루·상태색만, 간격 4px 배수, 모서리 위계(sm 칩·md 버튼/입력·lg 카드·xl 패널), 그림자는 떠 있는 요소만. 토큰 외 임의 값 금지(`pnpm lint`의 check-tokens).
 - 시그니처: 가격 범위 바(`components/ui/PriceBar`) — 가격 비교는 같은 눈금 위 막대로 보여 준다.
 - 타이포: Pretendard Variable, 본문 16px/1.7, display·h1·h2·h3 위계, 제목 자간 촘촘하게, 숫자 `tabular-nums`. 한글 줄바꿈 `word-break: keep-all`.

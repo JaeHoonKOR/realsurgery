@@ -1,21 +1,21 @@
 /**
  * P-10 칼럼 — 정렬·읽는 시간·관련 시술·JSON-LD (Node·빌드 전용 데이터 가공).
  */
-import type { EmojiName } from "@/components/ui/Emoji3D";
+import type { IconName } from "@/components/ui/Icon3D";
 import type { Author, Post, Procedure } from "@/lib/content";
 import { plainText } from "@/lib/procedure/markdown";
 import { absoluteUrl } from "@/lib/seo";
 import { SITE } from "@/lib/site";
 
-/** 칼럼 표지 일러스트(content/images/prompts.json post-*)와 대체 이모지 */
-export const POST_COVER: Record<string, { image: string; fallback: EmojiName }> = {
-  "double-eyelid-consult-questions": { image: "post-consult-questions", fallback: "memo" },
-  "lower-fat-vs-lower-blepharoplasty": { image: "post-lower-eye-compare", fallback: "eye" },
-  "reading-surgery-quotes": { image: "post-reading-quotes", fallback: "money" },
+/** 칼럼 표지 일러스트(content/images/prompts.json post-*)와 이미지가 없을 때의 3D 아이콘 */
+export const POST_COVER: Record<string, { image: string; fallback: IconName }> = {
+  "double-eyelid-consult-questions": { image: "post-consult-questions", fallback: "ic-memo" },
+  "lower-fat-vs-lower-blepharoplasty": { image: "post-lower-eye-compare", fallback: "ic-eye" },
+  "reading-surgery-quotes": { image: "post-reading-quotes", fallback: "ic-quote" },
 };
 
-export function postCover(id: string): { image: string; fallback: EmojiName } {
-  return POST_COVER[id] ?? { image: `post-${id}`, fallback: "book" };
+export function postCover(id: string): { image: string; fallback: IconName } {
+  return POST_COVER[id] ?? { image: `post-${id}`, fallback: "ic-source" };
 }
 
 /** 최신순(발행일 → 수정일) */

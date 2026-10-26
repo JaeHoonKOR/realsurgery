@@ -4,14 +4,18 @@ import { ConsultCta } from "@/components/common/ConsultCta";
 import { HeaderSearch } from "@/components/common/HeaderSearch";
 import { TrackedLink } from "@/components/common/TrackedLink";
 import { PostCard } from "@/components/blog/PostCard";
+import { ClinicPhoto } from "@/components/clinic/ClinicPhoto";
+import { HERO_CUTOUT, HeroCutoutBack, HeroCutoutFront } from "@/components/home/HeroCutouts";
 import { HeroPriceCard, type HeroShowcase } from "@/components/home/HeroPriceCard";
-import { Emoji3D, categoryEmoji } from "@/components/ui/Emoji3D";
+import { ProcedureThumb } from "@/components/procedure/ProcedureThumb";
+import { Icon3D, categoryIcon } from "@/components/ui/Icon3D";
 import { Illustration } from "@/components/ui/Illustration";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { sortPosts } from "@/lib/blog";
 import { isPathBuilt } from "@/lib/built-routes";
 import { getSearchItems, loadContent, type Clinic, type Procedure } from "@/lib/content";
 import { formatDate, formatDuration, formatManwon, formatPriceRange, formatRecovery } from "@/lib/format";
+import { clinicImageId, hasAsset, procedureImageId } from "@/lib/gen-assets";
 import { ROUTES, clinicPath, postPath, procedurePath } from "@/lib/routes";
 import { chip, container, cx, section } from "@/lib/ui";
 
@@ -24,23 +28,23 @@ export const metadata: Metadata = {
 /** 인기 시술 칩(히어로 검색 아래) — 조회수 상위 */
 const QUICK_COUNT = 4;
 
-/** 이용 흐름 3단계 (일러스트: content/images/prompts.json flow-*) */
+/** 이용 흐름 3단계 (일러스트: content/images/prompts.json flow-*, 없으면 3D 아이콘 타일) */
 const FLOW = [
   {
     id: "flow-compare",
-    fallback: "search",
+    fallback: "ic-search",
     title: "가격·회복기간 비교",
     body: "시술별 공개 가격 범위와 회복 일정을 출처와 함께 확인합니다.",
   },
   {
     id: "flow-request",
-    fallback: "clipboard",
+    fallback: "ic-guide",
     title: "상담 신청",
     body: "관심 시술과 희망 지역·시기, 연락처만 남기면 됩니다. 신청 비용은 들지 않습니다.",
   },
   {
     id: "flow-connect",
-    fallback: "phone",
+    fallback: "ic-callback",
     title: "상담 가이드 받기",
     body: "상담 때 확인할 질문과 견적 체크리스트, 회복 일정을 정리해 드립니다.",
   },
@@ -68,7 +72,7 @@ function toShowcase(p: Procedure, shortName: string, categoryName: string, clini
     name: p.name,
     shortName,
     category: categoryName,
-    emoji: categoryEmoji(p.category_id),
+    icon: categoryIcon(p.category_id),
     priceLow: p.price_low,
     priceHigh: p.price_high,
     scaleMin: p.price_low ?? 0,
@@ -120,7 +124,14 @@ export default function HomePage() {
     <>
       {/* 히어로 */}
       <section data-testid="home-hero" aria-labelledby="home-title" className="overflow-hidden">
-        <div className={cx(container, "grid gap-12 pt-10 pb-16 md:grid-cols-12 md:items-center md:gap-10 md:pt-16 md:pb-24")}>
+        <div
+          className={cx(
+            container,
+            "grid gap-12 pt-10 pb-16 md:grid-cols-12 md:items-center md:gap-10 md:pb-24",
+            // 카드 우상단 컷아웃이 카드 위로 올라오는 만큼 위 여백(없으면 지금 그대로)
+            hasAsset(HERO_CUTOUT) ? "md:pt-24" : "md:pt-16",
+          )}
+        >
           <div className="md:col-span-6">
             <h1 id="home-title" className="text-display font-bold tracking-tighter text-ink">
               시술 가격·회복기간,
@@ -158,8 +169,9 @@ export default function HomePage() {
           <div className="relative md:col-span-6">
             <div aria-hidden="true" className="absolute -inset-x-5 -inset-y-6 rounded-xl bg-canvas md:-inset-x-8 md:-inset-y-10" />
             <div className="relative md:px-4">
+              <HeroCutoutBack />
               <HeroPriceCard items={showcase} />
-              <Emoji3D name="sparkles" size={56} className="absolute -top-7 -right-1 md:-right-3" />
+              <HeroCutoutFront />
             </div>
           </div>
         </div>
@@ -179,7 +191,7 @@ export default function HomePage() {
               const href = isPathBuilt(ROUTES.procedures) ? listHref : first ? procedurePath(first.slug) : null;
               const inner = (
                 <>
-                  <Emoji3D name={categoryEmoji(cat.id)} size={56} />
+                  <Icon3D name={categoryIcon(cat.id)} size={56} />
                   <span className="mt-3 font-bold text-ink">{cat.name}</span>
                   <span className="text-xs text-ink-muted">시술 {items.length}개</span>
                 </>
@@ -218,18 +230,33 @@ export default function HomePage() {
             {popular.slice(0, 6).map((p) => {
               const cat = categoryById.get(p.category_id);
               const href = procedurePath(p.slug);
+              // 시술 이미지가 있으면 상단 16:10 썸네일 + 태그라인 1줄(asset-plan 7절), 없으면 부위 아이콘 타일 + 2줄
+              const thumb = hasAsset(procedureImageId(p.id));
+              const catChip = cat && <span className={cx(chip.base, chip.neutral, "h-6 px-2 text-xs")}>{cat.name}</span>;
               const body = (
                 <>
-                  <div className="flex items-start justify-between">
-                    <span className="flex size-14 items-center justify-center rounded-md bg-canvas">
-                      <Emoji3D name={categoryEmoji(p.category_id)} size={40} />
-                    </span>
-                    {cat && <span className={cx(chip.base, chip.neutral, "h-6 px-2 text-xs")}>{cat.name}</span>}
-                  </div>
-                  <div className="mt-4 flex items-center gap-2">
-                    <h3 className="text-h3 font-bold tracking-tight text-ink">{p.name}</h3>
-                  </div>
-                  <p className="mt-1 line-clamp-2 text-sm text-ink-muted">{p.extras?.tagline ?? p.summary}</p>
+                  {thumb ? (
+                    <>
+                      <ProcedureThumb procedureId={p.id} className="-mx-6 -mt-6 mb-5" />
+                      <div className="flex flex-wrap items-center gap-2">
+                        <h3 className="text-h3 font-bold tracking-tight text-ink">{p.name}</h3>
+                        {catChip}
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="flex items-start justify-between">
+                        <span className="flex size-14 items-center justify-center rounded-md bg-canvas">
+                          <Icon3D name={categoryIcon(p.category_id)} size={40} />
+                        </span>
+                        {catChip}
+                      </div>
+                      <div className="mt-4 flex items-center gap-2">
+                        <h3 className="text-h3 font-bold tracking-tight text-ink">{p.name}</h3>
+                      </div>
+                    </>
+                  )}
+                  <p className={cx("mt-1 text-sm text-ink-muted", thumb ? "line-clamp-1" : "line-clamp-2")}>{p.extras?.tagline ?? p.summary}</p>
                   <p className="mt-5 text-lg font-bold text-ink tabular-nums">
                     {formatPriceRange(p.price_low, p.price_high)}
                     {p.price_note && <span className="ml-1 text-sm font-medium text-ink-subtle">{p.price_note}</span>}
@@ -246,7 +273,7 @@ export default function HomePage() {
                   </dl>
                 </>
               );
-              const cardClass = "flex h-full flex-col rounded-lg bg-surface p-6";
+              const cardClass = cx("flex h-full flex-col rounded-lg bg-surface p-6", thumb && "overflow-hidden");
               return (
                 <li key={p.id} className="w-72 shrink-0 snap-start sm:w-auto">
                   {isPathBuilt(href) ? (
@@ -281,27 +308,39 @@ export default function HomePage() {
             const low = lowestOffer(c, byId);
             const offered = c.procedures.map((o) => byId.get(o.procedure_id)?.name).filter(Boolean) as string[];
             const href = clinicPath(c.slug);
+            // 병원 예시 사진이 있으면 상단 16:9 커버('예시 이미지' 표기), 없으면 병원 아이콘 타일
+            const photo = hasAsset(clinicImageId(c.id));
+            // 사진이 있으면 카드가 길어지므로 시술 칩은 2개 + N(asset-plan 7절)
+            const maxChips = photo ? 2 : 3;
+            const demoChip = c.is_demo && <span className={cx(chip.base, chip.outline, "h-7 bg-surface text-xs")}>예시 데이터</span>;
             const body = (
               <>
-                <div className="flex items-center justify-between gap-3">
-                  <span className="flex size-12 items-center justify-center rounded-md bg-surface">
-                    <Emoji3D name="hospital" size={32} />
-                  </span>
-                  {c.is_demo && <span className={cx(chip.base, chip.outline, "h-7 bg-surface text-xs")}>예시 데이터</span>}
-                </div>
-                <h3 className="mt-4 text-h3 font-bold tracking-tight text-ink">{c.name}</h3>
+                {photo ? (
+                  <>
+                    <ClinicPhoto clinicId={c.id} className="-mx-6 -mt-6 mb-5" />
+                    {demoChip && <div className="flex">{demoChip}</div>}
+                  </>
+                ) : (
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="flex size-12 items-center justify-center rounded-md bg-surface">
+                      <Icon3D name="ic-clinic" size={32} />
+                    </span>
+                    {demoChip}
+                  </div>
+                )}
+                <h3 className={cx("text-h3 font-bold tracking-tight text-ink", photo ? demoChip && "mt-3" : "mt-4")}>{c.name}</h3>
                 <p className="mt-1 flex items-center gap-1 text-sm text-ink-muted">
                   <MapPin aria-hidden="true" className="size-4" />
                   {c.region}
                 </p>
                 <ul className="mt-4 flex flex-wrap gap-1.5" aria-label="공개 시술">
-                  {offered.slice(0, 3).map((name) => (
+                  {offered.slice(0, maxChips).map((name) => (
                     <li key={name} className={cx(chip.base, "h-7 bg-surface text-xs text-ink-muted")}>
                       {name}
                     </li>
                   ))}
-                  {offered.length > 3 && (
-                    <li className={cx(chip.base, "h-7 bg-surface text-xs text-ink-muted")}>+{offered.length - 3}</li>
+                  {offered.length > maxChips && (
+                    <li className={cx(chip.base, "h-7 bg-surface text-xs text-ink-muted")}>+{offered.length - maxChips}</li>
                   )}
                 </ul>
                 {low && (
@@ -311,7 +350,7 @@ export default function HomePage() {
                 )}
               </>
             );
-            const cardClass = "flex h-full flex-col rounded-lg bg-canvas p-6";
+            const cardClass = cx("flex h-full flex-col rounded-lg bg-canvas p-6", photo && "overflow-hidden");
             return (
               <li key={c.id}>
                 {isPathBuilt(href) ? (
@@ -343,7 +382,7 @@ export default function HomePage() {
           <ol className="mt-8 grid gap-4 md:grid-cols-3">
             {FLOW.map((step, i) => (
               <li key={step.id} className="overflow-hidden rounded-lg bg-surface">
-                <Illustration id={step.id} aspect="4:3" fallback={step.fallback} alt="" sizes="(min-width: 768px) 360px, 100vw" />
+                <Illustration id={step.id} aspect="4:3" fallback={step.fallback} alt="" sizes="(min-width: 768px) 352px, 100vw" />
                 <div className="p-6">
                   <p className="text-sm font-bold text-brand-strong tabular-nums">{i + 1}단계</p>
                   <h3 className="mt-1 text-h3 font-bold tracking-tight text-ink">{step.title}</h3>
@@ -380,7 +419,7 @@ export default function HomePage() {
       <section aria-labelledby="home-trust" data-testid="home-trust" className={cx(container, section)}>
         <div className="grid gap-8 rounded-xl bg-canvas-soft p-6 md:grid-cols-12 md:items-center md:p-10">
           <div className="md:col-span-5">
-            <Emoji3D name="book" size={56} />
+            <Icon3D name="ic-source" size={56} />
             <h2 id="home-trust" className="mt-4 text-h2 font-bold tracking-tight text-ink">
               모든 수치에 출처를 붙입니다
             </h2>
@@ -395,7 +434,7 @@ export default function HomePage() {
               {heroProcedure.sources.map((s) => (
                 <li key={s.url} className="flex items-center justify-between gap-4 py-3">
                   <span className="font-semibold text-ink">{s.title}</span>
-                  <Emoji3D name="check" size={24} />
+                  <Icon3D name="ic-check" size={24} />
                 </li>
               ))}
             </ul>

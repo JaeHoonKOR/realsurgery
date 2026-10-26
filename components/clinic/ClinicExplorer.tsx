@@ -2,7 +2,7 @@
 
 import { ChevronDown, RotateCcw } from "lucide-react";
 import { useCallback, useEffect, useId, useMemo, useReducer, useRef, useState } from "react";
-import { Emoji3D } from "@/components/ui/Emoji3D";
+import { Icon3D } from "@/components/ui/Icon3D";
 import { INITIAL_COMPARE, compareReducer } from "@/lib/clinic/compare";
 import type { ClinicCardData, ProcedureOption } from "@/lib/clinic/types";
 import { EMPTY_FILTER, filterClinics, filterQuery, parseFilter, premiumFirst, type ClinicFilter } from "@/lib/clinic/view";
@@ -179,10 +179,12 @@ export function ClinicExplorer({ clinics, procedures, regions }: Props) {
       {/* 목록 */}
       {visible.length > 0 ? (
         <ul data-testid="clinic-list" className="mt-4 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {visible.map((c) => (
+          {visible.map((c, i) => (
             <li key={c.id}>
               <ClinicCard
                 clinic={c}
+                // 첫 카드 커버 사진은 데스크톱 첫 화면 안(LCP 후보) → 지연 로딩하지 않는다
+                priorityPhoto={i === 0}
                 procedures={procById}
                 focusProcedure={focus}
                 selected={compare.ids.includes(c.id)}
@@ -194,7 +196,7 @@ export function ClinicExplorer({ clinics, procedures, regions }: Props) {
         </ul>
       ) : (
         <div data-testid="clinic-empty" className="mt-4 flex flex-col items-center rounded-lg bg-surface px-6 py-14 text-center">
-          <Emoji3D name="search" size={64} />
+          <Icon3D name="ic-search" size={64} />
           <p className="mt-5 text-h3 font-bold tracking-tight text-ink">조건에 맞는 병원이 없습니다</p>
           <p className="mt-2 max-w-text text-ink-muted">
             {focus && filter.region

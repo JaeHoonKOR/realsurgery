@@ -34,7 +34,7 @@ describe("blog helpers", () => {
   });
   it("표지 매핑과 기본값", () => {
     expect(postCover("reading-surgery-quotes").image).toBe("post-reading-quotes");
-    expect(postCover("new-post")).toEqual({ image: "post-new-post", fallback: "book" });
+    expect(postCover("new-post")).toEqual({ image: "post-new-post", fallback: "ic-source" });
   });
   it("Article JSON-LD", () => {
     const ld = postJsonLd({ post: post("a", "2026-10-01", "2026-10-02"), author: undefined, path: "/blog/a/" }) as {

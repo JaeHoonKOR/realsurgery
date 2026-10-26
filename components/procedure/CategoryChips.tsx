@@ -1,11 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Emoji3D, type EmojiName } from "@/components/ui/Emoji3D";
+import { Icon3D, type IconName } from "@/components/ui/Icon3D";
+import { hasAsset } from "@/lib/gen-assets";
 import { track } from "@/lib/track";
 import { cx } from "@/lib/ui";
 
-export type CategoryChip = { id: string; slug: string; name: string; count: number; emoji: EmojiName };
+export type CategoryChip = { id: string; slug: string; name: string; count: number; icon: IconName };
 
 /** 고정 헤더(최대 64px) + 칩 바(약 68px) 아래에 섹션 머리가 걸리면 "지금 보는 부위" */
 const ACTIVE_OFFSET = 160;
@@ -61,7 +62,16 @@ export function CategoryChips({ items }: { items: CategoryChip[] }) {
                   isActive ? "bg-ink text-surface" : "bg-canvas text-ink hover:bg-line",
                 )}
               >
-                <Emoji3D name={c.emoji} size={24} />
+                {/* 생성 아이콘은 흰 배경 multiply 라 어두운 활성 칩(bg-ink) 위에서는 흰 원 안에 둔다(asset-plan 10절) */}
+                <span
+                  aria-hidden="true"
+                  className={cx(
+                    "-mx-0.5 flex size-7 shrink-0 items-center justify-center rounded-full",
+                    isActive && hasAsset(c.icon) && "bg-surface",
+                  )}
+                >
+                  <Icon3D name={c.icon} size={24} />
+                </span>
                 {c.name}
                 <span className={cx("text-sm tabular-nums", isActive ? "text-line-strong" : "text-ink-muted")}>{c.count}</span>
               </a>

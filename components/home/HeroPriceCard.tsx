@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useId, useState } from "react";
 import { ChevronRight } from "lucide-react";
-import { Emoji3D, type EmojiName } from "@/components/ui/Emoji3D";
+import { Icon3D, type IconName } from "@/components/ui/Icon3D";
 import { PriceBar } from "@/components/ui/PriceBar";
 import { formatPriceRange } from "@/lib/format";
 import { chip, cx } from "@/lib/ui";
@@ -14,7 +14,7 @@ export type HeroShowcase = {
   name: string;
   shortName: string;
   category: string;
-  emoji: EmojiName;
+  icon: IconName;
   priceLow: number | null;
   priceHigh: number | null;
   scaleMin: number;
@@ -66,7 +66,7 @@ export function HeroPriceCard({ items }: { items: HeroShowcase[] }) {
       <div id={`${id}-panel`} role="tabpanel" aria-labelledby={`${id}-tab-${index}`}>
         <div className="flex items-center gap-4">
           <span className="flex size-16 items-center justify-center rounded-lg bg-canvas">
-            <Emoji3D key={item.emoji} name={item.emoji} size={48} priority />
+            <Icon3D key={item.icon} name={item.icon} size={48} priority />
           </span>
           <div>
             <span className={cx(chip.base, chip.brand, "h-7 text-xs")}>{item.category}</span>

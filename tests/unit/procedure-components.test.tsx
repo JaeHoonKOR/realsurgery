@@ -152,8 +152,8 @@ describe("CategoryChips (select_category)", () => {
     render(
       <CategoryChips
         items={[
-          { id: "eye", slug: "눈", name: "눈", count: 4, emoji: "eye" },
-          { id: "nose", slug: "코", name: "코", count: 1, emoji: "nose" },
+          { id: "eye", slug: "눈", name: "눈", count: 4, icon: "ic-eye" },
+          { id: "nose", slug: "코", name: "코", count: 1, icon: "ic-nose" },
         ]}
       />,
     );

@@ -19,7 +19,7 @@ import { ProseMore } from "@/components/procedure/ProseMore";
 import { RecoveryTimeline } from "@/components/procedure/RecoveryTimeline";
 import { RelatedPosts } from "@/components/procedure/RelatedPosts";
 import { SourceList } from "@/components/procedure/SourceList";
-import { Emoji3D } from "@/components/ui/Emoji3D";
+import { Icon3D } from "@/components/ui/Icon3D";
 import { isPathBuilt } from "@/lib/built-routes";
 import { loadContent } from "@/lib/content";
 import { siteUrl } from "@/lib/env.public";
@@ -184,7 +184,7 @@ export default async function ProcedurePage({ params }: Params) {
               </>
             ) : (
               <div data-testid="body-pending" className="mt-10 first:mt-0 flex flex-col items-start gap-4 rounded-xl bg-canvas-soft p-6 md:flex-row md:items-center md:p-8">
-                <Emoji3D name="memo" size={48} />
+                <Icon3D name="ic-memo" size={48} />
                 <div>
                   <p className="font-bold text-ink">자세한 가이드를 정리하고 있습니다</p>
                   <p className="mt-1 text-ink-muted">
@@ -260,7 +260,7 @@ export default async function ProcedurePage({ params }: Params) {
                     </Link>
                   )}
                 </div>
-                {/* 좁은 가로 카드에서 제목 줄이 두 줄로 밀리지 않게 병원 수는 빼고(가격·회복·소요만), 이모지도 생략 */}
+                {/* 좁은 가로 카드에서 제목 줄이 두 줄로 밀리지 않게 병원 수는 빼고(가격·회복·소요만), 부위 아이콘 타일도 생략(시술 이미지가 있으면 썸네일) */}
                 <CardRail label={`${josa(p.name, "과/와")} 비슷한 시술`} className="mt-6 md:mt-8">
                   {similar.map((s) => (
                     <ProcedureCard

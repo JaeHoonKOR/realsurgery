@@ -1,4 +1,4 @@
-import { Emoji3D } from "@/components/ui/Emoji3D";
+import { Icon3D } from "@/components/ui/Icon3D";
 import { isPathBuilt } from "@/lib/built-routes";
 import { ROUTES, consultPath } from "@/lib/routes";
 import { CONSULT_CTA } from "@/lib/site";
@@ -41,7 +41,7 @@ export function ConsultCta({
       aria-labelledby={titleId}
       className="flex flex-col gap-6 rounded-xl bg-brand-weak px-6 py-7 md:flex-row md:items-center md:gap-8 md:px-10 md:py-9"
     >
-      <Emoji3D name="chat" size={64} />
+      <Icon3D name="ic-consult" size={64} />
       <div className="md:flex-1">
         <h2 id={titleId} className="text-h3 font-bold tracking-tight text-ink">
           {title}

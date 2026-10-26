@@ -1,5 +1,5 @@
 import { Check } from "lucide-react";
-import { Emoji3D } from "@/components/ui/Emoji3D";
+import { Icon3D } from "@/components/ui/Icon3D";
 import type { ProcedureExtras } from "@/lib/content";
 import { PAGE_SECTION_IDS } from "@/lib/procedure/toc";
 import { cx } from "@/lib/ui";
@@ -11,8 +11,8 @@ import { cx } from "@/lib/ui";
  */
 export function HighlightCards({ extras }: { extras: Pick<ProcedureExtras, "good_for" | "cautions"> }) {
   const cards = [
-    { key: "good", title: "이런 분이 많이 받아요", items: extras.good_for, emoji: "check" as const },
-    { key: "caution", title: "꼭 확인하세요", items: extras.cautions, emoji: "warning" as const },
+    { key: "good", title: "이런 분이 많이 받아요", items: extras.good_for, icon: "ic-check" as const },
+    { key: "caution", title: "꼭 확인하세요", items: extras.cautions, icon: "ic-caution" as const },
   ].filter((c) => c.items.length > 0);
   if (cards.length === 0) return null;
   return (
@@ -27,7 +27,7 @@ export function HighlightCards({ extras }: { extras: Pick<ProcedureExtras, "good
       {cards.map((c) => (
         <section key={c.key} aria-labelledby={`highlight-${c.key}`} className="py-3.5 sm:px-6 sm:py-0">
           <div className="flex items-center gap-2">
-            <Emoji3D name={c.emoji} size={24} />
+            <Icon3D name={c.icon} size={24} />
             <h2 id={`highlight-${c.key}`} className="font-bold tracking-tight text-ink">
               {c.title}
             </h2>
