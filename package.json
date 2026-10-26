@@ -18,7 +18,8 @@
     "test:a11y": "playwright test tests/a11y",
     "test:e2e": "playwright test tests/e2e",
     "lh": "node scripts/lh.mjs",
-    "screens": "node scripts/screens.mjs"
+    "screens": "node scripts/screens.mjs",
+    "audit:site": "node scripts/audit.mjs"
   },
   "pnpm": {
     "overrides": {

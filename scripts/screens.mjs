@@ -11,11 +11,11 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { chromium } from "@playwright/test";
-import { detectBasePath, startServer } from "./serve-out.mjs";
+import { defaultPorts, detectBasePath, startServer } from "./serve-out.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const SCREEN_DIR = path.join(ROOT, "backlog", "log", "screens");
-const PREVIEW_PORT = 4174;
+const PREVIEW_PORT = defaultPorts(ROOT).preview;
 const STATES = new Set(["consent-saved", "search-open", "scrolled", "viewport"]);
 
 const VIEWPORTS = [

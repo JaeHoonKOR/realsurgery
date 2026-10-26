@@ -21,3 +21,11 @@ reports/seo/inbox/*.csv
 
 # AI 이미지 후보(검토 전)
 .gen-candidates/
+
+# 감사 스크린샷(로컬 전용)
+reports/audit/*/screens/
+
+# 개선 루프 실행 로그(원문)·잠금
+backlog/log/improve-run-*.log
+backlog/log/.improve.lock
+.claude/.playwright-installed
