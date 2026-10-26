@@ -99,17 +99,43 @@ export async function postProcess(sharp, png, item) {
   return sharp(padded).resize(out, out).webp({ quality: 86 }).toBuffer();
 }
 
-/** 로컬 실행용: .env.local → .env 순서로 읽는다(이미 있는 환경 변수가 우선, 키 값은 출력하지 않음) */
+/**
+ * 로컬 실행용 키 로드: --env-file <경로>(여러 번 가능) → 저장소의 .env.local → .env 순서.
+ * 이미 있는 환경 변수가 우선이고, 키 값은 출력하지 않는다.
+ */
 function loadLocalEnv() {
-  for (const name of [".env.local", ".env"]) {
-    const file = path.join(ROOT, name);
-    if (fs.existsSync(file) && typeof process.loadEnvFile === "function") process.loadEnvFile(file);
+  const files = [];
+  process.argv.forEach((a, i) => {
+    if (a === "--env-file" && process.argv[i + 1]) files.push(path.resolve(process.argv[i + 1]));
+  });
+  files.push(path.join(ROOT, ".env.local"), path.join(ROOT, ".env"));
+  const loaded = [];
+  for (const file of files) {
+    if (fs.existsSync(file) && typeof process.loadEnvFile === "function") {
+      process.loadEnvFile(file);
+      loaded.push(file);
+    }
   }
   if (!process.env.GEMINI_API_KEY) process.env.GEMINI_API_KEY = process.env.GEMINI_KEY ?? process.env.GOOGLE_API_KEY ?? "";
+  return loaded;
+}
+
+/** 키를 못 찾았을 때 안내: 읽은 파일의 변수 "이름"만 보여 준다(값은 출력하지 않음) */
+function keyHint(loaded) {
+  const names = loaded.flatMap((f) =>
+    fs
+      .readFileSync(f, "utf8")
+      .split(/\r?\n/)
+      .map((l) => l.match(/^\s*([A-Z0-9_]+)\s*=/)?.[1])
+      .filter((n) => n && /KEY|GEMINI|GOOGLE/i.test(n)),
+  );
+  return loaded.length
+    ? `읽은 파일: ${loaded.join(", ")} · 키 후보 변수 이름: ${names.join(", ") || "(없음)"} — GEMINI_API_KEY 이름으로 넣어 주세요.`
+    : "읽은 .env 파일이 없습니다. --env-file 로 .env.local 경로를 지정하세요.";
 }
 
 async function main() {
-  loadLocalEnv();
+  const loadedEnv = loadLocalEnv();
   const manifest = JSON.parse(fs.readFileSync(MANIFEST, "utf8"));
   const apiKey = (process.env.GEMINI_API_KEY ?? "").trim();
   const model = String(arg("model", manifest.model ?? "gemini-nano-banana-2.1"));
@@ -130,7 +156,7 @@ async function main() {
     for (const j of jobs) console.log(`  · ${j.item.id}-v${j.v} (${j.item.family}, ${j.item.aspect}, ${j.item.size})`);
     return;
   }
-  if (!apiKey) throw new Error("GEMINI_API_KEY 가 없습니다.");
+  if (!apiKey) throw new Error(`GEMINI_API_KEY 가 없습니다. ${keyHint(loadedEnv)}`);
 
   const sharp = (await import("sharp")).default;
   fs.mkdirSync(outDir, { recursive: true });
