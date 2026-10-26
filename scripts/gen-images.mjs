@@ -99,7 +99,17 @@ export async function postProcess(sharp, png, item) {
   return sharp(padded).resize(out, out).webp({ quality: 86 }).toBuffer();
 }
 
+/** 로컬 실행용: .env.local → .env 순서로 읽는다(이미 있는 환경 변수가 우선, 키 값은 출력하지 않음) */
+function loadLocalEnv() {
+  for (const name of [".env.local", ".env"]) {
+    const file = path.join(ROOT, name);
+    if (fs.existsSync(file) && typeof process.loadEnvFile === "function") process.loadEnvFile(file);
+  }
+  if (!process.env.GEMINI_API_KEY) process.env.GEMINI_API_KEY = process.env.GEMINI_KEY ?? process.env.GOOGLE_API_KEY ?? "";
+}
+
 async function main() {
+  loadLocalEnv();
   const manifest = JSON.parse(fs.readFileSync(MANIFEST, "utf8"));
   const apiKey = (process.env.GEMINI_API_KEY ?? "").trim();
   const model = String(arg("model", manifest.model ?? "gemini-nano-banana-2.1"));
