@@ -111,6 +111,17 @@
           }
         ]
       }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/scripts/hooks/verify-build.mjs\"",
+            "timeout": 300
+          }
+        ]
+      }
     ]
   },
   "extraKnownMarketplaces": {

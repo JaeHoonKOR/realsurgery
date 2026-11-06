@@ -41,7 +41,7 @@ builder 종료 hook이 돌 때마다 `harness/hooks.log`에 한 줄이 남는다
 | --- | --- |
 | 저장소 밖 접근·위험한 git/gh 명령 차단 | `scripts/guard.mjs` (PreToolUse Bash) + `.claude/settings.json` deny |
 | features.json: planner만 목록 변경, 오케스트레이터는 `passes`만, 나머지 서브에이전트는 변경 불가. passes를 true로 바꾸는 건 오케스트레이터만, 그것도 회귀 테스트 파일이 있을 때만 | `scripts/hooks/check-features.mjs` (PreToolUse Write·Edit, `agent_type`으로 구분), 셸 변경은 guard가 차단 |
-| builder는 typecheck·lint 통과 전에 끝낼 수 없음 | `scripts/hooks/verify-build.mjs` (builder frontmatter Stop → SubagentStop) |
+| builder는 typecheck·lint 통과 전에 끝낼 수 없음 | `scripts/hooks/verify-build.mjs` (`.claude/settings.json` SubagentStop, 스크립트가 `agent_type == builder`일 때만 검사. 에이전트 frontmatter의 Stop hook은 이 환경에서 발동하지 않았다) |
 | 통과한 기능이 깨지면 배포 안 됨 | CI(`.github/workflows/pages.yml`)가 `pnpm test:features` 실패 시 배포 중단 |
 
 나머지 규칙은 CLAUDE.md와 에이전트 지침에 둔다. hook은 예외가 없는 규칙에만 쓴다.
