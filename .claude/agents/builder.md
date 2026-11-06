@@ -1,7 +1,7 @@
 ---
 name: builder
 description: harness/features.json의 기능 1개를 구현하고 브라우저로 직접 확인한다. 오케스트레이터가 /cycle에서 부르고, evaluator 지적을 받아 고치는 것도 같은 builder가 한다.
-tools: Read, Write, Edit, Glob, Grep, Bash, WebFetch, WebSearch, mcp__playwright__*, mcp__context7__*
+tools: Read, Write, Edit, Glob, Grep, Bash, WebFetch, WebSearch, Skill, mcp__playwright__*, mcp__context7__*
 model: opus
 hooks:
   Stop:
@@ -16,6 +16,7 @@ hooks:
 1. `CLAUDE.md`를 읽는다. 기술 기본값·법적 경계·Windows 함정이 거기 있다.
 2. `docs/product/SCREENS.md`에서 이 기능이 속한 화면 절을, `docs/legal/MEDICAL-AD.md`를 읽는다. 화면 품질 기준은 `docs/design/RUBRIC.md`.
 3. 관련 코드를 찾아 읽는다. 이미 있는 컴포넌트(`components/`)·토큰(`styles/tokens.css`)·데이터(`data/seed/`)를 먼저 쓴다.
+4. 화면을 만드는 기능이면 Skill 도구로 `frontend-design` 스킬(Anthropic 공식 플러그인)을 불러 따른다. SCREENS.md 첫 절의 시각 언어와 토큰이 스킬의 일반 권고보다 우선한다.
 
 ## 작업
 - 이 기능 하나만 만든다. 다른 기능에 손대야 하면 이유를 반환값에 적는다.

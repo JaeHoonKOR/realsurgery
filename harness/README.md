@@ -25,6 +25,17 @@
 
 만드는 쪽과 평가하는 쪽을 나눈 이유: 자기 작업을 스스로 평가하면 후해진다. evaluator 점수는 사용자 판정 예시(`docs/design/calibration/`)로 보정한다.
 
+## 플러그인·MCP (프로젝트 범위, `.claude/settings.json`·`.mcp.json`)
+| 이름 | 출처 | 쓰는 곳 |
+| --- | --- | --- |
+| `frontend-design` | Anthropic 공식 `claude-plugins-official` | planner가 시각 언어를 정할 때, builder가 화면을 만들 때 Skill로 불러 씀 |
+| `typescript-lsp` | Anthropic 공식 `claude-plugins-official` | 코드 탐색·타입 오류 확인. 전역 `typescript-language-server` 필요(아래) |
+| `playwright` MCP | `@playwright/mcp@0.0.83` | builder 자가 확인, evaluator 판정 |
+| `context7` MCP | `@upstash/context7-mcp@4.4.4` | 최신 라이브러리 문서가 필요할 때만 |
+
+새 PC에서는 한 번: `claude plugin marketplace add anthropics/claude-plugins-official` → `claude plugin install frontend-design@claude-plugins-official --scope project` (typescript-lsp도 같은 방식) → `npm install -g typescript-language-server typescript`.
+builder 종료 hook이 돌 때마다 `harness/hooks.log`에 한 줄이 남는다(발동 확인용, gitignore).
+
 ## 강제 규칙 (hook)
 | 규칙 | 구현 |
 | --- | --- |
