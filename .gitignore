@@ -9,9 +9,15 @@ playwright-report/
 *.tsbuildinfo
 next-env.d.ts
 public/fonts/pretendard/
+public/og/
 .env*
 !.env.example
 secrets/
 reports/ads/inbox/*.csv
 reports/seo/inbox/*.csv
+# 경쟁사 화면 캡처: 참고용·재배포 금지 (T-090, docs/BENCHMARK.md 0절)
+reports/benchmark/*.png
+# bench-measure.mjs 원시 결과(경쟁사 UI 라벨 일부 포함) — 재측정으로 재현, 커밋 안 함
+reports/benchmark/raw/
+.playwright-mcp/
 .claude/settings.local.json

@@ -26,7 +26,8 @@
 
 끝나면 `/loop` 한 번 더 → needs-key 항목이 자동 재검증됨.
 
-## 세션 3 — 첫 배포 후 (10분)
+## 세션 3 — 첫 배포 후 (15분)
+| 0-1 | 무료 가입 3곳 | 네이버 검색광고(searchad.naver.com)·네이버 블로그·Bing 웹마스터 도구(bing.com/webmasters, 사이트맵 제출 — ChatGPT 검색이 Bing 색인 사용) | — |
 | # | 서비스 | 할 것 | 값 |
 | --- | --- | --- | --- |
 | 0 | 구글 서치콘솔 https://search.google.com/search-console | 속성 추가 › **URL 접두어**(배포 URL) → HTML 태그 → content 값. 설정 › 사용자 및 권한에 서비스계정 이메일 추가(전체) | `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION`, `GSC_SITE_URL` |

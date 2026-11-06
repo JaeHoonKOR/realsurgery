@@ -10,11 +10,14 @@ $log = "backlog\log\night-$(Get-Date -Format yyyyMMdd-HHmm).log"
 powercfg /change standby-timeout-ac 0 | Out-Null
 powercfg /change hibernate-timeout-ac 0 | Out-Null
 Copy-Item "config\claude-settings.json" ".claude\settings.json" -Force
-if (Test-Path "config\orchestrator.md") { Copy-Item "config\orchestrator.md" ".claude\agents\orchestrator.md" -Force }
+if (Test-Path "config\agents") { Copy-Item "config\agents\*.md" ".claude\agents\" -Force }
+if (Test-Path "config\commands") { Copy-Item "config\commands\*.md" ".claude\commands\" -Force }
 "=== night run start $(Get-Date) ===" | Tee-Object -FilePath $log -Append
 for ($i = 1; $i -le $max; $i++) {
   "--- loop $i / $max  $(Get-Date -Format HH:mm) ---" | Tee-Object -FilePath $log -Append
-  $out = & claude -p "/loop" --permission-mode acceptEdits --max-turns 250 2>&1 | Out-String
+  $job = Start-Job -ScriptBlock { Set-Location "C:\rs"; & claude -p "/loop" --permission-mode acceptEdits --max-turns 250 2>&1 | Out-String }
+  if (-not (Wait-Job $job -Timeout 5400)) { Stop-Job $job; "loop timed out after 90 min - killing claude" | Tee-Object -FilePath $log -Append; Get-Process claude -ErrorAction SilentlyContinue | Stop-Process -Force }
+  $out = (Receive-Job $job | Out-String); Remove-Job $job -Force
   $out | Tee-Object -FilePath $log -Append | Out-Null
   if ($out -match "NOTHING_TO_DO") { "no runnable tasks - stopping" | Tee-Object -FilePath $log -Append; break }
   if ($out -match "(?i)(hit your (session |usage |rate )?limit|usage limit reached|rate_limit_error|You.ve reached)") {

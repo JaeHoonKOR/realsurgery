@@ -73,20 +73,22 @@ URL 규칙: 소문자·하이픈. slug는 **한글 URL 허용**(네이버 검색
 | 쿠키·동의 배너 | GA4·메타 픽셀 동의 토글 | Consent Mode 기본 denied, 동의 후 업데이트 |
 | 공통 스크립트 | GTM 컨테이너 1개 → GA4, Meta Pixel, 네이버 애널리틱스, 네이버 서치어드바이저 메타태그 | 모든 태그는 GTM 안에서만 관리, 하드코딩 금지 |
 | SEO 공통 | title·description 템플릿, canonical, OG·트위터 카드, hreflang(2단계) | 6절 |
-| 로딩·에러 상태 | 스켈레톤 UI, 폼 제출 실패 시 재시도 안내 | LCP 2.5초 이내 |
+| 로딩·에러 상태 | 스켈레톤 UI, 폼 제출 실패 시 재시도 안내 | LCP 2.0초 이내 |
 
 ## 4. 화면별 상세 정의 (P0)
 
+**규칙**: 모든 표에 "링크 대상" 열이 있어야 하며, 카드·목록 항목은 요소 전체가 `<a href>`다. 링크 대상이 빈 행은 lint 실패. (T-088에서 전 표에 적용)
+
 ### P-01 메인 (/)
 
-| 영역 | 구성 요소 | 기능·규칙 | 데이터 | 이벤트 |
-| --- | --- | --- | --- | --- |
-| 히어로 | H1 "시술 가격·회복기간, 한 번에 비교", 시술 검색창, CTA | 검색 자동완성 → P-03 | procedures.name | search, click_cta(location=hero) |
-| 부위별 바로가기 | 눈·코·윤곽·리프팅·피부·가슴 아이콘 6개 | P-02(또는 대표 시술 P-03) | categories | select_category |
-| 인기 시술 TOP 6 | 카드(썸네일, 시술명, 가격 범위, 회복기간) | 주간 조회수 자동 정렬 | procedures + view_count | select_procedure |
-| 병원 정보 | 카드(병원명, 지역, 대표 시술 3개) | "추천"·"제휴" 표현 금지(8절 폴백). is_partner 병원만 프리미엄 뱃지·심의번호 표기 | clinics(is_partner, is_premium) | select_clinic |
-| 최신 칼럼 3 | 제목·요약·날짜 | P-10 | posts | select_post |
-| 하단 CTA | 상담 예약 블록 | P-06 | — | click_cta(location=footer) |
+| 영역 | 구성 요소 | 기능·규칙 | 데이터 | 이벤트 | 링크 대상 |
+| --- | --- | --- | --- | --- | --- |
+| 히어로 | H1 "시술 가격·회복기간, 한 번에 비교", 시술 검색창, CTA | 검색 자동완성 → P-03 | procedures.name | search, click_cta(location=hero) | 검색 → /procedures/{slug}, CTA → /consult |
+| 부위별 바로가기 | 눈·코·윤곽·리프팅·피부·가슴 아이콘 6개 | P-02(또는 대표 시술 P-03) | categories | select_category | /procedures?cat={id} (P-02 전엔 대표 시술 P-03) |
+| 인기 시술 TOP 6 | 카드(썸네일, 시술명, 가격 범위, 회복기간) — **카드 전체가 링크** | 주간 조회수 자동 정렬 | procedures + view_count | select_procedure | /procedures/{slug} |
+| 병원 정보 | 카드(병원명, 지역, 대표 시술 3개) — **카드 전체가 링크** | "추천"·"제휴" 표현 금지(8절 폴백). is_partner 병원만 프리미엄 뱃지·심의번호 표기 | clinics(is_partner, is_premium) | select_clinic | /clinics/{slug} |
+| 최신 칼럼 3 | 제목·요약·날짜 — 카드 전체가 링크 | P-10 | posts | select_post | /blog/{slug} (P-10 전엔 최소 뼈대) |
+| 하단 CTA | 상담 예약 블록 | P-06 | — | click_cta(location=footer) | /consult |
 
 ### P-03 시술 상세 가이드 (/procedures/{slug})
 
@@ -222,7 +224,7 @@ SEO·AEO 핵심 화면. 첫 문단에 직답 2~3문장, 본문은 질문형 H2.
 | description | 직답 1문장 + 가격 범위, 120~150자 |
 | 사이트맵 | /sitemap.xml 자동 생성, lastmod. 서치콘솔·서치어드바이저 제출 |
 | robots | /admin, /consult/done, /my 차단. llms.txt 제공 |
-| 성능 | next/image·WebP, 폰트 서브셋, LCP 2.5초·CLS 0.1 |
+| 성능 | next/image·WebP, 폰트 서브셋, LCP 2.0초·CLS 0.05 (QUALITY 4절과 동일) |
 | 네이버 | 사이트 메타태그 인증, OG 완비, 블로그·지식iN 외부 유입 |
 | 내부 링크 | 시술↔병원↔칼럼 상호 링크, 고아 페이지 0 |
 

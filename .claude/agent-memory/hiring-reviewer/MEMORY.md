@@ -1,0 +1,1 @@
+- [Benchmark access](reference_benchmark_access.md) — WebFetch only; compare P-03 to unni.app/contents/* (newest has 세 문장 요약+footnotes+FAQ+TOC) and babitalk /search?keyword=, not home pages (2026-10-25)

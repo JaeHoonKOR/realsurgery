@@ -11,18 +11,24 @@
 - 해당 화면이 쓰는 테이블·이벤트명을 체크리스트로 뽑아 로그에 먼저 적는다.
 
 ## ACT
+0. **레이아웃 명세 먼저** `docs/layouts/<ID>.md`: 섹션 순서, 섹션별 비주얼(이미지·차트·다이어그램·아이콘 — 구체적으로 무엇), 인터랙션, 데이터 필드, 375/1280 ASCII 와이어, BENCHMARK 대조표(우리 목표 ≥ 벤치마크 최고). TASKS를 `review`(명세)로 올려 reviewer 승인 후 구현. 승인 전 코드 금지.
 1. 브랜치 `feat/<ID>-<slug>` 생성.
 2. 필요한 Supabase 마이그레이션(`supabase/migrations/*.sql`) 작성. 더미 시드 `supabase/seed.sql` 갱신.
 3. 페이지 `app/<route>/page.tsx` + 컴포넌트 `components/<screen>/*`. **정적 export 제약**: 동적 경로는 `generateStaticParams`, 데이터는 빌드 시 JSON으로. Route Handler·SSR·middleware 금지, 서버 로직은 `supabase/functions/*`(Edge Function). 클라이언트 컴포넌트는 폼·인터랙션·Edge Function 호출만. **leads 테이블은 브라우저에서 읽기·쓰기 모두 금지**(submit-lead / admin-leads 함수 경유).
 4. 표의 **이벤트 열**에 있는 모든 이벤트를 `lib/track.ts`의 `track(name, params)`로 호출. 클릭 요소에 `data-track="<event>"` 속성.
 5. 표의 **기능·규칙 열**을 하나씩 구현. 구현 못 하는 규칙은 `// SPEC-GAP:` 주석 + TASKS.md spec-question.
 6. 3절 공통 요소(헤더·푸터·CTA 블록·동의 배너)는 `components/common/`에 1회만 만들고 재사용.
+7. **흐름 연결**: 이 화면으로 들어오는 링크(이전 화면의 카드·CTA)와 나가는 링크를 전부 실제 경로로 연결한다. 아직 없는 화면으로 가는 링크는 숨기지 말고 **임시 랜딩**(`/coming-soon/<ID>`가 아니라 해당 화면의 최소 뼈대)을 만들어 404가 없게 한다.
+8. 인터랙션 구현: 카드 호버, 아코디언 애니메이션, 스켈레톤, 폼 단계 전환 등 레이아웃 명세에 적은 것 전부.
 
-## VERIFY (전부 통과해야 REPORT — `docs/QUALITY.md` 1·2·3절 포함)
-- [ ] QUALITY.md 1절 자동 게이트 전부 통과 (`pnpm lh`, `pnpm test`, `pnpm test:a11y`, `pnpm test:e2e`)
-- [ ] **QUALITY.md 3-1 비주얼 필수 요건** 해당 화면 행 전부 구현 (이미지·아이콘·다이어그램·차트). 375×667 스크롤 구간마다 텍스트 외 요소 ≥ 1
-- [ ] QUALITY.md 2절 상태(로딩·빈·에러·성공) 구현 + 스크린샷
-- [ ] 스크린샷 `backlog/log/screens/<ID>-375.png`, `<ID>-1280.png` 저장 후 **직접 Read로 열어** 3절 디자인 기준 자가 점검, 위반 시 수정
+## VERIFY (전부 통과해야 REPORT — QUALITY.md v2)
+- [ ] **직접 클릭**: `pnpm dev`를 Playwright로 열어 M1 흐름 중 이 화면 앞뒤 구간을 클릭으로 통과. 404·링크 없음 0
+- [ ] `scripts/check-density.mjs` 375×667 구간별 비텍스트 ≥ 2, `scripts/check-links.mjs` 클릭 불가 카드 0
+- [ ] 레이아웃 명세의 비주얼·인터랙션 항목 전부 구현(명세와 1:1 대조표 로그에)
+- [ ] BENCHMARK 대조표: 벤치마크 최고값 이상
+- [ ] QUALITY.md 4절 자동 게이트 전부 통과 (`pnpm lh`, `pnpm test`, `pnpm test:a11y`, `pnpm test:e2e`)
+- [ ] QUALITY.md 5절 상태(로딩·빈·에러·성공) 구현
+- [ ] 스크린샷은 흐름 클릭 중 **그 자리에서** 찍어 Read로 보고 자가 점검(저장만 하고 안 보는 것 금지)
 - [ ] `pnpm lint && pnpm typecheck && pnpm build` 통과 (`out/`에 해당 화면 HTML 생성 확인)
 - [ ] 외부 키 없는 항목은 mock 가드로 통과하고 `needs-key`로 기록
 - [ ] 4절 표의 **구성 요소** 행 전부 화면에 존재 (playwright 스모크: 각 영역 testid 존재)

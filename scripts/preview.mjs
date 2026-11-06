@@ -10,7 +10,7 @@ const i = process.argv.indexOf("--port");
 const port = i > -1 ? process.argv[i + 1] : "4174";
 const env = { ...process.env, RS_PREVIEW: "1" };
 
-for (const script of ["scripts/copy-fonts.mjs", "scripts/build-data.mjs"]) {
+for (const script of ["scripts/copy-fonts.mjs", "scripts/build-data.mjs", "scripts/og.mjs"]) {
   const r = spawnSync(process.execPath, [script], { stdio: "inherit", env });
   if (r.status !== 0) process.exit(r.status ?? 1);
 }

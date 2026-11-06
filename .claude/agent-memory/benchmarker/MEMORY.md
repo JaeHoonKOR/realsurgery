@@ -1,0 +1,2 @@
+- [Competitor access map](reference_competitor_access.md) — blocks per site, unni.app robots Disallow *, babitalk load budget, kakao path, RealSelf SSR facts, bench-measure.mjs (2026-10-25)
+- [Target vs best sweep](feedback_target_vs_best.md) — T-090 rejected twice for targets below best; same unit per row, per-card counting, full sweep incl. 6절

@@ -1,0 +1,190 @@
+{
+  "version": 1,
+  "generator": "scripts/gen-image.mjs",
+  "stylePrefix": "Flat vector illustration, soft pastel palette (#F7F3EF background, accent #D97B66 and #2F6F6B), clean geometric shapes, no people, no faces, no text, no photorealism, medical-information mood, generous whitespace, centered composition, 3:2 aspect.",
+  "dailyCap": 60,
+  "usage": {},
+  "procedures": [
+    {
+      "slug": "double-eyelid",
+      "kind": "placeholder",
+      "file": "/images/placeholder/double-eyelid.svg",
+      "fileSm": "/images/placeholder/double-eyelid.svg",
+      "width": 1200,
+      "height": 800,
+      "alt": "쌍꺼풀 수술을 나타내는 눈 윤곽선을 단순화한 기하 도형",
+      "prompt": "Flat vector illustration, soft pastel palette (#F7F3EF background, accent #D97B66 and #2F6F6B), clean geometric shapes, no people, no faces, no text, no photorealism, medical-information mood, generous whitespace, centered composition, 3:2 aspect. Subject: stylized eye outline with a gentle fold line and small sparkle. Do not draw letters, numbers, logos, people, skin, body parts, medical instruments, needles or blood.",
+      "date": "2026-10-25",
+      "model": null,
+      "placeholder": "/images/placeholder/double-eyelid.svg"
+    },
+    {
+      "slug": "epicanthoplasty",
+      "kind": "placeholder",
+      "file": "/images/placeholder/epicanthoplasty.svg",
+      "fileSm": "/images/placeholder/epicanthoplasty.svg",
+      "width": 1200,
+      "height": 800,
+      "alt": "앞트임을 나타내는 눈 윤곽선을 단순화한 기하 도형",
+      "prompt": "Flat vector illustration, soft pastel palette (#F7F3EF background, accent #D97B66 and #2F6F6B), clean geometric shapes, no people, no faces, no text, no photorealism, medical-information mood, generous whitespace, centered composition, 3:2 aspect. Subject: stylized almond eye outline with a soft curved accent at the inner corner. Do not draw letters, numbers, logos, people, skin, body parts, medical instruments, needles or blood.",
+      "date": "2026-10-25",
+      "model": null,
+      "placeholder": "/images/placeholder/epicanthoplasty.svg"
+    },
+    {
+      "slug": "ptosis-correction",
+      "kind": "placeholder",
+      "file": "/images/placeholder/ptosis-correction.svg",
+      "fileSm": "/images/placeholder/ptosis-correction.svg",
+      "width": 1200,
+      "height": 800,
+      "alt": "눈매교정을 나타내는 눈 윤곽선을 단순화한 기하 도형",
+      "prompt": "Flat vector illustration, soft pastel palette (#F7F3EF background, accent #D97B66 and #2F6F6B), clean geometric shapes, no people, no faces, no text, no photorealism, medical-information mood, generous whitespace, centered composition, 3:2 aspect. Subject: stylized open eye outline with a small gentle upward arrow arc above it. Do not draw letters, numbers, logos, people, skin, body parts, medical instruments, needles or blood.",
+      "date": "2026-10-25",
+      "model": null,
+      "placeholder": "/images/placeholder/ptosis-correction.svg"
+    },
+    {
+      "slug": "lower-fat-repositioning",
+      "kind": "placeholder",
+      "file": "/images/placeholder/lower-fat-repositioning.svg",
+      "fileSm": "/images/placeholder/lower-fat-repositioning.svg",
+      "width": 1200,
+      "height": 800,
+      "alt": "눈밑지방재배치를 나타내는 눈 윤곽선을 단순화한 기하 도형",
+      "prompt": "Flat vector illustration, soft pastel palette (#F7F3EF background, accent #D97B66 and #2F6F6B), clean geometric shapes, no people, no faces, no text, no photorealism, medical-information mood, generous whitespace, centered composition, 3:2 aspect. Subject: stylized eye outline with a smooth soft crescent curve beneath it. Do not draw letters, numbers, logos, people, skin, body parts, medical instruments, needles or blood.",
+      "date": "2026-10-25",
+      "model": null,
+      "placeholder": "/images/placeholder/lower-fat-repositioning.svg"
+    },
+    {
+      "slug": "rhinoplasty",
+      "kind": "placeholder",
+      "file": "/images/placeholder/rhinoplasty.svg",
+      "fileSm": "/images/placeholder/rhinoplasty.svg",
+      "width": 1200,
+      "height": 800,
+      "alt": "코 성형을 나타내는 옆모습 곡선을 단순화한 기하 도형",
+      "prompt": "Flat vector illustration, soft pastel palette (#F7F3EF background, accent #D97B66 and #2F6F6B), clean geometric shapes, no people, no faces, no text, no photorealism, medical-information mood, generous whitespace, centered composition, 3:2 aspect. Subject: abstract profile curve with a smooth bridge line and a dotted guide line. Do not draw letters, numbers, logos, people, skin, body parts, medical instruments, needles or blood.",
+      "date": "2026-10-25",
+      "model": null,
+      "placeholder": "/images/placeholder/rhinoplasty.svg"
+    },
+    {
+      "slug": "square-jaw-reduction",
+      "kind": "placeholder",
+      "file": "/images/placeholder/square-jaw-reduction.svg",
+      "fileSm": "/images/placeholder/square-jaw-reduction.svg",
+      "width": 1200,
+      "height": 800,
+      "alt": "사각턱 수술을 나타내는 턱·광대 곡선을 단순화한 기하 도형",
+      "prompt": "Flat vector illustration, soft pastel palette (#F7F3EF background, accent #D97B66 and #2F6F6B), clean geometric shapes, no people, no faces, no text, no photorealism, medical-information mood, generous whitespace, centered composition, 3:2 aspect. Subject: soft geometric jawline curve with rounded corners. Do not draw letters, numbers, logos, people, skin, body parts, medical instruments, needles or blood.",
+      "date": "2026-10-25",
+      "model": null,
+      "placeholder": "/images/placeholder/square-jaw-reduction.svg"
+    },
+    {
+      "slug": "zygoma-reduction",
+      "kind": "placeholder",
+      "file": "/images/placeholder/zygoma-reduction.svg",
+      "fileSm": "/images/placeholder/zygoma-reduction.svg",
+      "width": 1200,
+      "height": 800,
+      "alt": "광대 축소술을 나타내는 턱·광대 곡선을 단순화한 기하 도형",
+      "prompt": "Flat vector illustration, soft pastel palette (#F7F3EF background, accent #D97B66 and #2F6F6B), clean geometric shapes, no people, no faces, no text, no photorealism, medical-information mood, generous whitespace, centered composition, 3:2 aspect. Subject: soft geometric oval with gentle inward arcs at the cheek level. Do not draw letters, numbers, logos, people, skin, body parts, medical instruments, needles or blood.",
+      "date": "2026-10-25",
+      "model": null,
+      "placeholder": "/images/placeholder/zygoma-reduction.svg"
+    },
+    {
+      "slug": "thread-lift",
+      "kind": "placeholder",
+      "file": "/images/placeholder/thread-lift.svg",
+      "fileSm": "/images/placeholder/thread-lift.svg",
+      "width": 1200,
+      "height": 800,
+      "alt": "실리프팅을 나타내는 위로 향하는 곡선을 단순화한 기하 도형",
+      "prompt": "Flat vector illustration, soft pastel palette (#F7F3EF background, accent #D97B66 and #2F6F6B), clean geometric shapes, no people, no faces, no text, no photorealism, medical-information mood, generous whitespace, centered composition, 3:2 aspect. Subject: three flowing upward curved lines with small rounded arrow tips. Do not draw letters, numbers, logos, people, skin, body parts, medical instruments, needles or blood.",
+      "date": "2026-10-25",
+      "model": null,
+      "placeholder": "/images/placeholder/thread-lift.svg"
+    },
+    {
+      "slug": "laser-toning",
+      "kind": "placeholder",
+      "file": "/images/placeholder/laser-toning.svg",
+      "fileSm": "/images/placeholder/laser-toning.svg",
+      "width": 1200,
+      "height": 800,
+      "alt": "레이저 토닝을 나타내는 동심원 빛을 단순화한 기하 도형",
+      "prompt": "Flat vector illustration, soft pastel palette (#F7F3EF background, accent #D97B66 and #2F6F6B), clean geometric shapes, no people, no faces, no text, no photorealism, medical-information mood, generous whitespace, centered composition, 3:2 aspect. Subject: soft concentric light circles over a smooth even surface pattern. Do not draw letters, numbers, logos, people, skin, body parts, medical instruments, needles or blood.",
+      "date": "2026-10-25",
+      "model": null,
+      "placeholder": "/images/placeholder/laser-toning.svg"
+    },
+    {
+      "slug": "breast-augmentation",
+      "kind": "placeholder",
+      "file": "/images/placeholder/breast-augmentation.svg",
+      "fileSm": "/images/placeholder/breast-augmentation.svg",
+      "width": 1200,
+      "height": 800,
+      "alt": "가슴 확대 수술을 나타내는 좌우 대칭 곡선을 단순화한 기하 도형",
+      "prompt": "Flat vector illustration, soft pastel palette (#F7F3EF background, accent #D97B66 and #2F6F6B), clean geometric shapes, no people, no faces, no text, no photorealism, medical-information mood, generous whitespace, centered composition, 3:2 aspect. Subject: abstract symmetric flowing ribbon curves mirrored around a dotted vertical axis. Do not draw letters, numbers, logos, people, skin, body parts, medical instruments, needles or blood.",
+      "date": "2026-10-25",
+      "model": null,
+      "placeholder": "/images/placeholder/breast-augmentation.svg"
+    }
+  ],
+  "slots": [
+    {
+      "slot": "home-hero",
+      "file": "/images/placeholder/home-hero.svg",
+      "width": 1200,
+      "height": 800,
+      "alt": "시술 가격 범위와 회복 일정을 비교하는 카드 일러스트"
+    },
+    {
+      "slot": "lp-hero",
+      "file": "/images/placeholder/lp-hero.svg",
+      "width": 1200,
+      "height": 800,
+      "alt": "상담 신청 단계를 나타내는 카드 일러스트"
+    },
+    {
+      "slot": "clinic-cover",
+      "file": "/images/placeholder/clinic-cover.svg",
+      "width": 1200,
+      "height": 400,
+      "alt": ""
+    },
+    {
+      "slot": "map",
+      "file": "/images/placeholder/map.svg",
+      "width": 600,
+      "height": 400,
+      "alt": "병원 위치를 표시한 약도 일러스트"
+    },
+    {
+      "slot": "post-cover",
+      "file": "/images/placeholder/post-cover.svg",
+      "width": 1200,
+      "height": 800,
+      "alt": "칼럼을 나타내는 추상 패턴 일러스트"
+    },
+    {
+      "slot": "consult-done",
+      "file": "/images/placeholder/consult-done.svg",
+      "width": 600,
+      "height": 400,
+      "alt": "상담 신청이 완료되었음을 나타내는 체크 표시 일러스트"
+    },
+    {
+      "slot": "empty",
+      "file": "/images/placeholder/empty.svg",
+      "width": 600,
+      "height": 400,
+      "alt": "찾는 결과가 없음을 나타내는 빈 카드와 돋보기 일러스트"
+    }
+  ]
+}

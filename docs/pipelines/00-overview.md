@@ -1,6 +1,6 @@
 # 파이프라인 전체 구조
 
-6개 파이프라인이 `backlog/TASKS.md`를 공유 큐로 쓰고, 오케스트레이터가 순서와 의존성을 관리한다.
+8개 파이프라인이 `backlog/TASKS.md`를 공유 큐로 쓰고, 오케스트레이터가 순서와 의존성을 관리한다.
 
 ```
                  ┌──────────────── orchestrator (매 루프 시작) ────────────────┐
@@ -22,23 +22,27 @@
 | 03 content | `content` | 시술 가이드 MDX | screen-spec 6절 AEO 규칙 | MDX 1편 + FAQ + JSON-LD 데이터 | 시술 1개 |
 | 04 seo | `seo` | 기술 SEO 점검·수정 | 배포 URL, 6절 | 점검 리포트, 수정 PR | 주 1회 전체 사이트 |
 | 05 ads | `ads` | 광고·검색 성과 분석 | GA4·메타 CSV(사람이 export) | 주간 리포트, 다음 실험 제안 | 주 1회 |
-| 06 reviewer | `review` | 스펙 대조 검수 | review 상태 작업 | 승인/반려 코멘트 | 작업 1건 |
+| 06 reviewer | `review` | **실사용 흐름 검수**(직접 클릭·카운트·최종 질문) | review 상태 작업 | 승인/반려 | 작업 1건 |
+| 08 specs | `specs` | 분야별 정의서 작성 + 교차 검토 + 채용 심사자 검토 | 제품 정의서·BENCHMARK | docs/specs/*.md | 정의서 1개 |
+| 07 benchmark | `benchmark` | 경쟁 서비스 실측 → 수치 목표 | 5개 서비스 | docs/BENCHMARK.md | 1회 |
 
 ## 의존성 (게이트)
+- **정의서 게이트**: 분야 정의서(T-080~T-086, T-088) 승인 전 화면 구현 금지. 레이아웃 명세는 10-design 컴포넌트 카탈로그만 사용.
+- **M1 게이트**: T-130(배포 URL에서 전체 흐름 클릭 통과) 전에는 tracking·content·seo·ads lane 착수 금지. build는 T-090(벤치마크) → T-112(에셋) → T-100c → 화면 순.
 - build P-06·P-07 완료 → tracking generate_lead 착수.
 - build P-03 완료 → content 첫 MDX 착수 (템플릿이 있어야 함).
 - 첫 Pages 배포 성공(T-100의 Actions 통과, 에이전트 확인) → seo 루프 시작.
 - T-001 키 투입(사람) → tracking·seo의 needs-key 항목 자동 재검증.
 - 광고 집행 승인(사람, T-500) → ads 루프 시작.
-- 모든 lane: 선행 작업이 `done`이 되기 전까지 다음 의존 작업 착수 금지. reviewer approve → 오케스트레이터가 `done`으로 바꾼다. `[human-gate]` 작업만 사람이 `done`으로 바꾼다(CLAUDE.md 루프 프로토콜 6).
+- 모든 lane: reviewer 통과 + 사람 `done` 전까지 다음 의존 작업 착수 금지.
 
 ## 상태 전이
 `todo → doing → review → done` / `doing → blocked` / `todo → needs-approval` / `any → spec-question`
 
 ## 실행 방법 (Claude Code)
 ```
-# 오케스트레이터 1회 (순차 기본, 병렬은 "/loop --parallel"). 무인 반복은 run-night.ps1
-claude -p "/loop" --permission-mode acceptEdits
+# 오케스트레이터 1회 (순차 기본, 병렬은 "/loop --parallel")
+claude -p "docs/pipelines/00-overview.md와 backlog/TASKS.md를 읽고 오케스트레이터 역할을 수행해. 사용 가능한 서브에이전트를 lane별로 1개씩 병렬로 띄우고, 끝나면 TASKS.md를 갱신하고 요약해."
 
 # 특정 lane만
 claude -p "/build P-03"
