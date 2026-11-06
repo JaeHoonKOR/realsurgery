@@ -29,10 +29,21 @@
 | 규칙 | 구현 |
 | --- | --- |
 | 저장소 밖 접근·위험한 git/gh 명령 차단 | `scripts/guard.mjs` (PreToolUse Bash) + `.claude/settings.json` deny |
-| features.json: planner만 목록 변경, 오케스트레이터는 `passes`만, 나머지 서브에이전트는 변경 불가. passes를 true로 바꾸는 건 오케스트레이터만 | `scripts/hooks/check-features.mjs` (PreToolUse Write·Edit, `agent_type`으로 구분), 셸 변경은 guard가 차단 |
+| features.json: planner만 목록 변경, 오케스트레이터는 `passes`만, 나머지 서브에이전트는 변경 불가. passes를 true로 바꾸는 건 오케스트레이터만, 그것도 회귀 테스트 파일이 있을 때만 | `scripts/hooks/check-features.mjs` (PreToolUse Write·Edit, `agent_type`으로 구분), 셸 변경은 guard가 차단 |
 | builder는 typecheck·lint 통과 전에 끝낼 수 없음 | `scripts/hooks/verify-build.mjs` (builder frontmatter Stop → SubagentStop) |
+| 통과한 기능이 깨지면 배포 안 됨 | CI(`.github/workflows/pages.yml`)가 `pnpm test:features` 실패 시 배포 중단 |
 
 나머지 규칙은 CLAUDE.md와 에이전트 지침에 둔다. hook은 예외가 없는 규칙에만 쓴다.
+
+## 회귀 테스트
+- 기능 1개 = `tests/e2e/features/<id>.spec.ts` 1개. builder가 steps를 옮겨 쓰고, evaluator가 steps를 빠짐없이 검증하는지 읽는다.
+- `pnpm build && pnpm test:features [id...]` — `out/`을 basePath 하위로 서빙해 375·1280에서 실행.
+- `/cycle`은 시작할 때 전부 돌린다. 깨진 게 있으면 새 기능보다 먼저 고친다.
+
+## 이용자 지표
+- 서비스 목표는 무료 + 높은 이용자 수 + 바이럴(`docs/product/BRIEF.md`). evaluator 기준에 "공유"가 있고, `/report`는 `node scripts/metrics.mjs`로 최근 7일 활성·신규 사용자, 세션, 공유 유입(`utm_medium=share`), `share` 이벤트를 보여준다.
+- GA4 Data API 키(`GA4_PROPERTY_ID` + 서비스 계정 JSON)가 없으면 needs-key만 출력한다(DECISIONS D-3).
+- 공유 동작은 `lib/track.ts`의 `share` 이벤트(GA4 권장 이벤트)로 남기고, 공유 링크에는 `utm_medium=share`를 붙인다.
 
 ## 상태 파일
 ### `features.json`
@@ -55,7 +66,7 @@
 ```
 ## YYYY-MM-DD · F-00x · <기능 요약>
 - 결과: PASS (라운드 2) | BLOCKED: <이유>
-- 점수: 기능 5 · 신뢰 5 · 디자인 완성도 n · 독창성 n · 만듦새 n
+- 점수: 기능 5 · 신뢰 5 · 디자인 완성도 n · 독창성 n · 만듦새 n · 공유 n
 - 커밋: <sha>
 - 메모: 다음 세션이 알아야 할 것
 ```

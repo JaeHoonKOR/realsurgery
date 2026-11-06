@@ -1,7 +1,7 @@
 import { test as base, expect } from "@playwright/test";
 
 /**
- * 모든 브라우저 테스트 공통: 콘솔 error·warning 0, 페이지 예외 0, 같은 출처 4xx/5xx 응답 0 (docs/QUALITY.md 1절 "콘솔").
+ * 모든 브라우저 테스트 공통: 콘솔 error·warning 0, 페이지 예외 0, 같은 출처 4xx/5xx 응답 0 (docs/archive/QUALITY.md 1절 "콘솔").
  */
 export const test = base.extend<{ pageIssues: string[] }>({
   pageIssues: [

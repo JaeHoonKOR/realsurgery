@@ -1,4 +1,4 @@
-// 시술 일러스트 생성 (docs/IMAGES.md "Gemini 생성 규칙")
+// 시술 일러스트 생성 (docs/design/IMAGES.md "Gemini 생성 규칙")
 //
 // 사용:
 //   node scripts/gen-image.mjs                    플레이스홀더 갱신 → (키 있으면) 아직 생성 이미지가 없는 시술마다 후보 3장 생성

@@ -15,6 +15,7 @@ disable-model-invocation: true
 3. 작업 브랜치: 현재 브랜치가 `cycle/`로 시작하지 않으면 `git switch -c cycle/<오늘 YYYY-MM-DD>`(이미 있으면 switch). 커밋 안 된 변경이 있으면 무엇인지 확인하고, 이전 사이클의 잔여물이면 사용자에게 묻는다.
 4. `node harness/init.mjs`로 개발 서버와 스모크 확인. 실패하면 새 기능보다 먼저 고친다(builder에게 "스모크 실패 수정"을 맡긴다).
 5. `harness/features.json`을 읽는다. 비어 있으면 "기능 목록이 없습니다. /define을 먼저 실행하세요."라고 말하고 끝낸다.
+6. **회귀 검사**: `pnpm build && pnpm test:features`. 이미 통과한 기능의 테스트가 하나라도 실패하면, 새 기능보다 먼저 그 회귀를 builder → evaluator 루프로 고친다(3절과 같은 방식, 기능 JSON 대신 실패한 테스트 출력을 넘긴다). 회귀를 못 고치면 `passes`를 `false`로 되돌리고 progress에 이유를 적는다.
 
 ## 2. 기능 고르기
 - `passes: false` 중 `priority`가 가장 작은 것. 같은 사이클에서 이미 막힌(blocked) 기능은 건너뛴다.
@@ -22,16 +23,16 @@ disable-model-invocation: true
 
 ## 3. builder → evaluator 루프 (기능 1개, 최대 3라운드)
 1. **builder**를 부른다. 넘길 것: 기능 JSON 그대로, 관련 SCREENS.md 절 위치, 이전 라운드가 있으면 evaluator의 BUGS 전문. 지난 사이클 progress 메모 중 이 기능 관련 줄.
-2. builder 반환에서 "바뀐 파일", "확인할 URL"만 뽑는다.
+2. builder 반환에서 "바뀐 파일", "확인할 URL"만 뽑는다. 바뀐 파일에 `tests/e2e/features/<기능id>.spec.ts`가 없으면 evaluator로 넘기지 말고 builder에게 회귀 테스트를 먼저 쓰게 한다.
 3. **evaluator**를 새로 부른다(매 라운드 새 인스턴스). 넘길 것: 기능 JSON, URL, 바뀐 파일 목록. builder의 설명·자가 확인 결과는 넘기지 않는다.
 4. VERDICT가
    - **PASS** → 4절로.
    - **FAIL** → BUGS를 같은 builder에게 `SendMessage`로 돌려준다(맥락 유지). SendMessage를 쓸 수 없으면 새 builder에 BUGS와 바뀐 파일 목록을 넘긴다. 다음 라운드.
-5. 3라운드 FAIL, 또는 builder가 "사용자 결정 필요"를 반환 → 그 기능은 이번 사이클 blocked. 변경은 `git stash push -m "<기능id> blocked"`로 치우고, progress에 이유를 적고, 필요하면 DECISIONS.md에 1줄 추가(5건 이하 유지). 다음 기능으로.
+5. 3라운드 FAIL, 또는 builder가 "사용자 결정 필요"를 반환 → 그 기능은 이번 사이클 blocked. 변경은 `git stash push -u -m "<기능id> blocked"`로 치우고(새 파일 포함), progress에 이유를 적고, 필요하면 DECISIONS.md에 1줄 추가(5건 이하 유지). 다음 기능으로.
 
 ## 4. 통과 처리
-1. `harness/features.json`에서 그 기능의 `passes`만 `true`로 바꾼다(다른 필드는 hook이 막는다).
-2. `harness/progress.md` 맨 위에 항목 추가(형식은 `harness/README.md`).
+1. `harness/features.json`에서 그 기능의 `passes`만 `true`로 바꾼다(다른 필드는 hook이 막고, 회귀 테스트 파일이 없어도 막는다).
+2. `harness/progress.md` 맨 위에 항목 추가(형식은 `harness/README.md`). evaluator의 EVENTS·REGRESSION 줄을 메모에 옮긴다.
 3. 커밋: `feat(<기능id>): <description 요약>` + 본문에 evaluator 점수 1줄. 커밋 메시지 끝에 저장소 규칙의 Co-Authored-By 줄.
 4. evaluator가 남긴 375·1280 스크린샷 경로를 기억해 둔다(/report에서 사용자에게 보여준다).
 

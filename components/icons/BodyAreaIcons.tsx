@@ -2,7 +2,7 @@ import { Eye, Sparkles } from "lucide-react";
 import type { ComponentType, ReactNode, SVGProps } from "react";
 
 /*
- * 부위별 선 아이콘 6종 (QUALITY 3-1 P-01 "부위별 아이콘 6개(선 아이콘, 토큰 색)", docs/IMAGES.md "Lucide, 없으면 24px 그리드 SVG")
+ * 부위별 선 아이콘 6종 (QUALITY 3-1 P-01 "부위별 아이콘 6개(선 아이콘, 토큰 색)", docs/design/IMAGES.md "Lucide, 없으면 24px 그리드 SVG")
  * - 눈: Lucide Eye, 피부: Lucide Sparkles
  * - 코·윤곽·리프팅·가슴: Lucide 에 맞는 아이콘이 없어 같은 규칙(24px 그리드, stroke 2, 둥근 끝, currentColor)으로 직접 그렸다.
  * - 색은 currentColor → 쓰는 쪽에서 text-brand 같은 토큰 클래스로 정한다.

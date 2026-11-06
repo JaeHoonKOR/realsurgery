@@ -17,6 +17,7 @@
     "test": "vitest run --coverage",
     "test:a11y": "playwright test tests/a11y",
     "test:e2e": "playwright test tests/e2e",
+    "test:features": "node scripts/test-features.mjs",
     "lh": "node scripts/lh.mjs",
     "screens": "node scripts/screens.mjs",
     "assets:images": "node scripts/gen-image.mjs",

@@ -6,9 +6,11 @@ description: 하루치 사이클 결과를 사용자에게 보고하고 화면 �
 - `git log --oneline` 중 오늘 사이클 브랜치의 커밋, `harness/progress.md` 오늘 항목, `harness/features.json` 통과 수/전체 수.
 - 오늘 통과한 기능마다 evaluator 스크린샷(375·1280) 경로와 점수.
 - `docs/product/DECISIONS.md` 대기 항목.
+- `node scripts/metrics.mjs` — 최근 7일 활성·신규 사용자, 세션, 공유 유입, share 이벤트(지난주 대비). 키가 없으면 needs-key 한 줄이 나온다. 그대로 옮긴다.
 
 ## 2. 보고 (채팅, 20줄 이내)
 ```
+이용자: 활성 n (지난주 대비 ±n%) · 공유 유입 n · share n   ← metrics.mjs, 키 없으면 "needs-key (D-3)"
 오늘: 통과 n개 (전체 통과 a/b) · 막힘 m개
 - F-00x <기능> — 점수 디자인 n · 독창성 n · 만듦새 n
 막힌 것: F-00y — <이유 한 줄>

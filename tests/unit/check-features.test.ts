@@ -53,6 +53,21 @@ describe("check-features: 메인 세션(오케스트레이터)", () => {
   it("파일이 없을 때 빈 배열 생성은 통과", () => {
     expect(checkFeaturesChange(null, "[]\n", undefined)).toBeNull();
   });
+  it("회귀 테스트 파일이 없으면 통과 처리를 막는다", () => {
+    expect(checkFeaturesChange(before, json([feature({ passes: true })]), undefined, () => false)).toContain(
+      "tests/e2e/features/F-001.spec.ts",
+    );
+  });
+  it("회귀 테스트 파일이 있으면 통과 처리를 허용한다", () => {
+    const seen: string[] = [];
+    const hasSpec = (id: string) => (seen.push(id), true);
+    expect(checkFeaturesChange(before, json([feature({ passes: true })]), undefined, hasSpec)).toBeNull();
+    expect(seen).toEqual(["F-001"]);
+  });
+  it("passes를 false로 되돌릴 때는 회귀 테스트를 묻지 않는다", () => {
+    const passed = json([feature({ passes: true })]);
+    expect(checkFeaturesChange(passed, json([feature()]), undefined, () => false)).toBeNull();
+  });
 });
 
 describe("check-features: 서브에이전트", () => {

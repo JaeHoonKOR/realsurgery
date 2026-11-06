@@ -59,6 +59,9 @@ async function main() {
     if (r.status !== 0) throw new Error("pnpm install 실패");
   }
 
+  // evaluator 스크린샷 저장 위치(gitignore)
+  fs.mkdirSync(path.join(ROOT, "harness", "screens"), { recursive: true });
+
   const url = `http://localhost:${PORT}${readBasePath()}/`;
   if (!(await isUp(url))) {
     const log = fs.openSync(LOG_FILE, "w");

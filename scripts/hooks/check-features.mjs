@@ -1,6 +1,7 @@
 // PreToolUse(Write|Edit) hook: harness/features.json 변경 규칙을 강제한다.
 // - planner 서브에이전트: 기능 추가·수정·삭제 가능. 단 passes를 true로 만들 수는 없다.
 // - 메인 세션(오케스트레이터): passes 값만 바꿀 수 있다. 기능 추가·삭제·다른 필드 변경 금지.
+//   passes를 true로 바꾸려면 회귀 테스트 tests/e2e/features/<id>.spec.ts 가 있어야 한다.
 // - 그 밖의 서브에이전트(builder·evaluator 등): 변경 금지.
 // 위반 = exit 2 + stderr (Claude Code가 도구 호출을 막고 이유를 Claude에게 돌려준다).
 // 회귀 테스트: tests/unit/check-features.test.ts
@@ -8,6 +9,7 @@ import fs from "node:fs";
 import path from "node:path";
 
 export const FEATURES_SUFFIX = "harness/features.json";
+export const specPath = (id) => `tests/e2e/features/${id}.spec.ts`;
 const FIELDS = ["id", "category", "description", "steps", "priority", "passes"];
 
 /** @returns {string | null} 형식 오류 메시지 */
@@ -38,9 +40,10 @@ const withoutPasses = (f) => JSON.stringify({ ...f, passes: null });
  * @param {string | null} oldText 변경 전 파일 내용(없으면 null)
  * @param {string} newText 변경 후 파일 내용
  * @param {string | undefined} agentType hook 입력의 agent_type (메인 세션이면 undefined)
+ * @param {(id: string) => boolean} [hasSpec] 회귀 테스트 파일이 있는지. 생략하면 검사하지 않는다
  * @returns {string | null} 막을 이유, 허용이면 null
  */
-export function checkFeaturesChange(oldText, newText, agentType) {
+export function checkFeaturesChange(oldText, newText, agentType, hasSpec) {
   let next;
   try {
     next = JSON.parse(newText);
@@ -77,6 +80,8 @@ export function checkFeaturesChange(oldText, newText, agentType) {
     if (!before) return `${f.id}: 목록에 없던 기능입니다. 목록 변경은 /define(planner)로`;
     if (withoutPasses(f) !== withoutPasses(before))
       return `${f.id}: passes 외 필드가 바뀌었습니다. steps·설명 변경은 /define(planner)로`;
+    if (f.passes && !before.passes && hasSpec && !hasSpec(f.id))
+      return `${f.id}: 회귀 테스트 ${specPath(f.id)} 가 없습니다. builder가 먼저 써야 통과 처리할 수 있습니다`;
   }
   return null;
 }
@@ -105,7 +110,8 @@ function main() {
   else if (input.tool_name === "Edit") newText = applyEdit(oldText ?? "", ti);
   else process.exit(0);
 
-  const reason = checkFeaturesChange(oldText, newText, input.agent_type);
+  const root = path.resolve(path.dirname(abs), "..");
+  const reason = checkFeaturesChange(oldText, newText, input.agent_type, (id) => fs.existsSync(path.join(root, specPath(id))));
   if (reason) {
     process.stderr.write(`FEATURES BLOCKED: ${reason}\n`);
     process.exit(2);

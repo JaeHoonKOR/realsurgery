@@ -52,12 +52,17 @@ export default defineConfig({
       reuseExistingServer: !process.env.CI,
       timeout: 30_000,
     },
-    {
-      command: `node scripts/preview.mjs --port ${PREVIEW_PORT}`,
-      url: `${previewOrigin}${basePath}/preview/`,
-      reuseExistingServer: !process.env.CI,
-      // 개발 서버 첫 컴파일 포함
-      timeout: 180_000,
-    },
+    // 기능 회귀 테스트(scripts/test-features.mjs)는 out/ 만 검사하므로 미리보기 서버를 띄우지 않는다
+    ...(process.env.RS_FEATURES === "1"
+      ? []
+      : [
+          {
+            command: `node scripts/preview.mjs --port ${PREVIEW_PORT}`,
+            url: `${previewOrigin}${basePath}/preview/`,
+            reuseExistingServer: !process.env.CI,
+            // 개발 서버 첫 컴파일 포함
+            timeout: 180_000,
+          },
+        ]),
   ],
 });

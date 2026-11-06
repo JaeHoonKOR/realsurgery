@@ -7,13 +7,14 @@ export type PriceRange = { min: number | null; max: number | null };
 
 /** 700000 → "70만", 15000 → "1.5만", 40000 → "4만", 125000000 → "1억 2,500만" */
 export function formatManwon(won: number): string {
-  if (won >= 100_000_000) {
-    const eok = Math.floor(won / 100_000_000);
-    const rest = Math.round((won % 100_000_000) / 10_000);
+  const man = won / 10_000;
+  // 만 단위로 먼저 반올림한 뒤 억/만을 나눈다(반올림 올림이 억 자리로 넘어가야 "1억 10,000만" 같은 표기가 안 생긴다)
+  const rounded = man >= 10 ? Math.round(man) : Math.round(man * 10) / 10;
+  if (rounded >= 10_000) {
+    const eok = Math.floor(rounded / 10_000);
+    const rest = rounded % 10_000;
     return rest ? `${eok}억 ${rest.toLocaleString("ko-KR")}만` : `${eok}억`;
   }
-  const man = won / 10_000;
-  const rounded = man >= 10 ? Math.round(man) : Math.round(man * 10) / 10;
   return `${rounded.toLocaleString("ko-KR")}만`;
 }
 

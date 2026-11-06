@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 };
 
 const GUIDE_FIELDS = [
-  { term: "가격 범위", desc: "병원 공개가 기준 최저가부터 최고가까지" },
+  { term: "가격 범위", desc: "병원이 공개한 가격의 하한부터 상한까지" },
   { term: "소요시간", desc: "상담 후 수술·시술이 진행되는 시간" },
   { term: "회복기간", desc: "붓기, 실밥 제거, 일상 복귀 시점" },
   { term: "마취 방식", desc: "국소·수면·전신 마취 여부" },

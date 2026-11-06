@@ -1,4 +1,4 @@
-// OG 이미지 빌드 시 생성 (docs/IMAGES.md "OG 이미지: 빌드 시 자동 생성, satori, 제목 + 브랜드 배경, 1200×630")
+// OG 이미지 빌드 시 생성 (docs/design/IMAGES.md "OG 이미지: 빌드 시 자동 생성, satori, 제목 + 브랜드 배경, 1200×630")
 // - 대상: app/ 에 실제로 있는 경로만(lib/built-routes.ts 와 같은 규칙). 동적 경로는 data/generated/content.json 의 항목마다 1장.
 // - 출력: public/og/<key>.png (빌드 산출물, gitignore). SNS 크롤러(카카오·페이스북·네이버)가 WebP 를 보장하지 않아 PNG 로 둔다
 //   → scripts/check-out.mjs 가 out/og/*.png 만 예외로 허용하고, og:image 가 실제 파일을 가리키는지 확인한다.

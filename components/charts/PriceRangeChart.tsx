@@ -151,8 +151,8 @@ export function PriceRangeChart({ title, description, items, caption, className 
         <thead>
           <tr>
             <th scope="col">항목</th>
-            <th scope="col">최저가</th>
-            <th scope="col">최고가</th>
+            <th scope="col">가격 하한</th>
+            <th scope="col">가격 상한</th>
           </tr>
         </thead>
         <tbody>

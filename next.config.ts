@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { PHASE_DEVELOPMENT_SERVER } from "next/constants";
 
 // GitHub Pages 하위 경로 배포(/realsurgery). 커스텀 도메인 연결 시 NEXT_PUBLIC_BASE_PATH를 비우면 루트 배포.
 function normalizeBasePath(raw: string | undefined): string {
@@ -13,13 +14,16 @@ const basePath = normalizeBasePath(process.env.NEXT_PUBLIC_BASE_PATH);
 // 정적 export(pnpm build)에는 들어가지 않는다. 빌드 산출물과 섞이지 않게 distDir 도 분리.
 const preview = process.env.RS_PREVIEW === "1";
 
-const nextConfig: NextConfig = {
+// 개발 서버(harness/init.mjs)는 .next-dev 를 쓴다. 개발 서버가 떠 있는 동안 pnpm build(.next)를 돌려도 서로 덮어쓰지 않는다.
+const distDirFor = (phase: string) => (preview ? ".next-preview" : phase === PHASE_DEVELOPMENT_SERVER ? ".next-dev" : ".next");
+
+const nextConfig = (phase: string): NextConfig => ({
   output: "export",
   basePath,
   trailingSlash: true,
   reactStrictMode: true,
   pageExtensions: preview ? ["preview.tsx", "tsx", "ts"] : ["tsx", "ts"],
-  distDir: preview ? ".next-preview" : ".next",
+  distDir: distDirFor(phase),
   // 개발 서버 좌하단 표시기는 스크린샷·e2e 에 섞이므로 끈다
   devIndicators: false,
   // 상위 폴더(사용자 홈)의 다른 lockfile 을 워크스페이스 루트로 오인하지 않도록 저장소 루트 고정
@@ -29,6 +33,6 @@ const nextConfig: NextConfig = {
   env: {
     NEXT_PUBLIC_BASE_PATH: basePath,
   },
-};
+});
 
 export default nextConfig;

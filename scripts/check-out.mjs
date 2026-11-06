@@ -1,4 +1,4 @@
-// 빌드 산출물(out/) 정적 검사 (docs/QUALITY.md 1절 "이미지"·"링크")
+// 빌드 산출물(out/) 정적 검사 (docs/archive/QUALITY.md 1절 "이미지"·"링크")
 // - 내부 링크·에셋(href/src)이 out/ 안의 실제 파일로 해석되는지 (깨진 내부 링크 0)
 // - <img>: alt·width·height 필수, 래스터는 WebP/AVIF만
 // - GA/Pixel 하드코딩 금지 (gtag( / fbq( / gtag.js / fbevents.js)

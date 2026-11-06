@@ -2,7 +2,7 @@ import { useId } from "react";
 import { wrapText } from "@/lib/svg-text";
 
 /*
- * 시술 위치 다이어그램 (QUALITY 3-1 P-03 "절개/시술 위치 SVG", docs/IMAGES.md "에이전트가 SVG 직접 작성")
+ * 시술 위치 다이어그램 (QUALITY 3-1 P-03 "절개/시술 위치 SVG", docs/design/IMAGES.md "에이전트가 SVG 직접 작성")
  * - 부위 기본 선화(region) 위에 번호 표식(marker)을 얹고, 아래 범례에 번호별 설명을 실제 <text> 로 쓴다.
  * - 얼굴 전체·이목구비 조합·신체 노출 없이 해당 부위 윤곽만 단순화한다.
  * - 색은 토큰 클래스(fill-*, stroke-*)만. 좌표계 320 폭(그림 320×180 + 범례).
