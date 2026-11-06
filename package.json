@@ -12,7 +12,7 @@
     "serve": "node scripts/serve-out.mjs",
     "data": "node scripts/build-data.mjs",
     "data:sql": "node scripts/build-data.mjs --sql",
-    "lint": "eslint . --max-warnings 0 && node scripts/check-tokens.mjs && node scripts/build-data.mjs --check-sql",
+    "lint": "eslint . --max-warnings 0 && node scripts/check-tokens.mjs && node scripts/lint-medical.mjs && node scripts/build-data.mjs --check-sql",
     "typecheck": "tsc --noEmit",
     "test": "vitest run --coverage",
     "test:a11y": "playwright test tests/a11y",

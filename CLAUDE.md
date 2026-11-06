@@ -23,7 +23,7 @@
 - 커밋은 Conventional Commits. `main`은 항상 빌드 통과.
 
 ## 법·콘텐츠 경계 (자세히: `docs/legal/MEDICAL-AD.md`)
-- 의료 효과 보장, 전후 사진, 다른 병원과 비교·비방, 치료경험담, 평점·AggregateRating, 최상급 표현 금지.
+- 의료 효과 보장, 전후 사진, 다른 병원과 비교·비방, 치료경험담, 평점·AggregateRating, 최상급 표현 금지. 금지 표현은 `scripts/lint-medical.mjs`가 파일 저장 때마다 검사한다.
 - 시술 정보에는 출처를 단다. 가격은 범위 + 출처 + 조사일.
 - 상담·리드 건수에 연동된 대가를 받는 구조는 만들지 않는다(의료법 제27조 제3항).
 - 얼굴·실사·병원 사진 금지. 이미지 규칙은 `docs/design/IMAGES.md`.

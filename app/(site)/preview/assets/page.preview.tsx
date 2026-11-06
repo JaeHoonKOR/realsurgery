@@ -209,7 +209,7 @@ export default function AssetPreviewPage() {
         </div>
       </Block>
 
-      <Block id="chart" title="가격 범위 막대 차트" note="병원별 공개 가격의 최저~최고. 값이 없으면 ‘가격 미정’ 점선 자리로 표시합니다.">
+      <Block id="chart" title="가격 범위 막대 차트" note="병원별 공개 가격의 하한~상한. 값이 없으면 ‘가격 미정’ 점선 자리로 표시합니다.">
         <PriceRangeChart
           title="쌍꺼풀 수술 병원별 공개 가격"
           items={priceItems}

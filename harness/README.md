@@ -43,6 +43,7 @@ builder 종료 hook이 돌 때마다 `harness/hooks.log`에 한 줄이 남는다
 | features.json: planner만 목록 변경, 오케스트레이터는 `passes`만, 나머지 서브에이전트는 변경 불가. passes를 true로 바꾸는 건 오케스트레이터만, 그것도 회귀 테스트 파일이 있을 때만 | `scripts/hooks/check-features.mjs` (PreToolUse Write·Edit, `agent_type`으로 구분), 셸 변경은 guard가 차단 |
 | builder는 typecheck·lint 통과 전에 끝낼 수 없음 | `scripts/hooks/verify-build.mjs` (`.claude/settings.json` SubagentStop, 스크립트가 `agent_type == builder`일 때만 검사. 에이전트 frontmatter의 Stop hook은 이 환경에서 발동하지 않았다) |
 | 통과한 기능이 깨지면 배포 안 됨 | CI(`.github/workflows/pages.yml`)가 `pnpm test:features` 실패 시 배포 중단 |
+| 의료광고 금지 표현(B01~B13) 0건 | `scripts/lint-medical.mjs`: 파일을 쓸 때마다 PostToolUse hook이 그 파일을 검사해 바로 알림 + `pnpm lint`에 포함(builder 종료 검사·CI가 막음). 대상은 app·components·lib·content·data/seed, 코드 주석과 JSON 키는 제외 |
 
 나머지 규칙은 CLAUDE.md와 에이전트 지침에 둔다. hook은 예외가 없는 규칙에만 쓴다.
 
