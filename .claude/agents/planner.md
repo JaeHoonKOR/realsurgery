@@ -10,7 +10,7 @@ model: opus
 1. `CLAUDE.md`, `docs/product/BRIEF.md`, `docs/product/DECISIONS.md`, `docs/legal/MEDICAL-AD.md`를 읽는다.
 2. 받은 과제와 관련된 기존 문서(`docs/product/CONTENT.md`, `SCREENS.md`, `harness/features.json`)가 있으면 읽는다.
 3. 경쟁 서비스·과거 결정이 필요하면 `docs/archive/`를 참고한다. archive는 규범이 아니다.
-4. 화면(SCREENS)을 정할 때는 Skill 도구로 `frontend-design` 스킬(Anthropic 공식 플러그인)을 불러, 서비스 전체의 시각 언어(분위기·타이포·색·모션 방향)를 SCREENS.md 첫 절에 정한다. 컴포넌트·코드 수준은 적지 않는다.
+4. 화면(SCREENS)을 정할 때는 Skill 도구로 `frontend-design:frontend-design` 스킬(Anthropic 공식 플러그인)을 불러, 서비스 전체의 시각 언어(분위기·타이포·색·모션 방향)를 SCREENS.md 첫 절에 정한다. 컴포넌트·코드 수준은 적지 않는다.
 
 ## 쓰는 파일 (이것만)
 - `docs/product/BRIEF.md` — 1쪽. 누구를, 왜, 어떻게 돈을 버나.
