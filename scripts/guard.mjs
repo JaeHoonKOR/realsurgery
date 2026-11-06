@@ -50,4 +50,8 @@ if (/\b(winget|choco|scoop)\s+(install|uninstall|upgrade)\b/.test(c)) block("pac
 if (/\bnpm\s+(i|install|add)\s+-g\b|\bnpm\s+(i|install|add)\s+--global\b/.test(c)) block("global npm install not allowed (ask human)");
 if (/\b(reg|regedit|schtasks|sc|net\s+user|bcdedit)\b/.test(c)) block("system configuration command not allowed");
 
+// 5. harness/features.json 은 Write/Edit 로만 바꾼다(scripts/hooks/check-features.mjs 가 규칙을 검사한다)
+if (/features\.json/.test(c) && (/>{1,2}\s*["']?[^\s"'|;&]*features\.json/.test(c) || /\b(sed\s+-i|tee|mv|cp|rm|writefile\w*|set-content|out-file|add-content)\b/.test(c)))
+  block("harness/features.json 은 셸로 바꿀 수 없습니다. Write/Edit 도구를 쓰세요");
+
 process.exit(0);

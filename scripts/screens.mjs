@@ -1,4 +1,4 @@
-// 리뷰용 스크린샷: backlog/log/screens/<ID>-375.png, <ID>-1280.png (전체 페이지)
+// 리뷰용 스크린샷: harness/screens/<ID>-375.png, <ID>-1280.png (전체 페이지, gitignore)
 // 사용: pnpm build && pnpm screens <ID> [route] [--suffix 상태명] [--preview] [--state 상태]
 //   예) pnpm screens T-100 /        pnpm screens P-06 /consult/ --suffix error
 //       pnpm screens T-100b /preview/ --preview                       (공통 컴포넌트 미리보기, next dev)
@@ -14,7 +14,7 @@ import { chromium } from "@playwright/test";
 import { detectBasePath, startServer } from "./serve-out.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const SCREEN_DIR = path.join(ROOT, "backlog", "log", "screens");
+const SCREEN_DIR = path.join(ROOT, "harness", "screens");
 const PREVIEW_PORT = 4174;
 const STATES = new Set(["consent-saved", "search-open", "scrolled", "viewport"]);
 
@@ -25,8 +25,8 @@ const VIEWPORTS = [
 
 const args = process.argv.slice(2);
 const id = args[0];
-if (!id || !/^[A-Z]-\d{2,3}[a-z]?$|^T-\d{3}[a-z]?$/.test(id)) {
-  console.error("사용: pnpm screens <ID> [route] [--suffix 상태명] [--preview] [--state 상태]   (ID 예: T-100, P-03)");
+if (!id || !/^[A-Z]-\d{2,3}[a-z]?$/.test(id)) {
+  console.error("사용: pnpm screens <ID> [route] [--suffix 상태명] [--preview] [--state 상태]   (ID 예: F-001, P-03)");
   process.exit(1);
 }
 const valueOf = (flag) => {

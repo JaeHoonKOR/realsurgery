@@ -13,6 +13,8 @@ const config = [
       "coverage/**",
       "test-results/**",
       "playwright-report/**",
+      ".playwright-mcp/**",
+      "docs/archive/**",
       "next-env.d.ts",
     ],
   },

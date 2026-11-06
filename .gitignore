@@ -1,6 +1,9 @@
 node_modules
 .next
 .next-preview/
+harness/screens/
+harness/.dev.pid
+harness/dev.log
 out/
 data/generated/
 coverage/

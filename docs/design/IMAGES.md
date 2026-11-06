@@ -16,7 +16,7 @@
 
 ## Gemini 생성 규칙 (`scripts/gen-image.mjs`)
 - 환경: `GEMINI_API_KEY`, `GEMINI_IMAGE_MODEL`(기본 `gemini-2.5-flash-image`). REST: `POST https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent`, 헤더 `X-goog-api-key`. 응답 `inlineData`(base64 PNG)를 저장 후 sharp로 WebP 변환.
-- 키 없으면 호출하지 않고 `public/images/placeholder/<slug>.svg`(브랜드색 기하 도형 + 시술명)를 생성, TASKS에 `needs-key`.
+- 키 없으면 호출하지 않고 `public/images/placeholder/<slug>.svg`(브랜드색 기하 도형 + 시술명)를 생성. 키 요청은 `docs/product/DECISIONS.md` D-3.
 - 스타일 프롬프트 고정 접두사(모든 이미지 동일):
   `Flat vector illustration, soft pastel palette (#F7F3EF background, accent #D97B66 and #2F6F6B), clean geometric shapes, no people, no faces, no text, no photorealism, medical-information mood, generous whitespace, centered composition, 3:2 aspect.`
 - 시술별 주제는 추상화: 쌍꺼풀 → "stylized eye outline with a gentle fold line and small sparkle", 코 → "abstract profile curve", 윤곽 → "soft geometric jawline curve". 신체 노출·수술 도구·혈액 묘사 금지.

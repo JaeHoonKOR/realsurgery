@@ -1,0 +1,73 @@
+# 하네스
+
+한 세션(메인)이 오케스트레이터로 일하고, 서브에이전트 3개를 루프로 돌린다.
+근거: Anthropic [Effective harnesses for long-running agents](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents), [Harness design for long-running apps](https://www.anthropic.com/engineering/harness-design-long-running-apps), [Claude Code best practices](https://code.claude.com/docs/en/best-practices).
+
+```
+사용자 ──/define──▶ 오케스트레이터 ──▶ planner ──▶ BRIEF·CONTENT·SCREENS·features.json
+   ▲                 (메인 세션)  ◀── QUESTIONS (오케스트레이터가 사용자에게 묻고 답을 돌려줌)
+   │
+   ├────/cycle────▶ 오케스트레이터 ──▶ builder ──▶ evaluator ──FAIL──▶ builder (최대 3라운드)
+   │                      │                           │
+   │                      └──── PASS: passes=true · progress · 커밋 ◀┘
+   │
+   └◀───/report─── 스크린샷 + 점수 → 사용자 판정(좋다/괜찮다/별로다) → docs/design/calibration/
+        /release   사용자만: cycle 브랜치 → main → GitHub Pages → 배포 URL 재확인
+```
+
+## 구성
+| 이름 | 위치 | 하는 일 |
+| --- | --- | --- |
+| 오케스트레이터 | 메인 세션 + `.claude/skills/{cycle,define,report,release}` | 순서 정하기, 서브에이전트에 넘길 정보 고르기, 상태 기록, 커밋. 직접 구현·판정하지 않음 |
+| planner | `.claude/agents/planner.md` | 무엇을 만들지 정함. 범위는 크게, 기술 세부는 적지 않음 |
+| builder | `.claude/agents/builder.md` | 기능 1개 구현 + 브라우저 확인. 끝낼 때 typecheck·lint hook |
+| evaluator | `.claude/agents/evaluator.md` | 실행 중인 사이트를 클릭해 PASS/FAIL. 쓰기 도구 없음. 구현자 추론을 받지 않음 |
+
+만드는 쪽과 평가하는 쪽을 나눈 이유: 자기 작업을 스스로 평가하면 후해진다. evaluator 점수는 사용자 판정 예시(`docs/design/calibration/`)로 보정한다.
+
+## 강제 규칙 (hook)
+| 규칙 | 구현 |
+| --- | --- |
+| 저장소 밖 접근·위험한 git/gh 명령 차단 | `scripts/guard.mjs` (PreToolUse Bash) + `.claude/settings.json` deny |
+| features.json: planner만 목록 변경, 오케스트레이터는 `passes`만, 나머지 서브에이전트는 변경 불가. passes를 true로 바꾸는 건 오케스트레이터만 | `scripts/hooks/check-features.mjs` (PreToolUse Write·Edit, `agent_type`으로 구분), 셸 변경은 guard가 차단 |
+| builder는 typecheck·lint 통과 전에 끝낼 수 없음 | `scripts/hooks/verify-build.mjs` (builder frontmatter Stop → SubagentStop) |
+
+나머지 규칙은 CLAUDE.md와 에이전트 지침에 둔다. hook은 예외가 없는 규칙에만 쓴다.
+
+## 상태 파일
+### `features.json`
+```json
+[
+  {
+    "id": "F-001",
+    "category": "flow",
+    "description": "메인에서 시술 카드를 누르면 그 시술 가이드가 열린다",
+    "steps": ["/realsurgery/ 열기", "첫 번째 시술 카드 클릭", "가이드 H1이 카드 제목과 같은지 확인"],
+    "priority": 1,
+    "passes": false
+  }
+]
+```
+- 필드는 이 6개뿐. `id`는 `F-000` 형식, `priority`는 1이 먼저.
+- 기능 = 사용자가 브라우저에서 클릭으로 확인할 수 있는 단위.
+
+### `progress.md` (최신이 위, 항목당 5줄 이하)
+```
+## YYYY-MM-DD · F-00x · <기능 요약>
+- 결과: PASS (라운드 2) | BLOCKED: <이유>
+- 점수: 기능 5 · 신뢰 5 · 디자인 완성도 n · 독창성 n · 만듦새 n
+- 커밋: <sha>
+- 메모: 다음 세션이 알아야 할 것
+```
+
+### `init.mjs`
+의존성 확인 → `pnpm dev`(이미 떠 있으면 재사용) → 첫 화면 200 + `<h1>` 확인. `--stop`으로 종료. 스크린샷은 `harness/screens/`(gitignore).
+
+## 하루 사이클
+1. 사용자: `/cycle 3` — 미통과 기능 3개를 builder → evaluator로 통과시킨다.
+2. 끝나면 오케스트레이터가 `/report` 절차로 스크린샷·점수를 보여주고 판정을 받는다.
+3. 사용자 판정이 calibration에 쌓이고, 다음 날 evaluator가 그 예시로 채점한다.
+4. 배포하고 싶을 때 사용자: `/release`.
+
+## 바꿀 때
+하네스의 구성요소는 모두 "모델이 혼자서는 못 한다"는 가정이다. 문제가 관찰되면 하나 추가하고, 필요 없어 보이면 하나씩 뺀다. 한꺼번에 바꾸지 않는다.
