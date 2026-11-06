@@ -1,5 +1,39 @@
-import { describe, expect, it } from "vitest";
-import { applyEdit, checkFeaturesChange, validateShape } from "../../scripts/hooks/check-features.mjs";
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
+import { afterEach, describe, expect, it } from "vitest";
+import { applyEdit, checkFeaturesChange, missingFiles, validateShape } from "../../scripts/hooks/check-features.mjs";
+
+let tmp: string | undefined;
+afterEach(() => {
+  if (tmp) fs.rmSync(tmp, { recursive: true, force: true });
+  tmp = undefined;
+});
+
+describe("check-features: 통과 처리에 필요한 파일", () => {
+  const setup = (files: Record<string, string>) => {
+    tmp = fs.mkdtempSync(path.join(os.tmpdir(), "rs-features-"));
+    for (const [rel, body] of Object.entries(files)) {
+      fs.mkdirSync(path.dirname(path.join(tmp, rel)), { recursive: true });
+      fs.writeFileSync(path.join(tmp, rel), body, "utf8");
+    }
+    return tmp;
+  };
+  it("회귀 테스트와 계약서가 없으면 둘 다 알려 준다", () => {
+    expect(missingFiles(setup({}), "F-001")).toHaveLength(2);
+  });
+  it("계약서에 합의 줄이 없으면 미완으로 본다", () => {
+    const root = setup({ "tests/e2e/features/F-001.spec.ts": "x", "harness/contracts/F-001.md": "# F-001\n검증: ..." });
+    expect(missingFiles(root, "F-001")).toEqual(['계약서 harness/contracts/F-001.md 의 "합의:" 줄(evaluator 합의 전)']);
+  });
+  it("회귀 테스트와 합의된 계약서가 있으면 빈 목록", () => {
+    const root = setup({
+      "tests/e2e/features/F-001.spec.ts": "x",
+      "harness/contracts/F-001.md": "# F-001\n합의: 2026-11-06 evaluator 라운드 1\n",
+    });
+    expect(missingFiles(root, "F-001")).toEqual([]);
+  });
+});
 
 const feature = (over: Record<string, unknown> = {}) => ({
   id: "F-001",
@@ -53,20 +87,21 @@ describe("check-features: 메인 세션(오케스트레이터)", () => {
   it("파일이 없을 때 빈 배열 생성은 통과", () => {
     expect(checkFeaturesChange(null, "[]\n", undefined)).toBeNull();
   });
-  it("회귀 테스트 파일이 없으면 통과 처리를 막는다", () => {
-    expect(checkFeaturesChange(before, json([feature({ passes: true })]), undefined, () => false)).toContain(
-      "tests/e2e/features/F-001.spec.ts",
-    );
+  it("필요한 파일이 없으면 통과 처리를 막고 무엇이 없는지 알려 준다", () => {
+    const missing = () => ["회귀 테스트 tests/e2e/features/F-001.spec.ts", "계약서 harness/contracts/F-001.md"];
+    const reason = checkFeaturesChange(before, json([feature({ passes: true })]), undefined, missing);
+    expect(reason).toContain("tests/e2e/features/F-001.spec.ts");
+    expect(reason).toContain("harness/contracts/F-001.md");
   });
-  it("회귀 테스트 파일이 있으면 통과 처리를 허용한다", () => {
+  it("필요한 파일이 다 있으면 통과 처리를 허용한다", () => {
     const seen: string[] = [];
-    const hasSpec = (id: string) => (seen.push(id), true);
-    expect(checkFeaturesChange(before, json([feature({ passes: true })]), undefined, hasSpec)).toBeNull();
+    const missingFor = (id: string) => (seen.push(id), []);
+    expect(checkFeaturesChange(before, json([feature({ passes: true })]), undefined, missingFor)).toBeNull();
     expect(seen).toEqual(["F-001"]);
   });
-  it("passes를 false로 되돌릴 때는 회귀 테스트를 묻지 않는다", () => {
+  it("passes를 false로 되돌릴 때는 파일을 묻지 않는다", () => {
     const passed = json([feature({ passes: true })]);
-    expect(checkFeaturesChange(passed, json([feature()]), undefined, () => false)).toBeNull();
+    expect(checkFeaturesChange(passed, json([feature()]), undefined, () => ["x"])).toBeNull();
   });
 });
 

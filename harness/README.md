@@ -7,9 +7,11 @@
 사용자 ──/define──▶ 오케스트레이터 ──▶ planner ──▶ BRIEF·CONTENT·SCREENS·features.json
    ▲                 (메인 세션)  ◀── QUESTIONS (오케스트레이터가 사용자에게 묻고 답을 돌려줌)
    │
-   ├────/cycle────▶ 오케스트레이터 ──▶ builder ──▶ evaluator ──FAIL──▶ builder (최대 3라운드)
-   │                      │                           │
-   │                      └──── PASS: passes=true · progress · 커밋 ◀┘
+   ├────/cycle────▶ 오케스트레이터, 기능 1개마다:
+   │                 ① 계약   builder가 계약서 작성 ⇄ evaluator 검토 (AGREE까지, 최대 2라운드)
+   │                 ② 구현   builder 구현 → evaluator 판정 ──FAIL──▶ builder (최대 3라운드)
+   │                 ③ 디자인 (screen만) 다듬기/방향 바꾸기 → 재판정, 완성도·독창성 4까지 (최대 5라운드)
+   │                 ④ 통과   passes=true · progress · 커밋
    │
    └◀───/report─── 스크린샷 + 점수 → 사용자 판정(좋다/괜찮다/별로다) → docs/design/calibration/
         /release   사용자만: cycle 브랜치 → main → GitHub Pages → 배포 URL 재확인
@@ -20,8 +22,11 @@
 | --- | --- | --- |
 | 오케스트레이터 | 메인 세션 + `.claude/skills/{cycle,define,report,release}` | 순서 정하기, 서브에이전트에 넘길 정보 고르기, 상태 기록, 커밋. 직접 구현·판정하지 않음 |
 | planner | `.claude/agents/planner.md` | 무엇을 만들지 정함. 범위는 크게, 기술 세부는 적지 않음 |
-| builder | `.claude/agents/builder.md` | 기능 1개 구현 + 브라우저 확인. 끝낼 때 typecheck·lint hook |
-| evaluator | `.claude/agents/evaluator.md` | 실행 중인 사이트를 클릭해 PASS/FAIL. 쓰기 도구 없음. 구현자 추론을 받지 않음 |
+| builder | `.claude/agents/builder.md` | 기능 1개: 계약서 작성 → 구현 + 브라우저 확인 → 디자인 라운드. 끝낼 때 typecheck·lint hook |
+| evaluator | `.claude/agents/evaluator.md` | 계약 검토(AGREE/REVISE)와 판정(PASS/FAIL). 실행 중인 사이트를 클릭해 채점. 쓰기 도구 없음. 구현자 추론을 받지 않음 |
+
+계약서(`harness/contracts/<id>.md`, 양식은 그 폴더 README)는 Anthropic 하네스 설계 글의 "스프린트 계약"이다. 코딩 전에 무엇을 만들고 어떻게 검증할지 합의해서, evaluator가 구현자가 정한 기준이 아니라 합의된 기준으로 채점하게 한다.
+디자인 반복은 같은 글의 반복 생성–평가 루프다. 하한을 넘기면 멈추는 대신 목표(완성도·독창성 4)까지 다듬거나 방향을 바꾼다. 둘 다 "모델이 혼자서는 못 한다"는 가정이므로, 실제 사이클에서 효과가 없으면 하나씩 뺀다.
 
 만드는 쪽과 평가하는 쪽을 나눈 이유: 자기 작업을 스스로 평가하면 후해진다. evaluator 점수는 사용자 판정 예시(`docs/design/calibration/`)로 보정한다.
 
@@ -40,7 +45,7 @@ builder 종료 hook이 돌 때마다 `harness/hooks.log`에 한 줄이 남는다
 | 규칙 | 구현 |
 | --- | --- |
 | 저장소 밖 접근·위험한 git/gh 명령 차단 | `scripts/guard.mjs` (PreToolUse Bash) + `.claude/settings.json` deny |
-| features.json: planner만 목록 변경, 오케스트레이터는 `passes`만, 나머지 서브에이전트는 변경 불가. passes를 true로 바꾸는 건 오케스트레이터만, 그것도 회귀 테스트 파일이 있을 때만 | `scripts/hooks/check-features.mjs` (PreToolUse Write·Edit, `agent_type`으로 구분), 셸 변경은 guard가 차단 |
+| features.json: planner만 목록 변경, 오케스트레이터는 `passes`만, 나머지 서브에이전트는 변경 불가. passes를 true로 바꾸는 건 오케스트레이터만, 그것도 회귀 테스트 파일과 합의된 계약서(`합의:` 줄)가 있을 때만 | `scripts/hooks/check-features.mjs` (PreToolUse Write·Edit, `agent_type`으로 구분), 셸 변경은 guard가 차단 |
 | builder는 typecheck·lint 통과 전에 끝낼 수 없음 | `scripts/hooks/verify-build.mjs` (`.claude/settings.json` SubagentStop, 스크립트가 `agent_type == builder`일 때만 검사. 에이전트 frontmatter의 Stop hook은 이 환경에서 발동하지 않았다) |
 | 통과한 기능이 깨지면 배포 안 됨 | CI(`.github/workflows/pages.yml`)가 `pnpm test:features` 실패 시 배포 중단 |
 | 의료광고 금지 표현(B01~B13) 0건 | `scripts/lint-medical.mjs`: 파일을 쓸 때마다 PostToolUse hook이 그 파일을 검사해 바로 알림 + `pnpm lint`에 포함(builder 종료 검사·CI가 막음). 대상은 app·components·lib·content·data/seed, 코드 주석과 JSON 키는 제외 |
