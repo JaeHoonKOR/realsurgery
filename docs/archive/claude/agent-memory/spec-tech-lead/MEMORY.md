@@ -1,0 +1,1 @@
+- [Lint without Bash](feedback_lint_without_bash.md) — no Bash tool; reproduce lint-spec.mjs rules via Grep, ask orchestrator to run real script

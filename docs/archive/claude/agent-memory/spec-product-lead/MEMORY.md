@@ -1,0 +1,3 @@
+- [Legal source fetch paths](reference_legal_sources.md) — casenote works for 법률, law.go.kr/시행령 fail; Meta policy URLs
+- [95-legal-ops coupling](project_95_constraints.md) — 3-2 must stay 10 items (D6 100칸), internal lead rule, non-의료인 stance
+- [00-product decisions](project_00_product_decisions.md) — KPI-01~13/G1·G2, D8 numbers, 완본-only indexing, AEO guides 11-03, B13 regex owed to 95 v4

@@ -1,0 +1,2 @@
+- [No Bash: lint emulation](reference_no_bash_lint.md) — spec-designer has no shell; reproduce lint-spec.mjs rules with Grep
+- [10-design v1 decisions](project_10design_v1.md) — T-081 deviations from code/BENCHMARK (bar 64px, 1 filled CTA, R-TXT1 320/380) and why

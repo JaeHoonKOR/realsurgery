@@ -7,9 +7,9 @@ afterEach(() => {
 });
 
 describe("track()", () => {
-  it("screen-spec 5절 이벤트 21개를 정의한다(중복 없음)", () => {
-    expect(TRACK_EVENTS).toHaveLength(21);
-    expect(new Set(TRACK_EVENTS).size).toBe(21);
+  it("이벤트 22개를 정의한다(v2 21개 + share, 중복 없음)", () => {
+    expect(TRACK_EVENTS).toHaveLength(22);
+    expect(new Set(TRACK_EVENTS).size).toBe(22);
   });
 
   it("dataLayer 가 없으면 만들고 { event, ...params } 를 push 한다", () => {

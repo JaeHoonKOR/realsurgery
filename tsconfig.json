@@ -32,15 +32,18 @@
   "include": [
     "**/*.ts",
     "**/*.tsx",
+    ".next-preview/types/**/*.ts",
     ".next/types/**/*.ts",
     "next-env.d.ts",
-    ".next-preview/types/**/*.ts"
+    ".next-dev/types/**/*.ts"
   ],
   "exclude": [
     "node_modules",
     "out",
     ".next/cache",
     ".next-preview/cache",
+    ".next-dev/cache",
+    "docs/archive",
     "test-results",
     "playwright-report",
     "coverage"

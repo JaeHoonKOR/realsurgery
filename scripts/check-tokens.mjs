@@ -1,4 +1,4 @@
-// 디자인 토큰 가드 (docs/QUALITY.md 3절 "토큰 외 임의 값 금지")
+// 디자인 토큰 가드 (docs/archive/QUALITY.md 3절 "토큰 외 임의 값 금지")
 // - styles/tokens.css 밖의 색 리터럴 금지: hex, 색 함수(rgb·hsl·hwb·lab·lch·oklab·oklch·color()), 이름 색(white·red …)
 // - Tailwind 임의 값 클래스(p-[13px], bg-[#fff], max-w-[1120px] …)·토큰 밖 팔레트 색 클래스(text-white, bg-blue-500 …) 금지
 // - TSX·MDX 인라인 style 의 숫자·길이 값(style={{ padding: 13 }}, zIndex: 10, "13px") 금지 — 0·var(--토큰)만 허용

@@ -1,7 +1,7 @@
 import AxeBuilder from "@axe-core/playwright";
 import { test, expect } from "../fixtures";
 
-// docs/QUALITY.md 1절: axe-core critical·serious 0건
+// docs/archive/QUALITY.md 1절: axe-core critical·serious 0건
 const ROUTES = ["./"];
 
 for (const route of ROUTES) {

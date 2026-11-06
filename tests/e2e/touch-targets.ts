@@ -1,7 +1,7 @@
 import type { Page } from "@playwright/test";
 
 /**
- * 모바일 터치 타겟 44px (docs/QUALITY.md 3절) — 화면에 보이는 인터랙티브 요소를 목록 없이 전부 잰다.
+ * 모바일 터치 타겟 44px (docs/archive/QUALITY.md 3절) — 화면에 보이는 인터랙티브 요소를 목록 없이 전부 잰다.
  * 새 컴포넌트가 추가돼도 테스트 목록을 고칠 필요가 없게, 선택자로 모은다.
  * - 대상: 링크·버튼·입력·스위치·검색 옵션 등 누를 수 있는 모든 요소(tabindex="-1" 인 일반 요소는 제외, role=option 은 포함)
  * - 제외: 화면에 그려지지 않는 요소(display:none·hidden → 0×0, sr-only → 1×1, visibility:hidden)

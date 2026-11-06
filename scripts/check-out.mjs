@@ -1,4 +1,4 @@
-// 빌드 산출물(out/) 정적 검사 (docs/QUALITY.md 1절 "이미지"·"링크")
+// 빌드 산출물(out/) 정적 검사 (docs/archive/QUALITY.md 1절 "이미지"·"링크")
 // - 내부 링크·에셋(href/src)이 out/ 안의 실제 파일로 해석되는지 (깨진 내부 링크 0)
 // - <img>: alt·width·height 필수, 래스터는 WebP/AVIF만
 // - GA/Pixel 하드코딩 금지 (gtag( / fbq( / gtag.js / fbevents.js)
@@ -60,6 +60,21 @@ for (const file of htmlFiles) {
     if (!existsInOut(inOut)) problems.push(`${rel}: 깨진 내부 링크 ${raw}`);
   }
 
+  // og:image·twitter:image 는 절대 URL → 사이트 URL(basePath 포함) 아래 실제 파일이어야 한다
+  for (const m of html.matchAll(/<meta\s+(?:property|name)="(?:og:image|twitter:image)"\s+content="([^"]+)"/g)) {
+    const url = m[1].replace(/&amp;/g, "&");
+    let pathname;
+    try {
+      pathname = new URL(url).pathname;
+    } catch {
+      problems.push(`${rel}: OG 이미지 URL 형식 오류 ${url}`);
+      continue;
+    }
+    const inOut = basePath && pathname.startsWith(`${basePath}/`) ? pathname.slice(basePath.length) : pathname;
+    if (basePath && !pathname.startsWith(`${basePath}/`)) problems.push(`${rel}: OG 이미지가 basePath(${basePath}) 밖 ${url}`);
+    else if (!existsInOut(inOut)) problems.push(`${rel}: OG 이미지 파일 없음 ${url}`);
+  }
+
   for (const m of html.matchAll(/<img\b[^>]*>/g)) {
     const tag = m[0];
     const src = tag.match(/\ssrc="([^"]+)"/)?.[1] ?? "";
@@ -69,7 +84,11 @@ for (const file of htmlFiles) {
   }
 }
 
-const rasterNotModern = files.filter((f) => /\.(png|jpe?g|gif)$/i.test(f) && !f.includes(`${path.sep}_next${path.sep}`));
+// 예외: out/og/*.png — SNS 크롤러(카카오·페이스북·네이버)는 og:image WebP 를 보장하지 않는다. 화면에 그리지 않는 메타 전용 파일.
+const OG_PNG = new RegExp(`^og\\${path.sep}[^\\${path.sep}]+\\.png$`);
+const rasterNotModern = files.filter(
+  (f) => /\.(png|jpe?g|gif)$/i.test(f) && !f.includes(`${path.sep}_next${path.sep}`) && !OG_PNG.test(path.relative(OUT_DIR, f)),
+);
 for (const f of rasterNotModern) problems.push(`${path.relative(OUT_DIR, f)}: PNG/JPG/GIF 에셋 — WebP/AVIF로 변환 필요`);
 
 if (problems.length) {

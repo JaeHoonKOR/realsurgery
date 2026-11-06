@@ -10,7 +10,10 @@
  */
 export type CtaLocation = "header" | "hero" | "mid" | "bottom" | "footer" | "bottom_bar";
 
-/** screen-spec.md 5절 이벤트 21개 (전환 1 + 보조 3 + 행동 17) 와 파라미터 */
+/**
+ * v2 screen-spec 5절 이벤트 21개(전환 1 + 보조 3 + 행동 17) + 공유 1개와 파라미터.
+ * share 는 GA4 권장 이벤트 이름·파라미터를 그대로 쓴다. 공유 링크에는 utm_medium=share 를 붙인다(scripts/metrics.mjs 가 집계).
+ */
 export type TrackEvents = {
   view_procedure: { procedure_id: string; procedure_name: string; category: string };
   view_clinic: { clinic_id: string; clinic_name: string; is_premium: boolean };
@@ -39,6 +42,7 @@ export type TrackEvents = {
   click_map: { clinic_id: string };
   kakao_add: Record<string, never>;
   experiment_variant: { campaign: string; variant: string };
+  share: { method: "copy_link" | "web_share" | "kakao" | "instagram"; content_type: string; item_id: string };
 };
 
 export type TrackEventName = keyof TrackEvents;
@@ -65,6 +69,7 @@ export const TRACK_EVENTS = [
   "click_map",
   "kakao_add",
   "experiment_variant",
+  "share",
 ] as const satisfies readonly TrackEventName[];
 
 /** 전환 값 (5절): generate_lead 50,000원, lead_qualified 200,000원 */

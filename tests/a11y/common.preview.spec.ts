@@ -2,7 +2,7 @@ import AxeBuilder from "@axe-core/playwright";
 import type { Page } from "@playwright/test";
 import { test, expect } from "../fixtures";
 
-// docs/QUALITY.md 1절: axe-core critical·serious 0건 — 공통 컴포넌트 미리보기(개발 서버)의 상태별 검사
+// docs/archive/QUALITY.md 1절: axe-core critical·serious 0건 — 공통 컴포넌트 미리보기(개발 서버)의 상태별 검사
 async function blocking(page: Page) {
   const results = await new AxeBuilder({ page })
     .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa", "best-practice"])

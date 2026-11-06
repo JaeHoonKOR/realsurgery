@@ -1,4 +1,4 @@
-// Lighthouse 모바일 게이트 (docs/QUALITY.md 1절): 3회 실행 중앙값으로 판정한다.
+// Lighthouse 모바일 게이트 (docs/archive/QUALITY.md 1절): 3회 실행 중앙값으로 판정한다.
 // 사용: pnpm build && pnpm lh [route] [--runs 3]   예) pnpm lh /   pnpm lh /procedures/쌍꺼풀-수술/
 // 기준: Performance ≥ 90, Accessibility ≥ 95, Best Practices ≥ 95, SEO = 100, LCP ≤ 2.0s, CLS ≤ 0.05
 import fs from "node:fs";

@@ -1,0 +1,3 @@
+- [Procedure content checks](feedback_procedure_content_checks.md) — box values vs source *meaning*; fact-support keyword false negatives (mutation-probe checkTripleHtml); test-results/ scratch
+- [Benchmark review](feedback_benchmark_review.md) — trace B-rows to sec 2 + raw JSON, counting units, tracked-script values, synthetic-HTML probe of "regex bug" claims
+- [Bash env for reviews](reference_bash_env.md) — `pnpm --dir C:/rs`, plain git; /preview/ screens; touch probe; out/ probe; bench-measure re-run; memory via real path

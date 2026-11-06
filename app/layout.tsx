@@ -11,6 +11,9 @@ const DEFAULT_TITLE = `${SITE.name} — 성형 시술 가격·회복기간 비�
 const DEFAULT_DESCRIPTION =
   "쌍꺼풀·코·안면윤곽 등 성형 시술의 가격 범위, 소요시간, 회복기간, 마취 방식과 부작용을 학회·논문 출처와 함께 한 화면에 정리합니다. 병원 공개 정보를 비교하고 시술 상담 전 꼭 확인할 내용을 미리 꼼꼼히 살펴보세요.";
 
+// 기본 OG 이미지: scripts/og.mjs 가 빌드 전에 public/og/default.png(1200×630)로 만든다. 경로는 metadataBase(basePath 포함) 기준.
+const OG_IMAGE = { url: "og/default.png", width: 1200, height: 630, alt: `${SITE.name} — 시술 가격·회복기간, 한 번에 비교` };
+
 // Pretendard Variable 동적 서브셋 (scripts/copy-fonts.mjs 가 public/fonts/pretendard/ 로 복사)
 const FONT_CSS = withBasePath("/fonts/pretendard/pretendardvariable-dynamic-subset.css");
 
@@ -33,8 +36,9 @@ export const metadata: Metadata = {
     siteName: SITE.name,
     title: DEFAULT_TITLE,
     description: DEFAULT_DESCRIPTION,
+    images: [OG_IMAGE],
   },
-  twitter: { card: "summary", title: DEFAULT_TITLE, description: DEFAULT_DESCRIPTION },
+  twitter: { card: "summary_large_image", title: DEFAULT_TITLE, description: DEFAULT_DESCRIPTION, images: [OG_IMAGE.url] },
   formatDetection: { telephone: false },
 };
 
